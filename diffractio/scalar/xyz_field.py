@@ -69,16 +69,16 @@ from numpy import cos, diff, gradient, sin
 from scipy.fftpack import fft2, ifft2
 from scipy.interpolate import RegularGridInterpolator
 
-from .__init__ import degrees, mm, np, plt, num_max_processors
-from .config import (
+from diffractio import degrees, mm, np, plt, num_max_processors
+from diffractio.config import (
     bool_raise_exception,
     CONF_DRAWING,
     Draw_pyvista_Options,
     video_isovalue_Options,
     get_scalar_options,
 )
-from .config import Draw_XZ_Options, Draw_XY_Options, Draw_XYZ_Options
-from .utils_common import (
+from diffractio.config import Draw_XZ_Options, Draw_XY_Options, Draw_XYZ_Options
+from diffractio.core.operations import (
     get_date,
     get_instance_size_MB,
     load_data_common,
@@ -90,16 +90,16 @@ from .utils_common import (
     sub,
     rmul,
 )
-from .utils_drawing import normalize_draw
-from .utils_math import get_k, nearest, reduce_to_1
-from .utils_multiprocessing import _pickle_method, _unpickle_method
-from .utils_optics import FWHM2D, beam_width_2D, field_parameters, normalize_field
-from .utils_drawing3D import draw, video_isovalue
-from .utils_typing import NDArrayFloat
-from .scalar_fields_XY import PWD_kernel, Scalar_field_XY, WPM_schmidt_kernel
-from .scalar_fields_XZ import Scalar_field_XZ
-from .vector_fields_XZ import Vector_field_XZ
-from .vector_fields_XY import Vector_field_XY
+from diffractio.core.drawing import normalize_draw
+from diffractio.core.math import get_k, nearest, reduce_to_1
+from diffractio.utils.multiprocessing import _pickle_method, _unpickle_method
+from diffractio.core.optics import FWHM2D, beam_width_2D, field_parameters, normalize_field
+from diffractio.core.drawing3D import draw, video_isovalue
+from diffractio.typing import NDArrayFloat
+from diffractio.scalar.xy_field import PWD_kernel, Scalar_field_XY, WPM_schmidt_kernel
+from diffractio.scalar.xz_field import Scalar_field_XZ
+from diffractio.vector.x_fieldZ import Vector_field_XZ
+from diffractio.vector.xy_field import Vector_field_XY
 
 copyreg.pickle(types.MethodType, _pickle_method, _unpickle_method)
 

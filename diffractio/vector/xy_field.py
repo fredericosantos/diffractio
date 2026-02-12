@@ -59,10 +59,10 @@ from scipy.interpolate import RectBivariateSpline
 from py_pol.jones_matrix import Jones_matrix
 from py_pol.jones_vector import Jones_vector
 
-from .__init__ import degrees, eps, mm, np, plt, um
-from .config import bool_raise_exception, CONF_DRAWING, Draw_Vector_XY_Options, get_vector_options
-from .utils_typing import NDArrayFloat
-from .utils_common import (
+from diffractio import degrees, eps, mm, np, plt, um
+from diffractio.config import bool_raise_exception, CONF_DRAWING, Draw_Vector_XY_Options, get_vector_options
+from diffractio.typing import NDArrayFloat
+from diffractio.core.operations import (
     load_data_common,
     save_data_common,
     get_date,
@@ -70,12 +70,12 @@ from .utils_common import (
     get_vector,
     check_none,
 )
-from .utils_common import get_instance_size_MB
+from diffractio.core.operations import get_instance_size_MB
 
-from .utils_drawing import normalize_draw, reduce_matrix_size, draw_edges
-from .utils_math import nearest
-from .scalar_fields_XY import Scalar_field_XY
-from .scalar_masks_XY import Scalar_mask_XY
+from diffractio.core.drawing import normalize_draw, reduce_matrix_size, draw_edges
+from diffractio.core.math import nearest
+from diffractio.scalar.xy_field import Scalar_field_XY
+from diffractio.scalar.xy_mask import Scalar_mask_XY
 
 
 percentage_intensity = CONF_DRAWING["percentage_intensity"]
@@ -484,7 +484,7 @@ class Vector_field_XY:
 
         TODO: Some inconsistency in the radius of the circle lower than the size of the field.
         """
-        from .vector_sources_XY import Vector_source_XY
+        from diffractio.vector.xy_source import Vector_source_XY
 
         num_x, num_y = self.X.shape
 
@@ -617,7 +617,7 @@ class Vector_field_XY:
         TODO: Radius of the circle lower than the size of the field.
         """
 
-        from diffractio.vector_sources_XY import Vector_source_XY
+        from diffractio.vector.xy_source import Vector_source_XY
 
         # numerical aperture
         sin_theta_max = radius / np.sqrt(radius**2 + focal**2)
@@ -869,7 +869,7 @@ class Vector_field_XY:
                 return e0x, e0y, e0z
 
             elif num_x > 1 and num_y == 1:
-                from diffractio.vector_fields_X import Vector_field_X
+                from diffractio.vector.x_field import Vector_field_X
 
                 E_out = Vector_field_X(xout, self.wavelength)
                 E_out.Ex = e0x.u
@@ -877,7 +877,7 @@ class Vector_field_XY:
                 E_out.Ez = e0z.u
                 return E_out
             elif num_x == 1 and num_y > 1:
-                from diffractio.vector_fields_X import Vector_field_X
+                from diffractio.vector.x_field import Vector_field_X
 
                 E_out = Vector_field_X(yout, self.wavelength)
                 E_out.Ex = e0x.u
@@ -885,7 +885,7 @@ class Vector_field_XY:
                 E_out.Ez = e0z.u
                 return E_out
             elif num_x > 1 and num_y > 1:
-                from diffractio.vector_fields_XY import Vector_field_XY
+                from diffractio.vector.xy_field import Vector_field_XY
 
                 E_out = Vector_field_XY(xout, yout, self.wavelength)
                 E_out.Ex = e0x.u
@@ -926,7 +926,7 @@ class Vector_field_XY:
                     e0z_zs.u[:, :, i] = e0z_u.u
 
             if num_x == 1 and num_y == 1:
-                from diffractio.vector_fields_Z import Vector_field_Z
+                from diffractio.vector.z_field import Vector_field_Z
 
                 E_out = Vector_field_Z(z, self.wavelength)
                 E_out.Ex = e0x_zs.u
@@ -935,7 +935,7 @@ class Vector_field_XY:
                 return E_out
 
             elif num_x > 1 and num_y == 1:
-                from diffractio.vector_fields_XZ import Vector_field_XZ
+                from diffractio.vector.x_fieldZ import Vector_field_XZ
 
                 E_out = Vector_field_XZ(xout, z, self.wavelength)
                 E_out.Ex = e0x_zs.u
@@ -944,7 +944,7 @@ class Vector_field_XY:
                 return E_out
 
             elif num_x == 1 and num_y > 1:
-                from diffractio.vector_fields_XZ import Vector_field_XZ
+                from diffractio.vector.x_fieldZ import Vector_field_XZ
 
                 E_out = Vector_field_XZ(yout, z, self.wavelength)
                 E_out.Ex = e0x_zs.u
@@ -953,7 +953,7 @@ class Vector_field_XY:
                 return E_out
 
             elif num_x > 1 and num_y > 1:
-                from diffractio.vector_fields_XYZ import Vector_field_XYZ
+                from diffractio.vector.xy_fieldZ import Vector_field_XYZ
 
                 E_out = Vector_field_XYZ(xout, yout, z, self.wavelength)
                 E_out.Ex = e0x_zs.u

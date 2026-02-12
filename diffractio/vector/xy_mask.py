@@ -43,14 +43,14 @@ from matplotlib import rcParams
 from py_pol.jones_matrix import Jones_matrix
 
 
-from .__init__ import degrees, np, plt
-from .config import bool_raise_exception, CONF_DRAWING, number_types
-from .utils_typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
-from .utils_common import check_none
-from .scalar_masks_XY import Scalar_mask_XY
-from .utils_optics import field_parameters
-from .vector_fields_XY import Vector_field_XY
-from .vector_sources_XY import Vector_source_XY
+from diffractio import degrees, np, plt
+from diffractio.config import bool_raise_exception, CONF_DRAWING, number_types
+from diffractio.typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
+from diffractio.core.operations import check_none
+from diffractio.scalar.xy_mask import Scalar_mask_XY
+from diffractio.core.optics import field_parameters
+from diffractio.vector.xy_field import Vector_field_XY
+from diffractio.vector.xy_source import Vector_source_XY
 
 
 Draw_Options = Literal["amplitudes", "phases", "jones", "jones_ap"]

@@ -52,13 +52,13 @@ import os
 from math import factorial
 from scipy.special import eval_hermite, j0, j1, jv
 
-from .__init__ import np, plt
-from .utils_typing import NDArray, NDArrayFloat
-from .utils_common import check_none
-from .utils_optics import roughness_2D
-from .config import bool_raise_exception
-from .scalar_fields_XY import Scalar_field_XY
-from .utils_math import fZernike, laguerre_polynomial_nk
+from diffractio import np, plt
+from diffractio.typing import NDArray, NDArrayFloat
+from diffractio.core.operations import check_none
+from diffractio.core.optics import roughness_2D
+from diffractio.config import bool_raise_exception
+from diffractio.scalar.xy_field import Scalar_field_XY
+from diffractio.core.math import fZernike, laguerre_polynomial_nk
 
 
 class Scalar_source_XY(Scalar_field_XY):

@@ -18,32 +18,32 @@ Init module to control the rest of the modules.
 """
 # flake8: noqa
 
-from .config import Options_Diffractio_kind, Options_Diffractio_frame
+from diffractio.config import Options_Diffractio_kind, Options_Diffractio_frame
 
-from diffractio.scalar_fields_X import Scalar_field_X
-from diffractio.scalar_fields_XY import Scalar_field_XY
-from diffractio.scalar_fields_XYZ import Scalar_field_XYZ
-from diffractio.scalar_fields_XZ import Scalar_field_XZ
-from diffractio.scalar_fields_Z import Scalar_field_Z
+from diffractio.scalar.x_field import Scalar_field_X
+from diffractio.scalar.xy_field import Scalar_field_XY
+from diffractio.scalar.xy_fieldZ import Scalar_field_XYZ
+from diffractio.scalar.xz_field import Scalar_field_XZ
+from diffractio.scalar.z_field import Scalar_field_Z
 
-from diffractio.scalar_masks_X import Scalar_mask_X
-from diffractio.scalar_masks_XY import Scalar_mask_XY
-from diffractio.scalar_masks_XYZ import Scalar_mask_XYZ
-from diffractio.scalar_masks_XZ import Scalar_mask_XZ
+from diffractio.scalar.x_mask import Scalar_mask_X
+from diffractio.scalar.xy_mask import Scalar_mask_XY
+from diffractio.scalar.xy_maskZ import Scalar_mask_XYZ
+from diffractio.scalar.xz_mask import Scalar_mask_XZ
 
-from diffractio.scalar_sources_X import Scalar_source_X
-from diffractio.scalar_sources_XY import Scalar_source_XY
+from diffractio.scalar.x_source import Scalar_source_X
+from diffractio.scalar.xy_source import Scalar_source_XY
 
-from diffractio.vector_fields_X import Vector_field_X
-from diffractio.vector_fields_XY import Vector_field_XY
-from diffractio.vector_fields_XYZ import Vector_field_XYZ
-from diffractio.vector_fields_XZ import Vector_field_XZ
-from diffractio.vector_fields_Z import Vector_field_Z
+from diffractio.vector.x_field import Vector_field_X
+from diffractio.vector.xy_field import Vector_field_XY
+from diffractio.vector.xy_fieldZ import Vector_field_XYZ
+from diffractio.vector.x_fieldZ import Vector_field_XZ
+from diffractio.vector.z_field import Vector_field_Z
 
-from diffractio.vector_masks_XY import Vector_mask_XY
-from diffractio.vector_sources_XY import Vector_source_XY
+from diffractio.vector.xy_mask import Vector_mask_XY
+from diffractio.vector.xy_source import Vector_source_XY
 
-from diffractio.utils_typing import NDArrayFloat
+from diffractio.typing import NDArrayFloat
 
 
 class Diffractio:

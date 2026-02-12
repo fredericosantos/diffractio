@@ -48,18 +48,18 @@ import scipy.ndimage as ndimage
 from scipy.interpolate import interp1d
 from scipy.signal import fftconvolve
 
-from diffractio.scalar_masks_XY import Scalar_mask_XY
+from diffractio.scalar.xy_mask import Scalar_mask_XY
 
 
-from .__init__ import degrees, np, plt, sp, um
-from .config import bool_raise_exception
-from .utils_typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
-from .utils_math import nearest, nearest2
-from .utils_optics import refractive_index, roughness_1D
-from .utils_dxf import load_dxf
-from .utils_common import check_none
-from .scalar_fields_XZ import Scalar_field_XZ
-from .scalar_masks_X import Scalar_mask_X
+from diffractio import degrees, np, plt, sp, um
+from diffractio.config import bool_raise_exception
+from diffractio.typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
+from diffractio.core.math import nearest, nearest2
+from diffractio.core.optics import refractive_index, roughness_1D
+from diffractio.utils.dxf import load_dxf
+from diffractio.core.operations import check_none
+from diffractio.scalar.xz_field import Scalar_field_XZ
+from diffractio.scalar.x_mask import Scalar_mask_X
 
 
 class Scalar_mask_XZ(Scalar_field_XZ):

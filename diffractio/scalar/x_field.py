@@ -74,11 +74,11 @@ from scipy.fftpack import fft, fftshift, ifft
 from scipy.interpolate import interp1d
 from scipy.special import hankel1
 
-from .__init__ import degrees, mm, np, plt
+from diffractio import degrees, mm, np, plt
 
-from .config import bool_raise_exception, Draw_X_Options, get_scalar_options, empty_types
-from .utils_typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
-from .utils_common import (
+from diffractio.config import bool_raise_exception, Draw_X_Options, get_scalar_options, empty_types
+from diffractio.typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
+from diffractio.core.operations import (
     get_date,
     load_data_common,
     save_data_common,
@@ -89,8 +89,8 @@ from .utils_common import (
     get_scalar,
     get_instance_size_MB,
 )
-from .utils_drawing import normalize_draw
-from .utils_math import (
+from diffractio.core.drawing import normalize_draw
+from diffractio.core.math import (
     fft_filter,
     get_edges,
     nearest,
@@ -99,8 +99,8 @@ from .utils_math import (
     get_k,
     nearest2,
 )
-from .utils_multiprocessing import _pickle_method, _unpickle_method, execute_multiprocessing
-from .utils_optics import field_parameters, normalize_field
+from diffractio.utils.multiprocessing import _pickle_method, _unpickle_method, execute_multiprocessing
+from diffractio.core.optics import field_parameters, normalize_field
 
 copyreg.pickle(types.MethodType, _pickle_method, _unpickle_method)
 
@@ -511,7 +511,7 @@ class Scalar_field_X:
         Returns:
             Scalar_mask_X:  If new_field is True, it returns a Scalar_mask_X object.
         """
-        from diffractio.scalar_masks_X import Scalar_mask_X
+        from diffractio.scalar.x_mask import Scalar_mask_X
 
         amplitude = np.abs(self.u)
         phase = np.angle(self.u)
@@ -545,7 +545,7 @@ class Scalar_field_X:
         if new_field is False:
             self.u = new_amplitude
         else:
-            from .scalar_masks_X import Scalar_mask_X
+            from diffractio.scalar.x_mask import Scalar_mask_X
 
             new = Scalar_mask_X(self.x, self.wavelength)
             new.u = new_amplitude
@@ -559,7 +559,7 @@ class Scalar_field_X:
             size (float): size of mask for filtering
         """
 
-        from .scalar_masks_X import Scalar_mask_X  # Do not write up
+        from diffractio.scalar.x_mask import Scalar_mask_X  # Do not write up
 
         slit = Scalar_mask_X(self.x, self.wavelength)
         slit.slit(x0=0, size=size)
@@ -1111,13 +1111,13 @@ class Scalar_field_X:
                 u_zs[i, :] = u0 * k_factor
 
             if num_x == 1:
-                from diffractio.scalar_fields_Z import Scalar_field_Z
+                from diffractio.scalar.z_field import Scalar_field_Z
 
                 u_out = Scalar_field_Z(z=z, wavelength=self.wavelength)
                 u_out.u = 1j * u_zs
                 return u_out
             else:
-                from diffractio.scalar_fields_XZ import Scalar_field_XZ
+                from diffractio.scalar.xz_field import Scalar_field_XZ
 
                 u_out = Scalar_field_XZ(xout, z, self.wavelength)
                 u_out.u = 1j * u_zs
@@ -1330,7 +1330,7 @@ class Scalar_field_X:
             2. S. Schmidt et al., “Wave-optical modeling beyond the thin-element-approximation,” Opt. Express, vol. 24, no. 26, p. 30188, 2016.
 
         """
-        from diffractio.scalar_masks_XZ import Scalar_mask_XZ
+        from diffractio.scalar.xz_mask import Scalar_mask_XZ
 
         k0 = 2 * np.pi / self.wavelength
         dx = self.x[1] - self.x[0]
@@ -1364,7 +1364,7 @@ class Scalar_field_X:
 
         # Storing intensities at axis (x=x_pos)
         if x_pos is not None:
-            from diffractio.scalar_fields_Z import Scalar_field_Z
+            from diffractio.scalar.z_field import Scalar_field_Z
 
             u_axis_x = Scalar_field_Z(zs, self.wavelength)
             index_x_axis, _, _ = nearest(self.x, x_pos)

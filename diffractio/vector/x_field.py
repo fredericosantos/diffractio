@@ -44,14 +44,14 @@ import copy
 from matplotlib import rcParams
 
 
-from .__init__ import degrees, eps, mm, np, plt
-from .utils_typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
-from .config import bool_raise_exception, CONF_DRAWING, Draw_Vector_X_Options, get_vector_options
-from .scalar_fields_X import Scalar_field_X
-from .utils_common import get_date, load_data_common, save_data_common, check_none, get_vector
-from .utils_common import get_instance_size_MB
+from diffractio import degrees, eps, mm, np, plt
+from diffractio.typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
+from diffractio.config import bool_raise_exception, CONF_DRAWING, Draw_Vector_X_Options, get_vector_options
+from diffractio.scalar.x_field import Scalar_field_X
+from diffractio.core.operations import get_date, load_data_common, save_data_common, check_none, get_vector
+from diffractio.core.operations import get_instance_size_MB
 
-from .utils_drawing import normalize_draw
+from diffractio.core.drawing import normalize_draw
 
 percentage_intensity = CONF_DRAWING["percentage_intensity"]
 
@@ -349,7 +349,7 @@ class Vector_field_X:
                 return e0x, e0y, e0z
 
             elif num_x > 1 and num_y == 1:
-                from diffractio.vector_fields_X import Vector_field_X
+                from diffractio.vector.x_field import Vector_field_X
 
                 E_out = Vector_field_X(xout, self.wavelength)
                 E_out.Ex = e0x.u
@@ -357,7 +357,7 @@ class Vector_field_X:
                 E_out.Ez = e0z.u
                 return E_out
             elif num_x == 1 and num_y > 1:
-                from diffractio.vector_fields_X import Vector_field_X
+                from diffractio.vector.x_field import Vector_field_X
 
                 E_out = Vector_field_X(xout, self.wavelength)
                 E_out.Ex = e0x.u
@@ -365,7 +365,7 @@ class Vector_field_X:
                 E_out.Ez = e0z.u
                 return E_out
             elif num_x > 1 and num_y > 1:
-                from diffractio.vector_fields_XY import Vector_field_XY
+                from diffractio.vector.xy_field import Vector_field_XY
 
                 E_out = Vector_field_XY(xout, yout, self.wavelength)
                 E_out.Ex = e0x.u
@@ -406,7 +406,7 @@ class Vector_field_X:
                     e0z_zs.u[:, :, i] = e0z_u.u
 
             if num_x == 1 and num_y == 1:
-                from diffractio.vector_fields_Z import Vector_field_Z
+                from diffractio.vector.z_field import Vector_field_Z
 
                 E_out = Vector_field_Z(z, self.wavelength)
                 E_out.Ex = e0x_zs.u
@@ -415,7 +415,7 @@ class Vector_field_X:
                 return E_out
 
             elif num_x > 1 and num_y == 1:
-                from diffractio.vector_fields_XZ import Vector_field_XZ
+                from diffractio.vector.x_fieldZ import Vector_field_XZ
 
                 E_out = Vector_field_XZ(xout, z, self.wavelength)
                 E_out.Ex = e0x_zs.u
@@ -424,7 +424,7 @@ class Vector_field_X:
                 return E_out
 
             elif num_x == 1 and num_y > 1:
-                from diffractio.vector_fields_XZ import Vector_field_XZ
+                from diffractio.vector.x_fieldZ import Vector_field_XZ
 
                 E_out = Vector_field_XZ(yout, z, self.wavelength)
                 E_out.Ex = e0x_zs.u
@@ -433,7 +433,7 @@ class Vector_field_X:
                 return E_out
 
             elif num_x > 1 and num_y > 1:
-                from diffractio.vector_fields_XYZ import Vector_field_XYZ
+                from diffractio.vector.xy_fieldZ import Vector_field_XYZ
 
                 E_out = Vector_field_XYZ(xout, yout, z, self.wavelength)
                 E_out.Ex = e0x_zs.u

@@ -49,9 +49,9 @@ import multiprocessing
 from numpy import linspace, pi, shape, zeros
 from scipy.interpolate import interp1d
 
-from .__init__ import degrees, mm, np, plt
-from .config import Draw_Z_Options, bool_raise_exception, get_scalar_options
-from .utils_common import (
+from diffractio import degrees, mm, np, plt
+from diffractio.config import Draw_Z_Options, bool_raise_exception, get_scalar_options
+from diffractio.core.operations import (
     add,
     check_none,
     get_date,
@@ -61,10 +61,10 @@ from .utils_common import (
     rmul,
     save_data_common,
 )
-from .utils_drawing import normalize_draw
-from .utils_math import nearest
-from .utils_optics import FWHM1D, field_parameters, normalize_field
-from .utils_typing import NDArrayFloat
+from diffractio.core.drawing import normalize_draw
+from diffractio.core.math import nearest
+from diffractio.core.optics import FWHM1D, field_parameters, normalize_field
+from diffractio.typing import NDArrayFloat
 
 num_max_processors = multiprocessing.cpu_count()
 

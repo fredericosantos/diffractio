@@ -77,20 +77,20 @@ from scipy.fftpack import fft2, fftshift, ifft2
 from scipy.interpolate import RectBivariateSpline
 from scipy.signal import czt
 
-from .__init__ import np, plt
-from .__init__ import degrees, mm, seconds, um
+from diffractio import np, plt
+from diffractio import degrees, mm, seconds, um
 
-from .config import (
+from diffractio.config import (
     bool_raise_exception,
     CONF_DRAWING,
     Draw_XY_Options,
     Save_mask_Options,
     get_scalar_options,
 )
-from .config import options_pupil
+from diffractio.config import options_pupil
 
-from .utils_typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
-from .utils_common import (
+from diffractio.typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
+from diffractio.core.operations import (
     get_date,
     load_data_common,
     save_data_common,
@@ -100,8 +100,8 @@ from .utils_common import (
     get_scalar,
     rmul,
 )
-from .utils_drawing import draw2D, normalize_draw, prepare_drawing, reduce_matrix_size
-from .utils_math import (
+from diffractio.core.drawing import draw2D, normalize_draw, prepare_drawing, reduce_matrix_size
+from diffractio.core.math import (
     get_edges,
     get_k,
     nearest,
@@ -110,11 +110,11 @@ from .utils_math import (
     rotate_image,
     Bluestein_dft_xy,
 )
-from .utils_optics import beam_width_2D, field_parameters, normalize_field
-from .scalar_fields_X import Scalar_field_X
-from .scalar_fields_XZ import Scalar_field_XZ
-from .scalar_fields_Z import Scalar_field_Z
-from .utils_common import get_instance_size_MB
+from diffractio.core.optics import beam_width_2D, field_parameters, normalize_field
+from diffractio.scalar.x_field import Scalar_field_X
+from diffractio.scalar.xz_field import Scalar_field_XZ
+from diffractio.scalar.z_field import Scalar_field_Z
+from diffractio.core.operations import get_instance_size_MB
 
 try:
     import screeninfo
@@ -1369,7 +1369,7 @@ class Scalar_field_XY:
 
         """
 
-        from diffractio.scalar_fields_XYZ import Scalar_field_XYZ
+        from diffractio.scalar.xy_fieldZ import Scalar_field_XYZ
 
         k0 = 2 * np.pi / self.wavelength
         x = self.x
@@ -1427,7 +1427,7 @@ class Scalar_field_XY:
 
         # Storing intensities at axis (x=x_pos)
         if r_pos is not None:
-            from diffractio.scalar_fields_Z import Scalar_field_Z
+            from diffractio.scalar.z_field import Scalar_field_Z
 
             x_pos, y_pos = r_pos
             u_axis_x = Scalar_field_Z(zs, self.wavelength)
@@ -1729,7 +1729,7 @@ class Scalar_field_XY:
                 return u_out
 
             elif num_x > 1 and num_y > 1:
-                from diffractio.scalar_fields_XY import Scalar_field_XY
+                from diffractio.scalar.xy_field import Scalar_field_XY
 
                 u_out = Scalar_field_XY(xout, yout, self.wavelength)
                 u_out.u = 1j * u0
@@ -1862,7 +1862,7 @@ class Scalar_field_XY:
                 return u_out
 
             elif num_x > 1 and num_y > 1:
-                from diffractio.scalar_fields_XYZ import Scalar_field_XYZ
+                from diffractio.scalar.xy_fieldZ import Scalar_field_XYZ
 
                 u_out = Scalar_field_XYZ(xout, yout, z, self.wavelength)
                 u_out.u = 1j * u_zs

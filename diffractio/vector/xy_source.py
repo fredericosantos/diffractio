@@ -40,14 +40,14 @@ The magnitude is related to microns: `micron = 1.`
 from py_pol.jones_vector import Jones_vector
 
 
-from .__init__ import degrees, eps, np, um
-from .utils_typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
-from .utils_common import check_none
-from .config import bool_raise_exception
-from .scalar_fields_XY import Scalar_field_XY
-from .scalar_masks_XY import Scalar_mask_XY
-from .scalar_sources_XY import Scalar_source_XY
-from .vector_fields_XY import Vector_field_XY
+from diffractio import degrees, eps, np, um
+from diffractio.typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
+from diffractio.core.operations import check_none
+from diffractio.config import bool_raise_exception
+from diffractio.scalar.xy_field import Scalar_field_XY
+from diffractio.scalar.xy_mask import Scalar_mask_XY
+from diffractio.scalar.xy_source import Scalar_source_XY
+from diffractio.vector.xy_field import Vector_field_XY
 
 
 class Vector_source_XY(Vector_field_XY):

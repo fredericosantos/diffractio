@@ -47,22 +47,22 @@ The magnitude is related to microns: `micron = 1.`
 import copy
 from matplotlib import rcParams
 
-from .utils_typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
+from diffractio.typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
 
-from .__init__ import degrees, eps, mm, np, plt
-from .config import bool_raise_exception, CONF_DRAWING, Draw_Z_Options, get_vector_options
-from .scalar_fields_Z import Scalar_field_Z
-from .utils_common import (
+from diffractio import degrees, eps, mm, np, plt
+from diffractio.config import bool_raise_exception, CONF_DRAWING, Draw_Z_Options, get_vector_options
+from diffractio.scalar.z_field import Scalar_field_Z
+from diffractio.core.operations import (
     get_date,
     load_data_common,
     save_data_common,
     get_vector_options,
     check_none,
 )
-from .utils_common import get_instance_size_MB
-from .utils_drawing import normalize_draw
-from .utils_math import nearest
-from .utils_optics import normalize_field
+from diffractio.core.operations import get_instance_size_MB
+from diffractio.core.drawing import normalize_draw
+from diffractio.core.math import nearest
+from diffractio.core.optics import normalize_field
 
 percentage_intensity = CONF_DRAWING["percentage_intensity"]
 

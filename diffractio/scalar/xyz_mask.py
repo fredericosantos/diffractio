@@ -35,16 +35,16 @@ The magnitude is related to microns: `micron = 1.`
 
 # flake8: noqa
 
-from .__init__ import degrees, np, um, plt
-from .config import bool_raise_exception
-from .utils_typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
-from .utils_common import check_none
-from .utils_math import nearest
+from diffractio import degrees, np, um, plt
+from diffractio.config import bool_raise_exception
+from diffractio.typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
+from diffractio.core.operations import check_none
+from diffractio.core.math import nearest
 
-from .scalar_fields_XYZ import Scalar_field_XYZ
-from .scalar_masks_XY import Scalar_mask_XY
-from .scalar_masks_XZ import Scalar_mask_XZ
-from .utils_drawing3D import load_stl, voxelize_volume_diffractio
+from diffractio.scalar.xy_fieldZ import Scalar_field_XYZ
+from diffractio.scalar.xy_mask import Scalar_mask_XY
+from diffractio.scalar.xz_mask import Scalar_mask_XZ
+from diffractio.core.drawing3D import load_stl, voxelize_volume_diffractio
 
 
 class Scalar_mask_XYZ(Scalar_field_XYZ):

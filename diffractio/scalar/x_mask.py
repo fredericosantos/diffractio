@@ -35,12 +35,12 @@ The main atributes are:
 
 from scipy.interpolate import interp1d
 
-from .__init__ import degrees, np, plt, um
-from .scalar_fields_X import Scalar_field_X
-from .utils_common import check_none
-from .utils_math import cut_function, fft_convolution1d, nearest, nearest2
-from .utils_optics import roughness_1D
-from .utils_typing import NDArrayFloat
+from diffractio import degrees, np, plt, um
+from diffractio.scalar.x_field import Scalar_field_X
+from diffractio.core.operations import check_none
+from diffractio.core.math import cut_function, fft_convolution1d, nearest, nearest2
+from diffractio.core.optics import roughness_1D
+from diffractio.typing import NDArrayFloat
 
 
 class Scalar_mask_X(Scalar_field_X):

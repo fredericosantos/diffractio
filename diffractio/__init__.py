@@ -11,12 +11,21 @@
 # ----------------------------------------------------------------------
 
 
-"""Top-level package for Python Scalar and vector diffraction and interference.
+"""
+Top-level package for Python Scalar and vector diffraction and interference.
 
 Diffractio: A scientific computing package for Scalar and Vector Optical Interference and Diffraction in Python.
 ==================================================================================================================
 
-
+diffractio/
+├── __init__.py        # Package init, version, units, and constants.
+├── config.py          # Configuration settings.
+├── diffractio.py      # Factory class.
+├── typing.py          # Type definitions.
+├── core/              # Core functionality (math, optics, drawing).
+├── scalar/            # Scalar field implementations.
+├── vector/            # Vector field implementations.
+└── utils/             # Utilities (multiprocessing, dxf).
 """
 
 import datetime

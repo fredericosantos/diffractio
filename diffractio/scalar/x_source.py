@@ -39,13 +39,13 @@ The magnitude is related to microns: `mifcron = 1.`
 """
 # flake8: noqa
 
-from .__init__ import degrees, np, um
-from .__init__ import np, plt
-from .utils_typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
-from .utils_common import check_none
-from .utils_optics import roughness_1D
-from .config import bool_raise_exception
-from .scalar_fields_X import Scalar_field_X
+from diffractio import degrees, np, um
+from diffractio import np, plt
+from diffractio.typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
+from diffractio.core.operations import check_none
+from diffractio.core.optics import roughness_1D
+from diffractio.config import bool_raise_exception
+from diffractio.scalar.x_field import Scalar_field_X
 
 
 class Scalar_source_X(Scalar_field_X):

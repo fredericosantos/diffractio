@@ -51,26 +51,26 @@ from scipy.interpolate import RectBivariateSpline
 import cmath
 
 
-from .__init__ import degrees, eps, mm, np, plt
-from .config import (
+from diffractio import degrees, eps, mm, np, plt
+from diffractio.config import (
     Draw_refractive_index_Options,
     bool_raise_exception,
     CONF_DRAWING,
     get_vector_options,
     Draw_Vector_XZ_Options,
 )
-from .utils_typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
-from .utils_common import get_date, load_data_common, save_data_common, check_none, get_vector
-from .utils_common import get_instance_size_MB
-from .utils_drawing import normalize_draw, reduce_matrix_size, draw_edges, draw2D
-from .utils_math import get_k, nearest
-from .utils_optics import normalize_field, fresnel_equations_kx
-from .scalar_fields_X import Scalar_field_X
-from .scalar_fields_XZ import Scalar_field_XZ
-from .scalar_masks_XZ import Scalar_mask_XZ
-from .vector_fields_X import Vector_field_X
+from diffractio.typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
+from diffractio.core.operations import get_date, load_data_common, save_data_common, check_none, get_vector
+from diffractio.core.operations import get_instance_size_MB
+from diffractio.core.drawing import normalize_draw, reduce_matrix_size, draw_edges, draw2D
+from diffractio.core.math import get_k, nearest
+from diffractio.core.optics import normalize_field, fresnel_equations_kx
+from diffractio.scalar.x_field import Scalar_field_X
+from diffractio.scalar.xz_field import Scalar_field_XZ
+from diffractio.scalar.xz_mask import Scalar_mask_XZ
+from diffractio.vector.x_field import Vector_field_X
 
-from .utils_common import get_vector_options
+from diffractio.core.operations import get_vector_options
 import diffractio
 
 from py_pol.jones_vector import Jones_vector

@@ -51,21 +51,21 @@ from PIL import Image
 from scipy.signal import fftconvolve
 from scipy.special import eval_hermite
 
-from .__init__ import degrees, mm, np, plt, sp, um
-from .config import Options_squares_nxm, bool_raise_exception
-from .scalar_fields_XY import Scalar_field_XY
-from .scalar_sources_XY import Scalar_source_XY
-from .utils_common import check_none
-from .utils_dxf import load_dxf
-from .utils_math import (
+from diffractio import degrees, mm, np, plt, sp, um
+from diffractio.config import Options_squares_nxm, bool_raise_exception
+from diffractio.scalar.xy_field import Scalar_field_XY
+from diffractio.scalar.xy_source import Scalar_source_XY
+from diffractio.core.operations import check_none
+from diffractio.utils.dxf import load_dxf
+from diffractio.core.math import (
     fft_convolution2d,
     laguerre_polynomial_nk,
     make_edge,
     nearest,
     nearest2,
 )
-from .utils_optics import roughness_1D, roughness_2D
-from .utils_typing import NDArrayFloat
+from diffractio.core.optics import roughness_1D, roughness_2D
+from diffractio.typing import NDArrayFloat
 
 
 class Scalar_mask_XY(Scalar_field_XY):

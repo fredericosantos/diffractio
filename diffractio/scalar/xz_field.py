@@ -78,8 +78,8 @@ from numpy.lib.scimath import sqrt as csqrt
 from scipy.fftpack import fft, fft2, fftshift, ifft, ifft2
 from scipy.interpolate import RectBivariateSpline
 
-from .__init__ import degrees, mm, np, num_max_processors, plt, seconds, um
-from .config import (
+from diffractio import degrees, mm, np, num_max_processors, plt, seconds, um
+from diffractio.config import (
     CONF_DRAWING,
     Draw_interactive_Options,
     Draw_refractive_index_Options,
@@ -88,16 +88,16 @@ from .config import (
     bool_raise_exception,
     get_scalar_options,
 )
-from .scalar_fields_X import (
+from diffractio.scalar.x_field import (
     PWD_kernel,
     Scalar_field_X,
     WPM_schmidt_kernel,
     kernelRS,
     kernelRSinverse,
 )
-from .scalar_masks_X import Scalar_mask_X
-from .scalar_sources_X import Scalar_source_X
-from .utils_common import (
+from diffractio.scalar.x_mask import Scalar_mask_X
+from diffractio.scalar.x_source import Scalar_source_X
+from diffractio.core.operations import (
     add,
     check_none,
     get_date,
@@ -108,11 +108,11 @@ from .utils_common import (
     rmul,
     save_data_common,
 )
-from .utils_drawing import normalize_draw, prepare_drawing
-from .utils_math import get_k, nearest, reduce_to_1, rotate_image
-from .utils_multiprocessing import _pickle_method, _unpickle_method
-from .utils_optics import FWHM1D, beam_width_1D, field_parameters, normalize_field
-from .utils_typing import NDArrayFloat
+from diffractio.core.drawing import normalize_draw, prepare_drawing
+from diffractio.core.math import get_k, nearest, reduce_to_1, rotate_image
+from diffractio.utils.multiprocessing import _pickle_method, _unpickle_method
+from diffractio.core.optics import FWHM1D, beam_width_1D, field_parameters, normalize_field
+from diffractio.typing import NDArrayFloat
 
 copyreg.pickle(types.MethodType, _pickle_method, _unpickle_method)
 

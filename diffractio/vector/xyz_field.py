@@ -57,30 +57,30 @@ The magnitude is related to microns: `micron = 1.`
 import copy
 import time
 
-from .__init__ import degrees, eps, mm, np, plt
-from .config import (
+from diffractio import degrees, eps, mm, np, plt
+from diffractio.config import (
     bool_raise_exception,
     CONF_DRAWING,
     Draw_Vector_XY_Options,
     Draw_Vector_XZ_Options,
     get_vector_options,
 )
-from .utils_typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
-from .utils_common import get_date, load_data_common, save_data_common, check_none, get_vector
-from .utils_common import get_instance_size_MB
+from diffractio.typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
+from diffractio.core.operations import get_date, load_data_common, save_data_common, check_none, get_vector
+from diffractio.core.operations import get_instance_size_MB
 
-from .utils_drawing import normalize_draw, reduce_matrix_size
-from .utils_math import get_k, nearest
-from .utils_optics import normalize_field, fresnel_equations_kx
+from diffractio.core.drawing import normalize_draw, reduce_matrix_size
+from diffractio.core.math import get_k, nearest
+from diffractio.core.optics import normalize_field, fresnel_equations_kx
 
-from .scalar_fields_X import Scalar_field_X
-from .scalar_fields_XY import Scalar_field_XY
-from .scalar_fields_XZ import Scalar_field_XZ
-from .scalar_fields_XYZ import Scalar_field_XYZ
-from .scalar_masks_XY import Scalar_mask_XY
-from .scalar_masks_XYZ import Scalar_mask_XYZ
-from .vector_fields_XY import Vector_field_XY
-from .vector_masks_XY import Vector_mask_XY
+from diffractio.scalar.x_field import Scalar_field_X
+from diffractio.scalar.xy_field import Scalar_field_XY
+from diffractio.scalar.xz_field import Scalar_field_XZ
+from diffractio.scalar.xy_fieldZ import Scalar_field_XYZ
+from diffractio.scalar.xy_mask import Scalar_mask_XY
+from diffractio.scalar.xy_maskZ import Scalar_mask_XYZ
+from diffractio.vector.xy_field import Vector_field_XY
+from diffractio.vector.xy_mask import Vector_mask_XY
 
 from py_pol.jones_vector import Jones_vector
 
@@ -530,7 +530,7 @@ class Vector_field_XYZ:
             matrix (bool): If True it returns a matrix
 
         """
-        from .vector_fields_XZ import Vector_field_XZ
+        from diffractio.vector.x_fieldZ import Vector_field_XZ
 
         field_output = Vector_field_XZ(x=self.x, z=self.z, wavelength=self.wavelength)
         if iy0 is None:
@@ -565,7 +565,7 @@ class Vector_field_XYZ:
             matrix (bool): If True it returns a matrix
 
         """
-        from .vector_fields_XZ import Vector_field_XZ
+        from diffractio.vector.x_fieldZ import Vector_field_XZ
 
         field_output = Vector_field_XZ(x=self.y, z=self.z, wavelength=self.wavelength)
         if ix0 is None:
