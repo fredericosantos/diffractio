@@ -9,3 +9,9 @@ core/
 ├── operations.py      # Common operations (load, save, get_size).
 └── optics.py          # Optical utility functions.
 """
+
+from . import drawing
+from . import drawing3D
+from . import math
+from . import operations
+from . import optics

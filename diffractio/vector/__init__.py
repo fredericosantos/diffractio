@@ -12,3 +12,11 @@ vector/
 ├── xyz_field.py       # 3D vector fields (XYZ).
 └── z_field.py         # 1D vector fields (Z).
 """
+
+from . import x_field
+from . import xy_field
+from . import xy_mask
+from . import xy_source
+from . import xz_field
+from . import xyz_field
+from . import z_field

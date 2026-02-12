@@ -273,37 +273,7 @@ def add(self, other, kind: Options_add = "source"):
         sum of the two fields.
     """
 
-    from diffractio.scalar.x_source import Scalar_source_X
-    from diffractio.scalar.xy_source import Scalar_source_XY
-    from diffractio.scalar.x_mask import Scalar_mask_X
-    from diffractio.scalar.xy_mask import Scalar_mask_XY
-    from diffractio.scalar.xz_field import Scalar_field_XZ
-    from diffractio.scalar.xy_field import Scalar_field_XY
-    from diffractio.scalar.xz_mask import Scalar_mask_XZ
-    from diffractio.scalar.z_field import Scalar_field_Z
-    from diffractio.scalar.xyz_field import Scalar_field_XYZ
-    from diffractio.scalar.xyz_mask import Scalar_mask_XYZ
-
-    if isinstance(self, Scalar_mask_XY):
-        t = Scalar_mask_XY(self.x, self.y, self.wavelength)
-    elif isinstance(self, Scalar_source_XY):
-        t = Scalar_source_XY(self.x, self.y, self.wavelength)
-    elif isinstance(self, Scalar_mask_X):
-        t = Scalar_mask_X(self.x, self.wavelength)
-    elif isinstance(self, Scalar_source_X):
-        t = Scalar_source_X(self.x, self.wavelength)
-    elif isinstance(self, Scalar_mask_XZ):
-        t = Scalar_mask_XZ(self.x, self.z, self.wavelength)
-    elif isinstance(self, Scalar_field_XZ):
-        t = Scalar_field_XZ(self.x, self.z, self.wavelength)
-    elif isinstance(self, Scalar_field_Z):
-        t = Scalar_field_Z(self.z, self.wavelength)
-    elif isinstance(self, Scalar_field_XYZ):
-        t = Scalar_field_XYZ(self.x, self.y, self.z, self.wavelength)
-    elif isinstance(self, Scalar_mask_XYZ):
-        t = Scalar_mask_XYZ(self.x, self.y, self.z, self.wavelength)
-    elif isinstance(self, Scalar_field_XY):
-        t = Scalar_field_XY(self.x, self.y, self.wavelength)
+    t = self.duplicate(clear=True)
 
     if kind == "source":
         if isinstance(other, tuple):
@@ -450,36 +420,7 @@ def sub(self, other, kind: Options_sub = "source"):
         Substraction of the two fields.
     """
 
-    from diffractio.scalar.x_source import Scalar_source_X
-    from diffractio.scalar.xy_source import Scalar_source_XY
-    from diffractio.scalar.x_mask import Scalar_mask_X
-    from diffractio.scalar.xy_mask import Scalar_mask_XY
-    from diffractio.scalar.xz_field import Scalar_field_XZ
-    from diffractio.scalar.xz_mask import Scalar_mask_XZ
-    from diffractio.scalar.z_field import Scalar_field_Z
-    from diffractio.scalar.xyz_field import Scalar_field_XYZ
-    from diffractio.scalar.xyz_mask import Scalar_mask_XYZ
-
-    if isinstance(self, Scalar_mask_XY):
-        t = Scalar_mask_XY(self.x, self.y, self.wavelength)
-    elif isinstance(self, Scalar_source_XY):
-        t = Scalar_source_XY(self.x, self.y, self.wavelength)
-    elif isinstance(self, Scalar_mask_X):
-        t = Scalar_mask_X(self.x, self.wavelength)
-    elif isinstance(self, Scalar_source_X):
-        t = Scalar_source_X(self.x, self.wavelength)
-    elif isinstance(self, Scalar_field_XZ):
-        t = Scalar_field_XZ(self.x, self.z, self.wavelength)
-    elif isinstance(self, Scalar_field_Z):
-        t = Scalar_field_Z(self.z, self.wavelength)
-    elif isinstance(self, Scalar_mask_XY):
-        t = Scalar_mask_XY(self.x, self.y, self.wavelength)
-    elif isinstance(self, Scalar_mask_XZ):
-        t = Scalar_mask_XZ(self.x, self.z, self.wavelength)
-    elif isinstance(self, Scalar_field_XYZ):
-        t = Scalar_field_XYZ(self.x, self.y, self.z, self.wavelength)
-    elif isinstance(self, Scalar_mask_XYZ):
-        t = Scalar_mask_XYZ(self.x, self.y, self.z, self.wavelength)
+    t = self.duplicate(clear=True)
 
     if kind == "source":
         if isinstance(other, tuple):
@@ -581,37 +522,7 @@ def rmul(cls, number: float | complex | int, kind: Options_rmul = "intensity"):
         The field multiplied by the number.
     """
 
-    from diffractio.scalar.x_source import Scalar_source_X
-    from diffractio.scalar.xy_source import Scalar_source_XY
-    from diffractio.scalar.x_mask import Scalar_mask_X
-    from diffractio.scalar.xy_mask import Scalar_mask_XY
-    from diffractio.scalar.xz_field import Scalar_field_XZ
-    from diffractio.scalar.xy_field import Scalar_field_XY
-    from diffractio.scalar.xz_mask import Scalar_mask_XZ
-    from diffractio.scalar.z_field import Scalar_field_Z
-    from diffractio.scalar.xyz_field import Scalar_field_XYZ
-    from diffractio.scalar.xyz_mask import Scalar_mask_XYZ
-
-    if isinstance(cls, Scalar_mask_XY):
-        t = Scalar_mask_XY(cls.x, cls.y, cls.wavelength)
-    elif isinstance(cls, Scalar_source_XY):
-        t = Scalar_source_XY(cls.x, cls.y, cls.wavelength)
-    elif isinstance(cls, Scalar_mask_X):
-        t = Scalar_mask_X(cls.x, cls.wavelength)
-    elif isinstance(cls, Scalar_source_X):
-        t = Scalar_source_X(cls.x, cls.wavelength)
-    elif isinstance(cls, Scalar_mask_XZ):
-        t = Scalar_mask_XZ(cls.x, cls.z, cls.wavelength)
-    elif isinstance(cls, Scalar_field_XZ):
-        t = Scalar_field_XZ(cls.x, cls.z, cls.wavelength)
-    elif isinstance(cls, Scalar_field_Z):
-        t = Scalar_field_Z(cls.z, cls.wavelength)
-    elif isinstance(cls, Scalar_field_XYZ):
-        t = Scalar_field_XYZ(cls.x, cls.y, cls.z, cls.wavelength)
-    elif isinstance(cls, Scalar_mask_XYZ):
-        t = Scalar_mask_XYZ(cls.x, cls.y, cls.z, cls.wavelength)
-    elif isinstance(cls, Scalar_field_XY):
-        t = Scalar_field_XY(cls.x, cls.y, cls.wavelength)
+    t = cls.duplicate(clear=True)
 
     if kind == "intensity":
         t.u = cls.u * np.sqrt(number)
@@ -773,7 +684,7 @@ def load_data_common(cls, filename: str, verbose: bool = False):
 
         if dict0 is not None:
             if isinstance(dict0, dict):
-                cls.__dict__ = dict0
+                cls.__dict__.update(dict0)
             else:
                 raise Exception("no dictionary in load_data")
 
