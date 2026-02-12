@@ -76,9 +76,9 @@ from diffractio.core.optics import normalize_field, fresnel_equations_kx
 from diffractio.scalar.x_field import Scalar_field_X
 from diffractio.scalar.xy_field import Scalar_field_XY
 from diffractio.scalar.xz_field import Scalar_field_XZ
-from diffractio.scalar.xy_fieldZ import Scalar_field_XYZ
+from diffractio.scalar.xyz_field import Scalar_field_XYZ
 from diffractio.scalar.xy_mask import Scalar_mask_XY
-from diffractio.scalar.xy_maskZ import Scalar_mask_XYZ
+from diffractio.scalar.xyz_mask import Scalar_mask_XYZ
 from diffractio.vector.xy_field import Vector_field_XY
 from diffractio.vector.xy_mask import Vector_mask_XY
 
@@ -530,7 +530,7 @@ class Vector_field_XYZ:
             matrix (bool): If True it returns a matrix
 
         """
-        from diffractio.vector.x_fieldZ import Vector_field_XZ
+        from diffractio.vector.xz_field import Vector_field_XZ
 
         field_output = Vector_field_XZ(x=self.x, z=self.z, wavelength=self.wavelength)
         if iy0 is None:
@@ -565,7 +565,7 @@ class Vector_field_XYZ:
             matrix (bool): If True it returns a matrix
 
         """
-        from diffractio.vector.x_fieldZ import Vector_field_XZ
+        from diffractio.vector.xz_field import Vector_field_XZ
 
         field_output = Vector_field_XZ(x=self.y, z=self.z, wavelength=self.wavelength)
         if ix0 is None:

@@ -41,7 +41,7 @@ from diffractio.typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
 from diffractio.core.operations import check_none
 from diffractio.core.math import nearest
 
-from diffractio.scalar.xy_fieldZ import Scalar_field_XYZ
+from diffractio.scalar.xyz_field import Scalar_field_XYZ
 from diffractio.scalar.xy_mask import Scalar_mask_XY
 from diffractio.scalar.xz_mask import Scalar_mask_XZ
 from diffractio.core.drawing3D import load_stl, voxelize_volume_diffractio

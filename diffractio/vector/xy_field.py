@@ -935,7 +935,7 @@ class Vector_field_XY:
                 return E_out
 
             elif num_x > 1 and num_y == 1:
-                from diffractio.vector.x_fieldZ import Vector_field_XZ
+                from diffractio.vector.xz_field import Vector_field_XZ
 
                 E_out = Vector_field_XZ(xout, z, self.wavelength)
                 E_out.Ex = e0x_zs.u
@@ -944,7 +944,7 @@ class Vector_field_XY:
                 return E_out
 
             elif num_x == 1 and num_y > 1:
-                from diffractio.vector.x_fieldZ import Vector_field_XZ
+                from diffractio.vector.xz_field import Vector_field_XZ
 
                 E_out = Vector_field_XZ(yout, z, self.wavelength)
                 E_out.Ex = e0x_zs.u
@@ -953,7 +953,7 @@ class Vector_field_XY:
                 return E_out
 
             elif num_x > 1 and num_y > 1:
-                from diffractio.vector.xy_fieldZ import Vector_field_XYZ
+                from diffractio.vector.xyz_field import Vector_field_XYZ
 
                 E_out = Vector_field_XYZ(xout, yout, z, self.wavelength)
                 E_out.Ex = e0x_zs.u

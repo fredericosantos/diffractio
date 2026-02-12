@@ -23,7 +23,7 @@ diffractio.diffractio module
 diffractio.scalar\_fields\_X module
 -----------------------------------
 
-.. automodule:: diffractio.scalar_fields_X
+.. automodule:: diffractio.scalar.x_field
    :members:
    :undoc-members:
    :show-inheritance:
@@ -31,7 +31,7 @@ diffractio.scalar\_fields\_X module
 diffractio.scalar\_fields\_XY module
 ------------------------------------
 
-.. automodule:: diffractio.scalar_fields_XY
+.. automodule:: diffractio.scalar.x_fieldY
    :members:
    :undoc-members:
    :show-inheritance:
@@ -39,7 +39,7 @@ diffractio.scalar\_fields\_XY module
 diffractio.scalar\_fields\_XYZ module
 -------------------------------------
 
-.. automodule:: diffractio.scalar_fields_XYZ
+.. automodule:: diffractio.scalar.x_fieldYZ
    :members:
    :undoc-members:
    :show-inheritance:
@@ -47,7 +47,7 @@ diffractio.scalar\_fields\_XYZ module
 diffractio.scalar\_fields\_XZ module
 ------------------------------------
 
-.. automodule:: diffractio.scalar_fields_XZ
+.. automodule:: diffractio.scalar.xz_field
    :members:
    :undoc-members:
    :show-inheritance:
@@ -55,7 +55,7 @@ diffractio.scalar\_fields\_XZ module
 diffractio.scalar\_fields\_Z module
 -----------------------------------
 
-.. automodule:: diffractio.scalar_fields_Z
+.. automodule:: diffractio.scalar.z_field
    :members:
    :undoc-members:
    :show-inheritance:
@@ -63,7 +63,7 @@ diffractio.scalar\_fields\_Z module
 diffractio.scalar\_masks\_X module
 ----------------------------------
 
-.. automodule:: diffractio.scalar_masks_X
+.. automodule:: diffractio.scalar.x_mask
    :members:
    :undoc-members:
    :show-inheritance:
@@ -71,7 +71,7 @@ diffractio.scalar\_masks\_X module
 diffractio.scalar\_masks\_XY module
 -----------------------------------
 
-.. automodule:: diffractio.scalar_masks_XY
+.. automodule:: diffractio.scalar.x_maskY
    :members:
    :undoc-members:
    :show-inheritance:
@@ -79,7 +79,7 @@ diffractio.scalar\_masks\_XY module
 diffractio.scalar\_masks\_XYZ module
 ------------------------------------
 
-.. automodule:: diffractio.scalar_masks_XYZ
+.. automodule:: diffractio.scalar.x_maskYZ
    :members:
    :undoc-members:
    :show-inheritance:
@@ -87,7 +87,7 @@ diffractio.scalar\_masks\_XYZ module
 diffractio.scalar\_masks\_XZ module
 -----------------------------------
 
-.. automodule:: diffractio.scalar_masks_XZ
+.. automodule:: diffractio.scalar.xz_mask
    :members:
    :undoc-members:
    :show-inheritance:
@@ -95,7 +95,7 @@ diffractio.scalar\_masks\_XZ module
 diffractio.scalar\_sources\_X module
 ------------------------------------
 
-.. automodule:: diffractio.scalar_sources_X
+.. automodule:: diffractio.scalar.x_source
    :members:
    :undoc-members:
    :show-inheritance:
@@ -103,7 +103,7 @@ diffractio.scalar\_sources\_X module
 diffractio.scalar\_sources\_XY module
 -------------------------------------
 
-.. automodule:: diffractio.scalar_sources_XY
+.. automodule:: diffractio.scalar.x_sourceY
    :members:
    :undoc-members:
    :show-inheritance:
@@ -111,7 +111,7 @@ diffractio.scalar\_sources\_XY module
 diffractio.utils\_common module
 -------------------------------
 
-.. automodule:: diffractio.utils_common
+.. automodule:: diffractio.core.operations
    :members:
    :undoc-members:
    :show-inheritance:
@@ -119,7 +119,7 @@ diffractio.utils\_common module
 diffractio.utils\_drawing module
 --------------------------------
 
-.. automodule:: diffractio.utils_drawing
+.. automodule:: diffractio.core.drawing
    :members:
    :undoc-members:
    :show-inheritance:
@@ -127,7 +127,7 @@ diffractio.utils\_drawing module
 diffractio.utils\_drawing3D module
 ----------------------------------
 
-.. automodule:: diffractio.utils_drawing3D
+.. automodule:: diffractio.core.drawing3D
    :members:
    :undoc-members:
    :show-inheritance:
@@ -143,7 +143,7 @@ diffractio.utils\_dxf module
 diffractio.utils\_math module
 -----------------------------
 
-.. automodule:: diffractio.utils_math
+.. automodule:: diffractio.core.math
    :members:
    :undoc-members:
    :show-inheritance:
@@ -159,7 +159,7 @@ diffractio.utils\_multiprocessing module
 diffractio.utils\_optics module
 -------------------------------
 
-.. automodule:: diffractio.utils_optics
+.. automodule:: diffractio.core.optics
    :members:
    :undoc-members:
    :show-inheritance:
@@ -183,7 +183,7 @@ diffractio.utils\_typing module
 diffractio.vector\_fields\_X module
 -----------------------------------
 
-.. automodule:: diffractio.vector_fields_X
+.. automodule:: diffractio.vector.x_field
    :members:
    :undoc-members:
    :show-inheritance:
@@ -191,7 +191,7 @@ diffractio.vector\_fields\_X module
 diffractio.vector\_fields\_XY module
 ------------------------------------
 
-.. automodule:: diffractio.vector_fields_XY
+.. automodule:: diffractio.vector.x_fieldY
    :members:
    :undoc-members:
    :show-inheritance:
@@ -199,7 +199,7 @@ diffractio.vector\_fields\_XY module
 diffractio.vector\_fields\_XYZ module
 -------------------------------------
 
-.. automodule:: diffractio.vector_fields_XYZ
+.. automodule:: diffractio.vector.x_fieldYZ
    :members:
    :undoc-members:
    :show-inheritance:
@@ -207,7 +207,7 @@ diffractio.vector\_fields\_XYZ module
 diffractio.vector\_fields\_XZ module
 ------------------------------------
 
-.. automodule:: diffractio.vector_fields_XZ
+.. automodule:: diffractio.vector.xz_field
    :members:
    :undoc-members:
    :show-inheritance:
@@ -215,7 +215,7 @@ diffractio.vector\_fields\_XZ module
 diffractio.vector\_fields\_Z module
 -----------------------------------
 
-.. automodule:: diffractio.vector_fields_Z
+.. automodule:: diffractio.vector.z_field
    :members:
    :undoc-members:
    :show-inheritance:
@@ -223,7 +223,7 @@ diffractio.vector\_fields\_Z module
 diffractio.vector\_masks\_XY module
 -----------------------------------
 
-.. automodule:: diffractio.vector_masks_XY
+.. automodule:: diffractio.vector.xy_mask
    :members:
    :undoc-members:
    :show-inheritance:
@@ -231,7 +231,7 @@ diffractio.vector\_masks\_XY module
 diffractio.vector\_sources\_XY module
 -------------------------------------
 
-.. automodule:: diffractio.vector_sources_XY
+.. automodule:: diffractio.vector.xy_source
    :members:
    :undoc-members:
    :show-inheritance:

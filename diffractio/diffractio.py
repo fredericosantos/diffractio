@@ -22,13 +22,13 @@ from diffractio.config import Options_Diffractio_kind, Options_Diffractio_frame
 
 from diffractio.scalar.x_field import Scalar_field_X
 from diffractio.scalar.xy_field import Scalar_field_XY
-from diffractio.scalar.xy_fieldZ import Scalar_field_XYZ
+from diffractio.scalar.xyz_field import Scalar_field_XYZ
 from diffractio.scalar.xz_field import Scalar_field_XZ
 from diffractio.scalar.z_field import Scalar_field_Z
 
 from diffractio.scalar.x_mask import Scalar_mask_X
 from diffractio.scalar.xy_mask import Scalar_mask_XY
-from diffractio.scalar.xy_maskZ import Scalar_mask_XYZ
+from diffractio.scalar.xyz_mask import Scalar_mask_XYZ
 from diffractio.scalar.xz_mask import Scalar_mask_XZ
 
 from diffractio.scalar.x_source import Scalar_source_X
@@ -36,8 +36,8 @@ from diffractio.scalar.xy_source import Scalar_source_XY
 
 from diffractio.vector.x_field import Vector_field_X
 from diffractio.vector.xy_field import Vector_field_XY
-from diffractio.vector.xy_fieldZ import Vector_field_XYZ
-from diffractio.vector.x_fieldZ import Vector_field_XZ
+from diffractio.vector.xyz_field import Vector_field_XYZ
+from diffractio.vector.xz_field import Vector_field_XZ
 from diffractio.vector.z_field import Vector_field_Z
 
 from diffractio.vector.xy_mask import Vector_mask_XY
@@ -78,7 +78,6 @@ class Diffractio:
         n_background: float = 1.0,
         info: str = "",
     ):
-
         if kind == "scalar":
             if x is not None and y is None and z is None:
                 if frame == "source":

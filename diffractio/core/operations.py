@@ -281,8 +281,8 @@ def add(self, other, kind: Options_add = "source"):
     from diffractio.scalar.xy_field import Scalar_field_XY
     from diffractio.scalar.xz_mask import Scalar_mask_XZ
     from diffractio.scalar.z_field import Scalar_field_Z
-    from diffractio.scalar.xy_fieldZ import Scalar_field_XYZ
-    from diffractio.scalar.xy_maskZ import Scalar_mask_XYZ
+    from diffractio.scalar.xyz_field import Scalar_field_XYZ
+    from diffractio.scalar.xyz_mask import Scalar_mask_XYZ
 
     if isinstance(self, Scalar_mask_XY):
         t = Scalar_mask_XY(self.x, self.y, self.wavelength)
@@ -457,8 +457,8 @@ def sub(self, other, kind: Options_sub = "source"):
     from diffractio.scalar.xz_field import Scalar_field_XZ
     from diffractio.scalar.xz_mask import Scalar_mask_XZ
     from diffractio.scalar.z_field import Scalar_field_Z
-    from diffractio.scalar.xy_fieldZ import Scalar_field_XYZ
-    from diffractio.scalar.xy_maskZ import Scalar_mask_XYZ
+    from diffractio.scalar.xyz_field import Scalar_field_XYZ
+    from diffractio.scalar.xyz_mask import Scalar_mask_XYZ
 
     if isinstance(self, Scalar_mask_XY):
         t = Scalar_mask_XY(self.x, self.y, self.wavelength)
@@ -589,8 +589,8 @@ def rmul(cls, number: float | complex | int, kind: Options_rmul = "intensity"):
     from diffractio.scalar.xy_field import Scalar_field_XY
     from diffractio.scalar.xz_mask import Scalar_mask_XZ
     from diffractio.scalar.z_field import Scalar_field_Z
-    from diffractio.scalar.xy_fieldZ import Scalar_field_XYZ
-    from diffractio.scalar.xy_maskZ import Scalar_mask_XYZ
+    from diffractio.scalar.xyz_field import Scalar_field_XYZ
+    from diffractio.scalar.xyz_mask import Scalar_mask_XYZ
 
     if isinstance(cls, Scalar_mask_XY):
         t = Scalar_mask_XY(cls.x, cls.y, cls.wavelength)

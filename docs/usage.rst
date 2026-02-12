@@ -39,9 +39,9 @@ X fields
 .. code-block:: python
 
   from diffractio import um, nm, mm, np
-  from diffractio.scalar_fields_X import Scalar_field_X
-  from diffractio.scalar_sources_X import Scalar_source_X
-  from diffractio.scalar_masks_X import Scalar_mask_X
+  from diffractio.scalar.x_field import Scalar_field_X
+  from diffractio.scalar.x_source import Scalar_source_X
+  from diffractio.scalar.x_mask import Scalar_mask_X
 
   x = np.linspace(-500*um, 500*um, 4096)
   wavelength = .6328*um
@@ -75,9 +75,9 @@ XZ fields
 .. code-block:: python
 
   from diffractio import um, nm, mm, np,degrees
-  from diffractio.scalar_sources_X import Scalar_source_X
-  from diffractio.scalar_fields_XZ import Scalar_field_XZ
-  from diffractio.scalar_masks_XZ import Scalar_mask_XZ
+  from diffractio.scalar.x_source import Scalar_source_X
+  from diffractio.scalar.xz_field import Scalar_field_XZ
+  from diffractio.scalar.xz_mask import Scalar_mask_XZ
 
   x0 = np.linspace(-100*um, 100*um, 512)
   z0 = np.linspace(0*um, 300*um, 512)
@@ -110,9 +110,9 @@ XY fields
 .. code-block:: python
 
   from diffractio import um, nm, mm, np, degrees
-  from diffractio.scalar_sources_XY import Scalar_source_XY
-  from diffractio.scalar_fields_XY import Scalar_field_XY
-  from diffractio.scalar_masks_XY import Scalar_mask_XY
+  from diffractio.scalar.x_sourceY import Scalar_source_XY
+  from diffractio.scalar.x_fieldY import Scalar_field_XY
+  from diffractio.scalar.x_maskY import Scalar_mask_XY
 
 
   length = 1000*um
@@ -161,10 +161,10 @@ XYZ fields
 .. code-block:: python
 
   from diffractio import degrees, eps, mm, no_date, np, um
-  from diffractio.scalar_fields_XYZ import Scalar_field_XYZ
-  from diffractio.scalar_masks_XY import Scalar_mask_XY
-  from diffractio.scalar_masks_XYZ import Scalar_mask_XYZ
-  from diffractio.scalar_sources_XY import Scalar_source_XY
+  from diffractio.scalar.x_fieldYZ import Scalar_field_XYZ
+  from diffractio.scalar.x_maskY import Scalar_mask_XY
+  from diffractio.scalar.x_maskYZ import Scalar_mask_XYZ
+  from diffractio.scalar.x_sourceY import Scalar_source_XY
 
   x0 = np.linspace(-25*um, 25*um, 128)
   y0 = np.linspace(-25*um, 25*um, 128)
@@ -199,13 +199,13 @@ XY Vector fields
   from diffractio import np, sp, plt
   from diffractio import nm, um, mm, degrees
 
-  from diffractio.scalar_sources_XY import Scalar_source_XY
-  from diffractio.scalar_masks_XY import Scalar_mask_XY
-  from diffractio.scalar_fields_XY import Scalar_field_XY
+  from diffractio.scalar.x_sourceY import Scalar_source_XY
+  from diffractio.scalar.x_maskY import Scalar_mask_XY
+  from diffractio.scalar.x_fieldY import Scalar_field_XY
 
-  from diffractio.vector_sources_XY import Vector_source_XY
-  from diffractio.vector_masks_XY import Vector_mask_XY
-  from diffractio.vector_fields_XY import Vector_field_XY
+  from diffractio.vector.xy_source import Vector_source_XY
+  from diffractio.vector.xy_mask import Vector_mask_XY
+  from diffractio.vector.x_fieldY import Vector_field_XY
 
   x0 = np.linspace(-125*um, 125*um, 256)
   y0 = np.linspace(-125*um, 125*um, 256)
@@ -263,8 +263,8 @@ XZ Vector fields
   from diffractio import degrees, um
 
 
-  from diffractio.scalar_sources_X import Scalar_source_X
-  from diffractio.vector_fields_XZ import Vector_field_XZ
+  from diffractio.scalar.x_source import Scalar_source_X
+  from diffractio.vector.xz_field import Vector_field_XZ
 
   from py_pol.jones_vector import Jones_vector
 

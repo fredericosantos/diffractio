@@ -98,7 +98,7 @@ from diffractio.core.drawing3D import draw, video_isovalue
 from diffractio.typing import NDArrayFloat
 from diffractio.scalar.xy_field import PWD_kernel, Scalar_field_XY, WPM_schmidt_kernel
 from diffractio.scalar.xz_field import Scalar_field_XZ
-from diffractio.vector.x_fieldZ import Vector_field_XZ
+from diffractio.vector.xz_field import Vector_field_XZ
 from diffractio.vector.xy_field import Vector_field_XY
 
 copyreg.pickle(types.MethodType, _pickle_method, _unpickle_method)

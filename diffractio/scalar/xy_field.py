@@ -1369,7 +1369,7 @@ class Scalar_field_XY:
 
         """
 
-        from diffractio.scalar.xy_fieldZ import Scalar_field_XYZ
+        from diffractio.scalar.xyz_field import Scalar_field_XYZ
 
         k0 = 2 * np.pi / self.wavelength
         x = self.x
@@ -1862,7 +1862,7 @@ class Scalar_field_XY:
                 return u_out
 
             elif num_x > 1 and num_y > 1:
-                from diffractio.scalar.xy_fieldZ import Scalar_field_XYZ
+                from diffractio.scalar.xyz_field import Scalar_field_XYZ
 
                 u_out = Scalar_field_XYZ(xout, yout, z, self.wavelength)
                 u_out.u = 1j * u_zs
