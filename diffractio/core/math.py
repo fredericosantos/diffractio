@@ -200,7 +200,7 @@ def reduce_to_1(class_diffractio):
         class (class): Scalar_field_X, XY ,....
 
     """
-    class_diffractio.u[np.abs(class_diffractio.u > 1)] = 1
+    class_diffractio.u[np.abs(class_diffractio.u) > 1] = 1
 
     return class_diffractio
 
@@ -220,7 +220,11 @@ def distance(p1: NDArray | float, p2: NDArray | float, verbose: bool = False):
     if isinstance(p2, (int, float)):
         d = np.abs((p2 - p1))
     else:
-        d = np.sqrt(np.sum((p2 - p1) ** 2, axis=1))
+        diff = p2 - p1
+        if diff.ndim == 1:
+            d = np.sqrt(np.sum(diff**2))
+        else:
+            d = np.sqrt(np.sum(diff**2, axis=1))
 
     if verbose:
         print(f"distance between p1 and p2: {d}")
@@ -1054,7 +1058,7 @@ def filter_edge_1D(x: NDArrayFloat, size: float = 1.1, exponent: float = 32):
     # num_x = len(x)
     x_center = (x[-1] + x[0]) / 2
     Dx = size * (x[-1] - x[0])
-    return np.exp(-((2 * (x - x_center) / (Dx)) ** np.abs(exponent)))
+    return np.exp(-(np.abs(2 * (x - x_center) / (Dx)) ** np.abs(exponent)))
 
 
 def filter_edge_2D(x: NDArrayFloat, y: NDArrayFloat, size: float = 1.1, exponent: float = 32):
@@ -1076,8 +1080,8 @@ def filter_edge_2D(x: NDArrayFloat, y: NDArrayFloat, size: float = 1.1, exponent
 
     X, Y = np.meshgrid(x, y)
 
-    exp1 = np.exp(-((2 * (X - x_center) / (Dx)) ** np.abs(exponent)))
-    exp2 = np.exp(-((2 * (Y - y_center) / (Dy)) ** np.abs(exponent)))
+    exp1 = np.exp(-(np.abs(2 * (X - x_center) / (Dx)) ** np.abs(exponent)))
+    exp2 = np.exp(-(np.abs(2 * (Y - y_center) / (Dy)) ** np.abs(exponent)))
 
     return exp1 * exp2
 

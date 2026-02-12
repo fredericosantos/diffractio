@@ -233,11 +233,11 @@ def oversampling(cls, factor_rate: int | tuple):  # -> Any:
         cls.X, cls.Y, cls.Z = np.meshgrid(cls.x, cls.y, cls.z)
 
         new_matrix = cls.u.repeat(factor_rate[0], axis=0)
-        new_matrix = new_matrix(factor_rate[1], axis=1)
+        new_matrix = new_matrix.repeat(factor_rate[1], axis=1)
         cls.u = new_matrix.repeat(factor_rate[2], axis=2)
 
         new_matrix = cls.n.repeat(factor_rate[0], axis=0)
-        new_matrix = new_matrix(factor_rate[1], axis=1)
+        new_matrix = new_matrix.repeat(factor_rate[1], axis=1)
         cls.n = new_matrix.repeat(factor_rate[2], axis=2)
 
     elif cls.type in ("Scalar_mask_XZ", "Scalar_field_XZ"):
@@ -620,9 +620,9 @@ def rmul(cls, number: float | complex | int, kind: Options_rmul = "intensity"):
         t.u = cls.u * number
 
     elif kind == "phase":
-        ampltiude = np.abs(cls.u)
+        amplitude = np.abs(cls.u)
         phase = np.angle(cls.u)
-        t.u = ampltiude * np.exp(1j * number * phase)
+        t.u = amplitude * np.exp(1j * number * phase)
 
     return t
 
@@ -796,10 +796,11 @@ def print_axis_info(cls, axis: str):
         axis(): axis x, y, z... etc.
     """
 
-    x0 = eval("cls.{}[0]".format(axis))
-    x1 = eval("cls.{}[-1]".format(axis))
+    axis_data = getattr(cls, axis)
+    x0 = axis_data[0]
+    x1 = axis_data[-1]
     length = x1 - x0
-    Dx = eval("cls.{}[1]-cls.{}[0]".format(axis, axis))
+    Dx = axis_data[1] - axis_data[0]
     axis_info = dict(axis=axis, min=x0, max=x1, length=length, Dx=Dx)
     print("   axis={axis}: min={min}, max={max}, length={length}, Dx={Dx}".format(**axis_info))
 
