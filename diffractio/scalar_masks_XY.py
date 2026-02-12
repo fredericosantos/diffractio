@@ -45,26 +45,28 @@ The magnitude is related to microns: `micron = 1.`
     * roughness, circle_rough, ring_rough, fresnel_lens_rough,
 """
 
-import matplotlib.figure as mpfig
-import matplotlib.image as mpimg
 
+import matplotlib.path as mpath
 from PIL import Image
 from scipy.signal import fftconvolve
 from scipy.special import eval_hermite
-import matplotlib.path as mpath
 
-
-
-from .__init__ import degrees, np, plt, sp, um, mm
-from .utils_typing import npt, Any, NDArray,  NDArrayFloat, NDArrayComplex
-from .utils_math import (cart2pol, fft_convolution2d, laguerre_polynomial_nk, make_edge,
-                         nearest, nearest2)
-from .config import bool_raise_exception, Options_squares_nxm
-from .utils_common import check_none
-from .utils_optics import roughness_1D, roughness_2D
-from .utils_dxf import load_dxf
+from .__init__ import degrees, mm, np, plt, sp, um
+from .config import Options_squares_nxm, bool_raise_exception
 from .scalar_fields_XY import Scalar_field_XY
 from .scalar_sources_XY import Scalar_source_XY
+from .utils_common import check_none
+from .utils_dxf import load_dxf
+from .utils_math import (
+    fft_convolution2d,
+    laguerre_polynomial_nk,
+    make_edge,
+    nearest,
+    nearest2,
+)
+from .utils_optics import roughness_1D, roughness_2D
+from .utils_typing import NDArrayFloat
+
 
 class Scalar_mask_XY(Scalar_field_XY):
     """Class for working with XY scalar masks.
@@ -83,17 +85,23 @@ class Scalar_mask_XY(Scalar_field_XY):
         self.info (str): String with info about the simulation
     """
 
-    def __init__(self, x: NDArrayFloat | None = None, y: NDArrayFloat | None = None,
-                 wavelength: float | None = None,  n_background: float = 1., info: str = ""):
+    def __init__(
+        self,
+        x: NDArrayFloat | None = None,
+        y: NDArrayFloat | None = None,
+        wavelength: float | None = None,
+        n_background: float = 1.0,
+        info: str = "",
+    ):
 
         super().__init__(x, y, wavelength, n_background, info)
-        self.type = 'Scalar_mask_XY'
+        self.type = "Scalar_mask_XY"
 
-
-    @check_none('u', raise_exception=bool_raise_exception)
-    def set_amplitude(self, q: bool = True, positive: bool = False, amp_min: float = 0.,
-                      amp_max: float = 1.):
-        """ TODO:
+    @check_none("u", raise_exception=bool_raise_exception)
+    def set_amplitude(
+        self, q: bool = True, positive: bool = False, amp_min: float = 0.0, amp_max: float = 1.0
+    ):
+        """TODO:
         makes that the mask has only amplitude.
 
         Args:
@@ -107,36 +115,32 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         if q == False:
             if positive is False:
-                self.u = amp_min + (amp_max -
-                                    amp_min) * amplitude * np.sign(phase)
+                self.u = amp_min + (amp_max - amp_min) * amplitude * np.sign(phase)
             elif positive is True:
                 self.u = amp_min + (amp_max - amp_min) * amplitude
-        else:
-            if positive is False:
-                self.u = amp_min + (amp_max - amp_min) * phase
-            elif positive is True:
-                self.u = amp_min + (amp_max - amp_min) * np.abs(phase)
+        elif positive is False:
+            self.u = amp_min + (amp_max - amp_min) * phase
+        elif positive is True:
+            self.u = amp_min + (amp_max - amp_min) * np.abs(phase)
 
         # hay que terminar
 
-    @check_none('u', raise_exception=bool_raise_exception)
-    def set_phase(self, q: bool = True, phase_min: float = 0., phase_max: float = np.pi):
+    @check_none("u", raise_exception=bool_raise_exception)
+    def set_phase(self, q: bool = True, phase_min: float = 0.0, phase_max: float = np.pi):
         """Makes the mask as phase,
-            q=0: Pass amplitude to 1.
-            q=1: amplitude pass to phase
+        q=0: Pass amplitude to 1.
+        q=1: amplitude pass to phase
         """
 
         amplitude = np.abs(self.u)
         phase = np.angle(self.u)
 
         if q == 0:
-            self.u = np.exp(1.j * phase)
+            self.u = np.exp(1.0j * phase)
         if q == 1:
-            self.u = np.exp(1.j * (phase_min +
-                                   (phase_max - phase_min) * amplitude))
+            self.u = np.exp(1.0j * (phase_min + (phase_max - phase_min) * amplitude))
 
-
-    @check_none('x', 'y', 'u', raise_exception=bool_raise_exception)
+    @check_none("x", "y", "u", raise_exception=bool_raise_exception)
     def area(self, percentage: float, verbose: bool = False):
         """Computes area where mask is not 0
 
@@ -177,16 +181,13 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         if verbose is True:
             if area < 10000:
-                print("area: {:2.2f} um^2".format(area))
+                print(f"area: {area:2.2f} um^2")
             else:
-                print("area: {:2.2f} mm^2".format(area / mm**2))
+                print(f"area: {area / mm**2:2.2f} mm^2")
 
         return area
-    
-   
 
-
-    @check_none('x', 'y', 'u', raise_exception=bool_raise_exception)
+    @check_none("x", "y", "u", raise_exception=bool_raise_exception)
     def inverse_amplitude(self, new_field: bool = False):
         """Inverts the amplitude of the mask, phase is equal as initial
 
@@ -201,7 +202,7 @@ class Scalar_mask_XY(Scalar_field_XY):
         amplitude = np.abs(self.u)
         phase = np.angle(self.u)
 
-        new_amplitude = (1 - amplitude) * np.exp(1.j * phase)
+        new_amplitude = (1 - amplitude) * np.exp(1.0j * phase)
 
         if new_field is False:
             self.u = new_amplitude
@@ -210,7 +211,7 @@ class Scalar_mask_XY(Scalar_field_XY):
             new.u = new_amplitude
             return new
 
-    @check_none('x', 'y', 'u', raise_exception=bool_raise_exception)
+    @check_none("x", "y", "u", raise_exception=bool_raise_exception)
     def inverse_phase(self, new_field: bool = False):
         """Inverts the phase of the mask, amplitude is equal as initial
 
@@ -225,7 +226,7 @@ class Scalar_mask_XY(Scalar_field_XY):
         amplitude = np.abs(self.u)
         phase = np.angle(self.u)
 
-        new_amplitude = amplitude * np.exp(-1.j * phase)
+        new_amplitude = amplitude * np.exp(-1.0j * phase)
 
         if new_field is False:
             self.u = new_amplitude
@@ -234,7 +235,7 @@ class Scalar_mask_XY(Scalar_field_XY):
             new.u = new_amplitude
             return new
 
-    @check_none('x', 'y', 'u', raise_exception=bool_raise_exception)
+    @check_none("x", "y", "u", raise_exception=bool_raise_exception)
     def filter(self, mask, new_field: bool = True, binarize=False, normalize: bool = False):
         """Widens a field using a mask
 
@@ -259,12 +260,10 @@ class Scalar_mask_XY(Scalar_field_XY):
             new = Scalar_field_XY(self.x, self.y, self.wavelength)
             new.u = covolved_image
             return new
-        else:
-            self.u = covolved_image
+        self.u = covolved_image
 
-
-    @check_none('x', 'y', 'u', raise_exception=bool_raise_exception)
-    def widen(self, radius: float, new_field: bool = True, binarize=True, mask: str = 'square' ):
+    @check_none("x", "y", "u", raise_exception=bool_raise_exception)
+    def widen(self, radius: float, new_field: bool = True, binarize=True, mask: str = "square"):
         """Widens a mask using a convolution of a certain radius
 
         Args:
@@ -275,10 +274,10 @@ class Scalar_mask_XY(Scalar_field_XY):
         """
 
         filter = Scalar_mask_XY(self.x, self.y, self.wavelength)
-        if mask == 'square':
-            filter.square(r0=(0*um, 0*um), size=2*radius, angle=0*degrees)
-        elif mask == 'circle':
-            filter.circle(r0=(0*um, 0*um), radius=radius, angle=0*degrees)
+        if mask == "square":
+            filter.square(r0=(0 * um, 0 * um), size=2 * radius, angle=0 * degrees)
+        elif mask == "circle":
+            filter.circle(r0=(0 * um, 0 * um), radius=radius, angle=0 * degrees)
         else:
             filter = mask
 
@@ -297,25 +296,28 @@ class Scalar_mask_XY(Scalar_field_XY):
         if new_field is True:
             filter.u = covolved_image
             return filter
-        else:
-            self.u = covolved_image
-            
-            
-    @check_none('x', 'y', 'u', raise_exception=bool_raise_exception)
-    def make_edge(self, edge_size,  filter='square', new_field=False):
-        
-        new_mask=make_edge(self, edge_size, filter=filter, new_field=True)
-        
+        self.u = covolved_image
+
+    @check_none("x", "y", "u", raise_exception=bool_raise_exception)
+    def make_edge(self, edge_size, filter="square", new_field=False):
+
+        new_mask = make_edge(self, edge_size, filter=filter, new_field=True)
+
         if new_field is True:
             return new_mask
-        else:
-            self.u = new_mask.u
+        self.u = new_mask.u
 
     # __MASKS____________________________________________
 
-    @check_none('x', 'y', 'u', raise_exception=bool_raise_exception)
-    def extrude_mask_x(self, mask_X, y0: float = None, y1: float = None, kind: str = 'unique',
-                       normalize: bool = None):
+    @check_none("x", "y", "u", raise_exception=bool_raise_exception)
+    def extrude_mask_x(
+        self,
+        mask_X,
+        y0: float = None,
+        y1: float = None,
+        kind: str = "unique",
+        normalize: bool = None,
+    ):
         """
         Converts a Scalar_mask_X in volumetric between z0 and z1 by growing between these two planes
         Args:
@@ -335,22 +337,22 @@ class Scalar_mask_XY(Scalar_field_XY):
         iy1, _, _ = nearest(vector=self.y, number=y1)
 
         for i, index in enumerate(range(iy0, iy1)):
-            if kind == 'unique':
+            if kind == "unique":
                 self.u[index, :] = mask_X.u
-            elif kind == 'superpose':
+            elif kind == "superpose":
                 self.u[index, :] = self.u[index, :] + mask_X.u
 
-        if normalize == 'cut':
+        if normalize == "cut":
             self.u[self.u > 1] = 1
-        elif normalize == 'normalize':
+        elif normalize == "normalize":
             maximum = np.abs(self.u.max())
             self.u = self.u / maximum
 
-
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def mask_from_function(self, r0: float | list, index: float, f1, f2, radius: float = 0,
-                           v_globals: dict = {}):
-        """ phase mask defined between 2 surfaces $f_1$ and $f_2$:  $h(x,y)=f_2(x,y)-f_1(x,y)$
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def mask_from_function(
+        self, r0: float | list, index: float, f1, f2, radius: float = 0, v_globals: dict = {}
+    ):
+        """phase mask defined between 2 surfaces $f_1$ and $f_2$:  $h(x,y)=f_2(x,y)-f_1(x,y)$
 
         Args:
             r0 (float, float): center of cross
@@ -369,26 +371,28 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         if radius[0] > 0:
             amplitude = Scalar_mask_XY(self.x, self.y, self.wavelength)
-            amplitude.circle(r0, radius, 0*degrees)
+            amplitude.circle(r0, radius, 0 * degrees)
             t = amplitude.u
         else:
             t = 1
 
-        v_locals = {'self': self, 'sp': sp, 'degrees': degrees}
+        v_locals = {"self": self, "sp": sp, "degrees": degrees}
 
         F2 = eval(f2, v_globals, v_locals)
         F1 = eval(f1, v_globals, v_locals)
-        self.u = t * np.exp(1.j * k * (index - 1) * (F2 - F1))
+        self.u = t * np.exp(1.0j * k * (index - 1) * (F2 - F1))
         self.u[t == 0] = 0
 
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def image(self,
-              filename: str = '',
-              channel: int = 0,
-              normalize: bool = True,
-              lengthImage: bool = False,
-              invert: bool = False,
-              angle: float = 0):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def image(
+        self,
+        filename: str = "",
+        channel: int = 0,
+        normalize: bool = True,
+        lengthImage: bool = False,
+        invert: bool = False,
+        angle: float = 0,
+    ):
         """Converts an image file XY mask. If the image is color, we get the first Red frame
 
         Args:
@@ -401,7 +405,7 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         Returns
             str: filename
-    """
+        """
 
         im = Image.open(filename)
         im = im.transpose(1)
@@ -432,10 +436,16 @@ class Scalar_mask_XY(Scalar_field_XY):
         self.u = data
         return filename
 
-    def dxf(self, filename_dxf: str, num_pixels: tuple[int, int] | None = None,
-            extent: tuple[float] | None = None, units: str = 'um', invert: bool = False,
-            verbose: bool = False):
-        """Loads a dxf file. Internally it has the extension of the drawing, so it is not required to generate x,y spaces. It is possible with extent, but then the file is scaled. Warning: Dxf files are usually in mm. and diffractio works in um. To generate .u, a temporal .png file is generated. 
+    def dxf(
+        self,
+        filename_dxf: str,
+        num_pixels: tuple[int, int] | None = None,
+        extent: tuple[float] | None = None,
+        units: str = "um",
+        invert: bool = False,
+        verbose: bool = False,
+    ):
+        """Loads a dxf file. Internally it has the extension of the drawing, so it is not required to generate x,y spaces. It is possible with extent, but then the file is scaled. Warning: Dxf files are usually in mm. and diffractio works in um. To generate .u, a temporal .png file is generated.
         If x and y arrays are given, then num_pixels and extent are not used.
 
         msp.units = 13 # 0 - sin ,  4 mm,   12 nm,  13 um,
@@ -455,12 +465,12 @@ class Scalar_mask_XY(Scalar_field_XY):
         image_new, p_min, p_max, msp = load_dxf(filename_dxf, num_pixels, verbose)
         image_new = np.flipud(image_new)
 
-        if units == 'mm':
-            p_min = p_min*1000
-            p_max = p_max*1000
-        elif units == 'inches':
-            p_min = p_min*25400
-            p_max = p_max*25400
+        if units == "mm":
+            p_min = p_min * 1000
+            p_max = p_max * 1000
+        elif units == "inches":
+            p_min = p_min * 25400
+            p_max = p_max * 25400
 
         if self.x is None:
             if extent is None:
@@ -474,15 +484,14 @@ class Scalar_mask_XY(Scalar_field_XY):
                 self.X, self.Y = np.meshgrid(self.x, self.y)
                 self.u = np.zeros_like(self.X, dtype=complex)
         if invert is True:
-            image_new = 1-image_new
+            image_new = 1 - image_new
 
         self.u = image_new
 
-    @check_none('x', 'y', 'u', raise_exception=bool_raise_exception)
-    def repeat_structure(self,
-                         num_repetitions: tuple[int,int],
-                         position: str = 'center',
-                         new_field: bool = True):
+    @check_none("x", "y", "u", raise_exception=bool_raise_exception)
+    def repeat_structure(
+        self, num_repetitions: tuple[int, int], position: str = "center", new_field: bool = True
+    ):
         """Repeat the structure (n x m) times.
 
         Args:
@@ -505,21 +514,21 @@ class Scalar_mask_XY(Scalar_field_XY):
         y_min = y0[0]
         y_max = y0[-1]
 
-        x_new = np.linspace(num_repetitions[0] * x_min,
-                            num_repetitions[0] * x_max,
-                            num_repetitions[0] * len(x0))
-        y_new = np.linspace(num_repetitions[1] * y_min,
-                            num_repetitions[1] * y_max,
-                            num_repetitions[1] * len(y0))
+        x_new = np.linspace(
+            num_repetitions[0] * x_min, num_repetitions[0] * x_max, num_repetitions[0] * len(x0)
+        )
+        y_new = np.linspace(
+            num_repetitions[1] * y_min, num_repetitions[1] * y_max, num_repetitions[1] * len(y0)
+        )
 
-        center_x = (x_new[-1] + x_new[0])/2
-        center_y = (y_new[-1] + y_new[0])/2
+        center_x = (x_new[-1] + x_new[0]) / 2
+        center_y = (y_new[-1] + y_new[0]) / 2
 
-        if position == 'center':
+        if position == "center":
             x_new = x_new - center_x
             y_new = y_new - center_y
 
-        elif position == 'previous':
+        elif position == "previous":
             x_new = x_new - x_new[0] + x0[0]
             y_new = y_new - y_new[0] + y0[0]
 
@@ -531,14 +540,18 @@ class Scalar_mask_XY(Scalar_field_XY):
             t_new = Scalar_mask_XY(x=x_new, y=y_new, wavelength=wavelength)
             t_new.u = u_new
             return t_new
-        else:
-            self.u = u_new
-            self.x = x_new
-            self.y = y_new
+        self.u = u_new
+        self.x = x_new
+        self.y = y_new
 
-    @check_none('x', 'y', 'u', raise_exception=bool_raise_exception)
-    def masks_to_positions(self, pos: tuple[float] | NDArrayFloat, new_field: bool = True,
-                           binarize: bool = False, normalize: bool = False):
+    @check_none("x", "y", "u", raise_exception=bool_raise_exception)
+    def masks_to_positions(
+        self,
+        pos: tuple[float] | NDArrayFloat,
+        new_field: bool = True,
+        binarize: bool = False,
+        normalize: bool = False,
+    ):
         """
         Place a certain mask on several positions.
 
@@ -570,10 +583,9 @@ class Scalar_mask_XY(Scalar_field_XY):
             new = Scalar_field_XY(self.x, self.y, self.wavelength)
             new.u = covolved_image
             return new
-        else:
-            self.u = covolved_image
+        self.u = covolved_image
 
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
+    @check_none("x", "y", raise_exception=bool_raise_exception)
     def polygon(self, vertices: NDArrayFloat):
         """Draws a polygon with the vertices given in a Nx2 numpy array.
 
@@ -599,8 +611,8 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         # Create the coordinates of the matrix
         coordinates = np.column_stack(
-            (np.repeat(np.arange(num_x),
-                       num_y), np.tile(np.arange(num_y), num_x)))
+            (np.repeat(np.arange(num_x), num_y), np.tile(np.arange(num_y), num_x))
+        )
 
         # Create the Path object of the polygon
         path = mpath.Path(i_vertices)
@@ -611,8 +623,8 @@ class Scalar_mask_XY(Scalar_field_XY):
         # Check if each point in the array is inside the polygon
         self.u[in_polygon.reshape((num_x, num_y))] = 1
 
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def regular_polygon(self, num_vertices: int, radius: float, angle: float = 0*degrees):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def regular_polygon(self, num_vertices: int, radius: float, angle: float = 0 * degrees):
         """Generates a regular polygon.
 
         Args:
@@ -628,8 +640,8 @@ class Scalar_mask_XY(Scalar_field_XY):
         i_vertices = np.array(range(num_vertices + 1))
         angles = 2 * np.pi * i_vertices / num_vertices
 
-        x_vertices = radius * np.cos(angles - angle + 90*degrees)
-        y_vertices = radius * np.sin(angles - angle + 90*degrees)
+        x_vertices = radius * np.cos(angles - angle + 90 * degrees)
+        y_vertices = radius * np.sin(angles - angle + 90 * degrees)
 
         vertices = np.column_stack((x_vertices, y_vertices))
 
@@ -637,8 +649,8 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         return vertices
 
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def star(self, num_peaks: int, radii: tuple[float, float], angle: float = 0*degrees):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def star(self, num_peaks: int, radii: tuple[float, float], angle: float = 0 * degrees):
         """Generates a regular polygon
 
         Args:
@@ -656,14 +668,12 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         phase_shift = 2 * np.pi / (2 * num_peaks)
 
-        x_vertices_max = radii[0] * np.cos(angles - angle + 90*degrees)
-        y_vertices_max = radii[0] * np.sin(angles - angle + 90*degrees)
+        x_vertices_max = radii[0] * np.cos(angles - angle + 90 * degrees)
+        y_vertices_max = radii[0] * np.sin(angles - angle + 90 * degrees)
         vertices_max = np.column_stack((x_vertices_max, y_vertices_max))
 
-        x_vertices_min = radii[1] * np.cos(angles - angle + phase_shift +
-                                           90*degrees)
-        y_vertices_min = radii[1] * np.sin(angles - angle + phase_shift +
-                                           90*degrees)
+        x_vertices_min = radii[1] * np.cos(angles - angle + phase_shift + 90 * degrees)
+        y_vertices_min = radii[1] * np.sin(angles - angle + phase_shift + 90 * degrees)
         vertices_min = np.column_stack((x_vertices_min, y_vertices_min))
 
         # Find the maximum number of rows between both matrices
@@ -680,7 +690,7 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         return interleaved_matrix
 
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
+    @check_none("x", "y", raise_exception=bool_raise_exception)
     def triangle(self, r0: tuple[float], slope: float, height: float, angle: float):
         """Create a triangle mask. It uses the equation of a straight line: y = -slope * (x - x0) + y0
 
@@ -693,8 +703,8 @@ class Scalar_mask_XY(Scalar_field_XY):
         if isinstance(r0, (float, int)):
             x0, y0 = (r0, r0)
         elif r0 is None:
-            x0 = 0*um
-            y0 = height/2
+            x0 = 0 * um
+            y0 = height / 2
         else:
             x0, y0 = r0
 
@@ -709,7 +719,7 @@ class Scalar_mask_XY(Scalar_field_XY):
         u[u > 1] = 1
         self.u = u
 
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
+    @check_none("x", "y", raise_exception=bool_raise_exception)
     def photon_sieve(self, t1, r0: tuple[float, float], top_one: bool = True):
         """Generates a matrix of shapes given in t1.
 
@@ -739,11 +749,15 @@ class Scalar_mask_XY(Scalar_field_XY):
             y_j = y0[i]
             i_xcercano, _, _ = nearest(self.x, x_i)
             j_ycercano, _, _ = nearest(self.y, y_j)
-            if x_i < self.x.max() and x_i > self.x.min() and y_j < self.y.max(
-            ) and y_j > self.y.min():
+            if (
+                x_i < self.x.max()
+                and x_i > self.x.min()
+                and y_j < self.y.max()
+                and y_j > self.y.min()
+            ):
                 uj[j_ycercano, i_xcercano] = 1
         num_points = int(uj.sum())
-        u = fftconvolve(uj, t1.u, mode='same')
+        u = fftconvolve(uj, t1.u, mode="same")
         if top_one:
             A = np.abs(u)
             phase = np.angle(u)
@@ -753,9 +767,10 @@ class Scalar_mask_XY(Scalar_field_XY):
         self.u = u.transpose()
         return num_points
 
-    @check_none('x', 'y', 'X', 'Y', raise_exception=bool_raise_exception)
-    def insert_array_masks(self, t1, space: tuple[float], margin: tuple[float] | float = 0,
-                           angle: float = 0*degrees):
+    @check_none("x", "y", "X", "Y", raise_exception=bool_raise_exception)
+    def insert_array_masks(
+        self, t1, space: tuple[float], margin: tuple[float] | float = 0, angle: float = 0 * degrees
+    ):
         """Generates a matrix of shapes given in t1.
 
         Args:
@@ -796,16 +811,20 @@ class Scalar_mask_XY(Scalar_field_XY):
             i_xcercano, _, _ = nearest(self.x, x_i)
             for j, y_j in enumerate(Y):
                 j_ycercano, _, _ = nearest(self.y, y_j)
-                if x_i < self.x.max() and x_i > self.x.min(
-                ) and y_j < self.y.max() and y_j > self.y.min():
+                if (
+                    x_i < self.x.max()
+                    and x_i > self.x.min()
+                    and y_j < self.y.max()
+                    and y_j > self.y.min()
+                ):
                     uj[i_xcercano, j_ycercano] = 1
         num_points = int(uj.sum())
-        u = fftconvolve(uj, t1.u, mode='same')
+        u = fftconvolve(uj, t1.u, mode="same")
         u[u > 1] = 1
         self.u = u
         return num_points
-  
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
+
+    @check_none("x", "y", raise_exception=bool_raise_exception)
     def dots(self, r0: tuple[float, float]):
         """Generates 1 or several point masks at positions r0
 
@@ -823,14 +842,15 @@ class Scalar_mask_XY(Scalar_field_XY):
         else:
             i_x0s, _, _ = nearest2(self.x, x0)
             i_y0s, _, _ = nearest2(self.y, y0)
-            for (i_x0, i_y0) in zip(i_x0s, i_y0s):
+            for i_x0, i_y0 in zip(i_x0s, i_y0s):
                 u[i_y0, i_x0] = 1
 
         self.u = u
 
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def dots_regular(self, xlim: tuple[float], ylim: tuple[float], num_data: int,
-                     verbose: bool = False):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def dots_regular(
+        self, xlim: tuple[float], ylim: tuple[float], num_data: int, verbose: bool = False
+    ):
         """Generates n x m or several point masks.
 
         Args:
@@ -856,7 +876,7 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         self.u = u
 
-    @check_none('X', raise_exception=bool_raise_exception)
+    @check_none("X", raise_exception=bool_raise_exception)
     def one_level(self, level: float = 0):
         """Sets one level for all the image.
 
@@ -865,9 +885,10 @@ class Scalar_mask_XY(Scalar_field_XY):
         """
         self.u = level * np.ones(self.X.shape)
 
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def two_levels(self, level1: float = 0, level2: float = 1,
-                   x_edge: float = 0., angle: float = 0*degrees):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def two_levels(
+        self, level1: float = 0, level2: float = 1, x_edge: float = 0.0, angle: float = 0 * degrees
+    ):
         """Divides the field in two levels
 
         Args:
@@ -880,34 +901,35 @@ class Scalar_mask_XY(Scalar_field_XY):
         self.u = level1 * np.ones(self.X.shape)
         self.u[Xrot > 0] = level2
 
-
-    @check_none('X', raise_exception=bool_raise_exception)
-    def edge_series(self,
-                    r0: tuple[float, float],
-                    period: float,
-                    a_coef: NDArrayFloat,
-                    b_coef: NDArrayFloat | None = None,
-                    angle: float = 0*degrees,
-                    invert: bool = True):
+    @check_none("X", raise_exception=bool_raise_exception)
+    def edge_series(
+        self,
+        r0: tuple[float, float],
+        period: float,
+        a_coef: NDArrayFloat,
+        b_coef: NDArrayFloat | None = None,
+        angle: float = 0 * degrees,
+        invert: bool = True,
+    ):
         """Creates a linear aperture using the Fourier coefficients.
 
-            Args:
-                x0 (float): x-axis displacement (for 'fslit' function)
-                period (float): Function period
+        Args:
+            x0 (float): x-axis displacement (for 'fslit' function)
+            period (float): Function period
 
-                a_coef (np.array, 2 rows and x columns): coefficients that multiply the cosine function.
-                b_coef (np.array, 2 rows and x columns): coefficients that multiply the sine function.
-                angle (float): angle of rotation in radians
-                invert (bool): inverts transmittance values (for 'fslit' function)
+            a_coef (np.array, 2 rows and x columns): coefficients that multiply the cosine function.
+            b_coef (np.array, 2 rows and x columns): coefficients that multiply the sine function.
+            angle (float): angle of rotation in radians
+            invert (bool): inverts transmittance values (for 'fslit' function)
 
-                For both arrays:
-                First row: coefficient orders
-                Second row: coefficient values
+            For both arrays:
+            First row: coefficient orders
+            Second row: coefficient values
 
-            Example:
-                t1.edge_series(x0=0, period=50, a_coef=np.array(
-                    [[0,1],[100,50]]), angle = 0*degrees, invert=False)
-            """
+        Example:
+            t1.edge_series(x0=0, period=50, a_coef=np.array(
+                [[0,1],[100,50]]), angle = 0*degrees, invert=False)
+        """
 
         Xrot, Yrot = self.__rotate__(angle)
         Yrot = Yrot
@@ -916,21 +938,17 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         u = np.zeros_like(self.X)
 
-        asol = a_coef[1][0]/2
+        asol = a_coef[1][0] / 2
         bsol = 0
 
         _, num_coefs_a = a_coef.shape
         for i in range(num_coefs_a):
-            asol = asol + \
-                a_coef[1][i] * np.cos(2 * np.pi * a_coef[0]
-                                      [i] * (Yrot - y0) / period)
+            asol = asol + a_coef[1][i] * np.cos(2 * np.pi * a_coef[0][i] * (Yrot - y0) / period)
 
         if b_coef is not None:
             _, num_coefs_b = b_coef.shape
             for i in range(num_coefs_b):
-                bsol = bsol + \
-                    b_coef[1][i] * np.sin(2 * np.pi *
-                                          b_coef[0][i] * (Yrot - y0) / period)
+                bsol = bsol + b_coef[1][i] * np.sin(2 * np.pi * b_coef[0][i] * (Yrot - y0) / period)
 
         sol = asol + bsol
 
@@ -943,19 +961,21 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         self.u = u
 
-    @check_none('X', 'x', 'y', 'u', raise_exception=bool_raise_exception)
-    def edge_rough(self,
-                    s: float,
-                    t: float,
-                    level1: float = 0, 
-                    level2: float = 1,
-                    x_edge: float = 0.,
-                    angle: float = 0*degrees,
-                    invert: bool = True):
+    @check_none("X", "x", "y", "u", raise_exception=bool_raise_exception)
+    def edge_rough(
+        self,
+        s: float,
+        t: float,
+        level1: float = 0,
+        level2: float = 1,
+        x_edge: float = 0.0,
+        angle: float = 0 * degrees,
+        invert: bool = True,
+    ):
         """
         edge_rough: rough edge
 
-        Divides the field in two levels, with a rough edge. 
+        Divides the field in two levels, with a rough edge.
 
         Args:
             s (float): std of rough edge
@@ -974,7 +994,7 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         self.u = level1 * np.ones(self.X.shape)
 
-        edge =  roughness_1D(self.y, s=s, t=t)
+        edge = roughness_1D(self.y, s=s, t=t)
 
         _, Edge = np.meshgrid(self.x, edge)
 
@@ -983,8 +1003,8 @@ class Scalar_mask_XY(Scalar_field_XY):
         self.u[ipasa] = level2
         return edge
 
-    @check_none('u', raise_exception=bool_raise_exception)
-    def slit(self, x0: float, size: float, angle: float = 0*degrees):
+    @check_none("u", raise_exception=bool_raise_exception)
+    def slit(self, x0: float, size: float, angle: float = 0 * degrees):
         """Slit: 1 inside, 0 outside
 
         Args:
@@ -993,8 +1013,8 @@ class Scalar_mask_XY(Scalar_field_XY):
             angle (float): angle of rotation in radians
         """
         # Definicion de la slit
-        xmin = -size/2
-        xmax = +size/2
+        xmin = -size / 2
+        xmax = +size / 2
 
         # Rotacion de la slit
         Xrot, Yrot = self.__rotate__(angle, (x0, 0))
@@ -1004,87 +1024,88 @@ class Scalar_mask_XY(Scalar_field_XY):
         u[ix] = 1
         self.u = u
 
-
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def slit_rough(self, x0: float, width: float,
-                    s: float, t: float, angle: float = 0*degrees):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def slit_rough(self, x0: float, width: float, s: float, t: float, angle: float = 0 * degrees):
         """Creates a lineal function using the Fourier coefficients.
 
-            Args:
-                x0 (float): position of the center of the slit
-                width (float): slit width
-                s (float): std of rough edge
-                t (float): correlation length of rough edge
-                angle (float): angle of rotation in radians
+        Args:
+            x0 (float): position of the center of the slit
+            width (float): slit width
+            s (float): std of rough edge
+            t (float): correlation length of rough edge
+            angle (float): angle of rotation in radians
 
-            Example:
-                t1.slit_series(x0=0, width=10, period1=50,
-                            period2=20, a_coef1=np.array([[0,1],[100,50]]) )
-            """
+        Example:
+            t1.slit_series(x0=0, width=10, period1=50,
+                        period2=20, a_coef1=np.array([[0,1],[100,50]]) )
+        """
 
         t1 = Scalar_mask_XY(x=self.x, y=self.y, wavelength=self.wavelength)
-        edge1 = t1.edge_rough(x_edge=x0-width/2, s=s, t=t, angle = angle, invert=True)
+        edge1 = t1.edge_rough(x_edge=x0 - width / 2, s=s, t=t, angle=angle, invert=True)
         t2 = Scalar_mask_XY(x=self.x, y=self.y, wavelength=self.wavelength)
-        edge2 = t2.edge_rough(x_edge=x0+width/2, s=s, t=t, angle = angle, invert=False)
-        
+        edge2 = t2.edge_rough(x_edge=x0 + width / 2, s=s, t=t, angle=angle, invert=False)
+
         self.u = t1.u - t2.u
         return edge1, edge2
 
-
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def slit_series(self,
-                    x0: float,
-                    width: float,
-                    period1: float,
-                    period2: float,
-                    Dy: float,
-                    a_coef1: NDArrayFloat,
-                    a_coef2: NDArrayFloat,
-                    b_coef1: NDArrayFloat | None = None,
-                    b_coef2: NDArrayFloat | None = None,
-                    angle: float = 0*degrees):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def slit_series(
+        self,
+        x0: float,
+        width: float,
+        period1: float,
+        period2: float,
+        Dy: float,
+        a_coef1: NDArrayFloat,
+        a_coef2: NDArrayFloat,
+        b_coef1: NDArrayFloat | None = None,
+        b_coef2: NDArrayFloat | None = None,
+        angle: float = 0 * degrees,
+    ):
         """Creates a lineal function using the Fourier coefficients.
 
-            Args:
-                x0 (float): position of the center of the slit
-                width (float): slit width
-                period1 (float): Period of the first function
-                period2 (float): Period of the second function
-                Dy (float, float): Shifts of the edges
-                a_coef1 (np.array, 2 rows and x columns): coefficients that multiply the cosine in the first function.
-                a_coef2 (np.array, 2 rows and x columns): coefficients that multiply the cosine in the second function.
-                b_coef1 (np.array, 2 rows and x columns): coefficients that multiply the sine in the first function.
-                b_coef2 (np.array, 2 rows and x columns): coefficients that multiply the sine in the second function.
-                For the arrays: First row - coefficient orders, Second row - coefficient values
-                angle (float): angle of rotation in radians
+        Args:
+            x0 (float): position of the center of the slit
+            width (float): slit width
+            period1 (float): Period of the first function
+            period2 (float): Period of the second function
+            Dy (float, float): Shifts of the edges
+            a_coef1 (np.array, 2 rows and x columns): coefficients that multiply the cosine in the first function.
+            a_coef2 (np.array, 2 rows and x columns): coefficients that multiply the cosine in the second function.
+            b_coef1 (np.array, 2 rows and x columns): coefficients that multiply the sine in the first function.
+            b_coef2 (np.array, 2 rows and x columns): coefficients that multiply the sine in the second function.
+            For the arrays: First row - coefficient orders, Second row - coefficient values
+            angle (float): angle of rotation in radians
 
-            Example:
-                t1.slit_series(x0=0, width=10, period1=50,
-                               period2=20, a_coef1=np.array([[0,1],[100,50]]) )
-            """
+        Example:
+            t1.slit_series(x0=0, width=10, period1=50,
+                           period2=20, a_coef1=np.array([[0,1],[100,50]]) )
+        """
         dy1, dy2 = Dy
 
         t1 = Scalar_mask_XY(x=self.x, y=self.y, wavelength=self.wavelength)
-        t1.edge_series(r0=(x0 - width/2, dy1),
-                       period=period1,
-                       a_coef=a_coef1,
-                       b_coef=b_coef1,
-                       angle=angle,
-                       invert=True)
+        t1.edge_series(
+            r0=(x0 - width / 2, dy1),
+            period=period1,
+            a_coef=a_coef1,
+            b_coef=b_coef1,
+            angle=angle,
+            invert=True,
+        )
         t2 = Scalar_mask_XY(x=self.x, y=self.y, wavelength=self.wavelength)
-        t2.edge_series(r0=(x0 + width/2, dy2),
-                       period=period2,
-                       a_coef=a_coef2,
-                       b_coef=b_coef2,
-                       angle=angle,
-                       invert=False)
+        t2.edge_series(
+            r0=(x0 + width / 2, dy2),
+            period=period2,
+            a_coef=a_coef2,
+            b_coef=b_coef2,
+            angle=angle,
+            invert=False,
+        )
 
         self.u = t1.u * t2.u
 
-
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def double_slit(self, x0: float, size: float, separation: float,
-                    angle: float = 0*degrees):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def double_slit(self, x0: float, size: float, separation: float, angle: float = 0 * degrees):
         """double slit: 1 inside, 0 outside
 
         Args:
@@ -1098,44 +1119,46 @@ class Scalar_mask_XY(Scalar_field_XY):
         slit2 = Scalar_mask_XY(self.x, self.y, self.wavelength)
 
         # Definicion de las dos slits
-        slit1.slit(x0=x0 - separation/2, size=size, angle=angle)
-        slit2.slit(x0=x0 + separation/2, size=size, angle=angle)
+        slit1.slit(x0=x0 - separation / 2, size=size, angle=angle)
+        slit2.slit(x0=x0 + separation / 2, size=size, angle=angle)
 
         self.u = slit1.u + slit2.u
 
-
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def double_slit_rough(self,
-                    x0: float,
-                    width: float,
-                    separation: float,
-                    s: float,
-                    t: float,
-                    angle: float = 0*degrees):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def double_slit_rough(
+        self,
+        x0: float,
+        width: float,
+        separation: float,
+        s: float,
+        t: float,
+        angle: float = 0 * degrees,
+    ):
         """Creates a double slit with rough edges.
 
-            Args:
-                x0 (float): position of the center of the slit
-                width (float): slit width
-                s (float): std of rough edge
-                t (float): correlation length of rough edge
-                angle (float): angle of rotation in radians
-            Returns:
-                edge1, edge2, edge3, edge4
-            """
+        Args:
+            x0 (float): position of the center of the slit
+            width (float): slit width
+            s (float): std of rough edge
+            t (float): correlation length of rough edge
+            angle (float): angle of rotation in radians
+        Returns:
+            edge1, edge2, edge3, edge4
+        """
 
         t1 = Scalar_mask_XY(x=self.x, y=self.y, wavelength=self.wavelength)
-        edge1, edge2 = t1.slit_rough(x0=x0-separation/2, width=width, s=s, t=t, angle=angle)
+        edge1, edge2 = t1.slit_rough(x0=x0 - separation / 2, width=width, s=s, t=t, angle=angle)
 
         t2 = Scalar_mask_XY(x=self.x, y=self.y, wavelength=self.wavelength)
-        edge3, edge4  = t2.slit_rough(x0=x0+separation/2, width=width, s=s, t=t, angle=angle)
+        edge3, edge4 = t2.slit_rough(x0=x0 + separation / 2, width=width, s=s, t=t, angle=angle)
 
         self.u = t1.u + t2.u
         return edge1, edge2, edge3, edge4
 
-
-    @check_none('X', raise_exception=bool_raise_exception)
-    def square(self, r0: tuple[float, float], size: tuple[float, float] | float, angle: float = 0*degrees):
+    @check_none("X", raise_exception=bool_raise_exception)
+    def square(
+        self, r0: tuple[float, float], size: tuple[float, float] | float, angle: float = 0 * degrees
+    ):
         """Square: 1 inside, 0 outside
 
         Args:
@@ -1152,10 +1175,10 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         x0, y0 = r0
 
-        xmin = -sizex/2
-        xmax = +sizex/2
-        ymin = -sizey/2
-        ymax = +sizey/2
+        xmin = -sizex / 2
+        xmax = +sizex / 2
+        ymin = -sizey / 2
+        ymax = +sizey / 2
 
         Xrot, Yrot = self.__rotate__(angle, (x0, y0))
 
@@ -1164,9 +1187,8 @@ class Scalar_mask_XY(Scalar_field_XY):
         u[ipasa] = 1
         self.u = u
 
-
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def gray_scale(self, num_levels: int, level_min: float = 0., level_max: float = 1.):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def gray_scale(self, num_levels: int, level_min: float = 0.0, level_max: float = 1.0):
         """Generates a number of strips with different amplitude
 
         Args:
@@ -1182,12 +1204,11 @@ class Scalar_mask_XY(Scalar_field_XY):
         ipos[-1] = len(self.x)
 
         for i in range(num_levels):
-            t[:, ipos[i]:ipos[i + 1]] = height_levels[i]
+            t[:, ipos[i] : ipos[i + 1]] = height_levels[i]
 
         self.u = t
 
-
-    def circle(self, r0: tuple[float, float], radius: float, angle: float = 0*degrees):
+    def circle(self, r0: tuple[float, float], radius: float, angle: float = 0 * degrees):
         """Creates a circle or an ellipse.
 
         Args:
@@ -1213,9 +1234,10 @@ class Scalar_mask_XY(Scalar_field_XY):
         u[ipasa] = 1
         self.u = u
 
-
-    @check_none('X', 'Y', raise_exception=bool_raise_exception)
-    def circular_sector(self, r0: tuple[float, float], radii: float | tuple[float], angles: tuple[float, float]):
+    @check_none("X", "Y", raise_exception=bool_raise_exception)
+    def circular_sector(
+        self, r0: tuple[float, float], radii: float | tuple[float], angles: tuple[float, float]
+    ):
         """Generates a circular sector.
 
         Args:
@@ -1224,11 +1246,9 @@ class Scalar_mask_XY(Scalar_field_XY):
             angles (float, float): initial and final angle in radians.
         """
 
-
         if isinstance(radii, float):
             radii = (0, radii)
 
-            
         # Shift the grid to the center
         X_shifted = self.X - r0[0]
         Y_shifted = self.Y - r0[1]
@@ -1240,7 +1260,6 @@ class Scalar_mask_XY(Scalar_field_XY):
         # Normalize angles to [0, 2π]
         theta = np.mod(theta, 2 * np.pi)
         angle_start, angle_end = np.mod(angles[0], 2 * np.pi), np.mod(angles[1], 2 * np.pi)
-        
 
         # Handle angle wrapping
         if angle_start > angle_end:
@@ -1254,9 +1273,14 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         self.u[sector_mask] = 1
 
-
-    def radial_skeleton(self, r0: tuple[float, float], num_arms: int,   width: float, 
-                        length: float=0,  radius: float=0):
+    def radial_skeleton(
+        self,
+        r0: tuple[float, float],
+        num_arms: int,
+        width: float,
+        length: float = 0,
+        radius: float = 0,
+    ):
         """Radial Skeletonn: central circle or not with n numbers of arms.
 
         Args:
@@ -1268,21 +1292,20 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         """
 
-        self.type = 'Scalar_mask_XY'
-        angles = np.linspace(0, 180*degrees, num_arms+1)
+        self.type = "Scalar_mask_XY"
+        angles = np.linspace(0, 180 * degrees, num_arms + 1)
         rectangle = Scalar_mask_XY(self.x, self.y, self.wavelength)
         mask = Scalar_mask_XY(self.x, self.y, self.wavelength)
-        
+
         if length == 0:
-            length = np.sqrt((self.x[-1]-self.x[0])**2 + (self.y[-1]-self.y[0])**2)
+            length = np.sqrt((self.x[-1] - self.x[0]) ** 2 + (self.y[-1] - self.y[0]) ** 2)
 
         for angle in angles[0:-1]:
             rectangle.square(r0=r0, size=(length, width), angle=angle)
             mask = mask + rectangle
 
-
         # Add the central circle if radius is greater than 0
-        if radius>0:
+        if radius > 0:
             circle = Scalar_mask_XY(self.x, self.y, self.wavelength)
             circle.circle(r0=r0, radius=radius)
             mask = mask + circle
@@ -1290,34 +1313,43 @@ class Scalar_mask_XY(Scalar_field_XY):
         self.u = mask.u
         self.inverse_amplitude()
 
-
-    def angular_skeleton(self, r0: tuple[float, float], period: float, fill_factor: float, first_radius = 0, num_rings: int = 0, verbose: bool = False):
+    def angular_skeleton(
+        self,
+        r0: tuple[float, float],
+        period: float,
+        fill_factor: float,
+        first_radius=0,
+        num_rings: int = 0,
+        verbose: bool = False,
+    ):
         """Structure based on several rings, with the same thickness.
-            Args:
-                r0 (float, float): (x0,y0) center.
-                period: thickness of the rings.
-                fill_factor: Ratio between the ring thickness and the period (thickness/period). 
-                            It defines the proportion of each period that is filled with material.
-                first radius: radius of the central circle.
-                num_rings: number of rings. If num_rings=0, the number of rings is infinity
-                verbose: If True, prints additional information about the structure.
-            """
+        Args:
+            r0 (float, float): (x0,y0) center.
+            period: thickness of the rings.
+            fill_factor: Ratio between the ring thickness and the period (thickness/period).
+                        It defines the proportion of each period that is filled with material.
+            first radius: radius of the central circle.
+            num_rings: number of rings. If num_rings=0, the number of rings is infinity
+            verbose: If True, prints additional information about the structure.
+        """
 
         if num_rings == 0:
-            num_rings = np.sqrt((self.x[-1]-self.x[0])**2+(self.y[-1]-self.y[0])**2)/(2*period)
+            num_rings = np.sqrt((self.x[-1] - self.x[0]) ** 2 + (self.y[-1] - self.y[0]) ** 2) / (
+                2 * period
+            )
             num_rings = int(num_rings)
 
-        thickness = fill_factor*period
+        thickness = fill_factor * period
 
-        centers = np.array(range(1, num_rings+1))*period
+        centers = np.array(range(1, num_rings + 1)) * period
 
         if first_radius > period:
             first_radius = first_radius % period
 
         centers = centers + first_radius
 
-        inner_radius = centers - thickness/2
-        outer_radius = centers + thickness/2
+        inner_radius = centers - thickness / 2
+        outer_radius = centers + thickness / 2
 
         if verbose:
             print("Inner radii:", inner_radius)
@@ -1329,18 +1361,25 @@ class Scalar_mask_XY(Scalar_field_XY):
         self.rings(r0=r0, inner_radius=inner_radius, outer_radius=outer_radius)
         self.inverse_amplitude()
 
-
-    def bullseye(self, r0: tuple[float, float], num_arms: int, period: float, fill_factor: float, 
-                first_radius = 0, radius: float=0, num_rings=int):
-        """ Bullseye: A structure based on multiple concentric rings of equal thickness (angular skeleton). 
-                    It may include a central circle and a set of radial arms (radial skeleton). 
+    def bullseye(
+        self,
+        r0: tuple[float, float],
+        num_arms: int,
+        period: float,
+        fill_factor: float,
+        first_radius=0,
+        radius: float = 0,
+        num_rings=int,
+    ):
+        """Bullseye: A structure based on multiple concentric rings of equal thickness (angular skeleton).
+                    It may include a central circle and a set of radial arms (radial skeleton).
 
         Args:
             r0 (tuple[float, float]): center of the angular and radial skeleton.
             num_arms (int): number of arms.
             width (float): width of the arm.
             period (float): thickness of the rings.
-            fill_factor (float): Ratio between the ring thickness and the period (thickness/period). 
+            fill_factor (float): Ratio between the ring thickness and the period (thickness/period).
                                 It defines the proportion of each period that is filled with material.
             first_radius (int, optional): radius of the first radius of th agular skeleton. Defaults to 0.
             radius (float, optional): radius of the central circle of the radial skeleton. Defaults to 0.
@@ -1349,33 +1388,42 @@ class Scalar_mask_XY(Scalar_field_XY):
         Returns:
             angular skeleton mask + radial skeleton mask.
         """
-        
+
         thickness = period * fill_factor
 
-        length = np.sqrt((self.x[-1]-self.x[0])**2+(self.y[-1]-self.y[0])**2)
+        length = np.sqrt((self.x[-1] - self.x[0]) ** 2 + (self.y[-1] - self.y[0]) ** 2)
 
         t1 = self.duplicate()
-        t1.angular_skeleton(r0=r0, period=period, fill_factor=fill_factor, first_radius=first_radius, num_rings=num_rings)
+        t1.angular_skeleton(
+            r0=r0,
+            period=period,
+            fill_factor=fill_factor,
+            first_radius=first_radius,
+            num_rings=num_rings,
+        )
         t1.inverse_amplitude()
-       
+
         t2 = self.duplicate()
-        t2.radial_skeleton(r0=r0, num_arms=num_arms, length=length, width=thickness,  radius=radius)
+        t2.radial_skeleton(r0=r0, num_arms=num_arms, length=length, width=thickness, radius=radius)
         t2.inverse_amplitude()
 
         t3 = self.duplicate()
         t3.circle(r0=r0, radius=radius - thickness)
-        
-        t4 = t1 + t2 
+
+        t4 = t1 + t2
         t4.inverse_amplitude()
 
         t4 = t4 + t3
         self.u = t4.u
-        self.type = 'Scalar_mask_XY'
-        
-        
+        self.type = "Scalar_mask_XY"
 
-    def super_gauss_circular(self, r0: tuple[float, float], radius: tuple[float] | float,
-                    power: float = 2, angle: float = 0*degrees):
+    def super_gauss_circular(
+        self,
+        r0: tuple[float, float],
+        radius: tuple[float] | float,
+        power: float = 2,
+        angle: float = 0 * degrees,
+    ):
         """Supergauss mask.
 
         Args:
@@ -1394,16 +1442,16 @@ class Scalar_mask_XY(Scalar_field_XY):
         x0, y0 = r0
 
         Xrot, Yrot = self.__rotate__(angle, (x0, y0))
-        R = np.sqrt(Xrot**2/ (2*radiusx**2) + Yrot**2/ (2*radiusy**2))
-        self.u = np.exp(-R**power)
+        R = np.sqrt(Xrot**2 / (2 * radiusx**2) + Yrot**2 / (2 * radiusy**2))
+        self.u = np.exp(-(R**power))
 
-
-    def super_gauss_square(self,
-                   r0: tuple[float, float],
-                   size: tuple[float, float] | float,
-                   power: float = 2.,
-                   angle: float = 0.,
-                   ):
+    def super_gauss_square(
+        self,
+        r0: tuple[float, float],
+        size: tuple[float, float] | float,
+        power: float = 2.0,
+        angle: float = 0.0,
+    ):
         """Gauss Beam.
 
         Args:
@@ -1426,22 +1474,20 @@ class Scalar_mask_XY(Scalar_field_XY):
         x0, y0 = r0
         powx, powy = power
 
+        amplitude = np.exp(
+            -(np.abs(self.X * np.cos(angle) + self.Y * np.sin(angle) - x0) ** powx)
+            / ((sizex / 2) ** powx)
+        ) * np.exp(
+            -(np.abs(-self.X * np.sin(angle) + self.Y * np.cos(angle) - y0) ** powy)
+            / (sizey / 2) ** powy
+        )
 
-      
-
-        amplitude = ( np.exp(
-            -np.abs((self.X * np.cos(angle) + self.Y * np.sin(angle) - x0))**powx /
-            ((sizex/2)**powx)) * np.exp(
-                -np.abs((-self.X * np.sin(angle) + self.Y * np.cos(angle) - y0))**powy /
-                (sizey/2)**powy))
-       
-        self.u = amplitude 
+        self.u = amplitude
         return self
 
-
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def square_circle(self, r0: float, R1: float, R2: float, s: float, angle: float = 0*degrees):
-        """ Between circle and square, depending on fill factor s
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def square_circle(self, r0: float, R1: float, R2: float, s: float, angle: float = 0 * degrees):
+        """Between circle and square, depending on fill factor s
 
         s=0 circle, s=1 square
 
@@ -1468,23 +1514,24 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         self.u = Z
 
-
-    @check_none('X', raise_exception=bool_raise_exception)
-    def angular_aperture(self, a_coef: NDArrayFloat, b_coef: NDArrayFloat | None = None, angle: float = 0*degrees):
+    @check_none("X", raise_exception=bool_raise_exception)
+    def angular_aperture(
+        self, a_coef: NDArrayFloat, b_coef: NDArrayFloat | None = None, angle: float = 0 * degrees
+    ):
         """Creates a radial function using the Fourier coefficients.
 
-            Args:
+        Args:
 
-                a_coef (np.array, 2 rows and x columns): coefficients that multiply the cosine function.
-                b_coef (np.array, 2 rows and x columns): coefficients that multiply the sine function.
-                angle (float): angle of rotation in radians
+            a_coef (np.array, 2 rows and x columns): coefficients that multiply the cosine function.
+            b_coef (np.array, 2 rows and x columns): coefficients that multiply the sine function.
+            angle (float): angle of rotation in radians
 
-                For a_coef and b_coef, the first row are the coefficient orders  and the second row are coefficient values.
-            Example:
+            For a_coef and b_coef, the first row are the coefficient orders  and the second row are coefficient values.
+        Example:
 
-                angular_aperture(t, a_coef=np.array(
-                    [[0,1],[20,10]]),  angle= 0*degrees)
-            """
+            angular_aperture(t, a_coef=np.array(
+                [[0,1],[20,10]]),  angle= 0*degrees)
+        """
 
         Xrot, Yrot = self.__rotate__(angle)
 
@@ -1513,10 +1560,15 @@ class Scalar_mask_XY(Scalar_field_XY):
         self.u = u
         return ipasa
 
-
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def ring(self, r0: tuple[float, float], radius1: tuple[float], radius2: tuple[float], angle: tuple[float] = 0.):
-        """ Ring.
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def ring(
+        self,
+        r0: tuple[float, float],
+        radius1: tuple[float],
+        radius2: tuple[float],
+        angle: tuple[float] = 0.0,
+    ):
+        """Ring.
 
         Args:
             r0 (float, float): center of ring
@@ -1532,9 +1584,10 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         self.u = np.abs(ring2.u - ring1.u)
 
-
-    @check_none('x', 'y', 'X', raise_exception=bool_raise_exception)
-    def rings(self, r0: tuple[float, float], inner_radius: NDArrayFloat, outer_radius: NDArrayFloat):
+    @check_none("x", "y", "X", raise_exception=bool_raise_exception)
+    def rings(
+        self, r0: tuple[float, float], inner_radius: NDArrayFloat, outer_radius: NDArrayFloat
+    ):
         """Structure based on several rings, with radius given by inner_radius and outer_radius.
 
         Args:
@@ -1560,10 +1613,11 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         self.u = u
 
-
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def cross(self, r0: tuple[float, float], size: float | tuple[float], angle: float = 0*degrees):
-        """ Cross
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def cross(
+        self, r0: tuple[float, float], size: float | tuple[float], angle: float = 0 * degrees
+    ):
+        """Cross
 
         Args:
             r0 (float, float): center of cross
@@ -1576,15 +1630,14 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         t1.square(r0, size, angle)
 
-        t2.square(r0, size, angle + 90*degrees)
+        t2.square(r0, size, angle + 90 * degrees)
 
         t3 = t1.u + t2.u
         t3[t3 > 0] = 1
 
         self.u = t3
 
-
-    def prism(self, r0: tuple[float, float], angle_wedge: float, angle: float = 0*degrees):
+    def prism(self, r0: tuple[float, float], angle_wedge: float, angle: float = 0 * degrees):
         """prism which produces a certain angle
 
         Args:
@@ -1600,10 +1653,14 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         self.u = np.exp(1j * k * (Xrot) * np.sin(angle_wedge))
 
-
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def lens(self, r0: tuple[float, float], focal: float | NDArrayFloat, radius: float = 0,
-             angle: float = 0*degrees):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def lens(
+        self,
+        r0: tuple[float, float],
+        focal: float | NDArrayFloat,
+        radius: float = 0,
+        angle: float = 0 * degrees,
+    ):
         """Transparent lens
 
         Args:
@@ -1637,13 +1694,16 @@ class Scalar_mask_XY(Scalar_field_XY):
         else:
             t = 1
 
-        self.u = t * np.exp(-1.j * (k * ((Xrot**2 / (2 * f1)) + Yrot**2 /
-                                         (2 * f2)) + np.pi))
+        self.u = t * np.exp(-1.0j * (k * ((Xrot**2 / (2 * f1)) + Yrot**2 / (2 * f2)) + np.pi))
 
-
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def lens_spherical(self, r0: tuple[float, float], focal: float, refractive_index: float = 1.5,
-                       radius: float = 0.):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def lens_spherical(
+        self,
+        r0: tuple[float, float],
+        focal: float,
+        refractive_index: float = 1.5,
+        radius: float = 0.0,
+    ):
         """Spherical lens, without paraxial approximation. The focal distance and the refractive index are used for the definition.
         When the refractive index decreases, the radius of curvature decrases and less paraxial.
         Now, only one focal.
@@ -1664,7 +1724,7 @@ class Scalar_mask_XY(Scalar_field_XY):
         k = 2 * np.pi / self.wavelength
 
         x0, y0 = r0
-        angle = 0.
+        angle = 0.0
 
         R = (refractive_index - 1) * focal
 
@@ -1677,7 +1737,7 @@ class Scalar_mask_XY(Scalar_field_XY):
         else:
             t = 1
 
-        h = (np.sqrt(R**2 - (Xrot**2 + Yrot**2)) - R)
+        h = np.sqrt(R**2 - (Xrot**2 + Yrot**2)) - R
 
         h[R**2 - (Xrot**2 + Yrot**2) < 0] = 0
         self.u = t * np.exp(1j * k * (refractive_index - 1) * h)
@@ -1685,10 +1745,17 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         return h
 
-
-    @check_none('x', 'y', 'X', 'Y', raise_exception=bool_raise_exception)
-    def aspheric(self, r0: tuple[float, float], c: float, k: float, a: list, n0: float, n1: float,
-                 radius: float = 0.):
+    @check_none("x", "y", "X", "Y", raise_exception=bool_raise_exception)
+    def aspheric(
+        self,
+        r0: tuple[float, float],
+        c: float,
+        k: float,
+        a: list,
+        n0: float,
+        n1: float,
+        radius: float = 0.0,
+    ):
         r"""asferic surface.
 
         $z = \frac{c r^2}{1+\np.sqrt{1-(1+k) c^2 r^2 }}+\sum{a_i r^{2i}}$
@@ -1715,14 +1782,14 @@ class Scalar_mask_XY(Scalar_field_XY):
         """
         x0, y0 = r0
 
-        s2 = (self.X - x0)**2 + (self.Y - y0)**2
+        s2 = (self.X - x0) ** 2 + (self.Y - y0) ** 2
 
         t1 = c * s2 / (1 + np.sqrt(1 - (1 + k) * c**2 * s2))
 
         t2 = 0
         if a is not None:
             for i, ai in enumerate(a):
-                t2 = t2 + ai * s2**(2 + i)
+                t2 = t2 + ai * s2 ** (2 + i)
 
         t3 = t1 + t2
 
@@ -1735,14 +1802,15 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         self.u = t3 * np.exp(1j * 2 * np.pi * (n1 - n0) * t / self.wavelength)
 
-
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def lens_cylindrical(self,
-                         x0: float,
-                         focal: float,
-                         refractive_index: float = 1.5,
-                         radius: float = 0,
-                         angle: float = 0*degrees):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def lens_cylindrical(
+        self,
+        x0: float,
+        focal: float,
+        refractive_index: float = 1.5,
+        radius: float = 0,
+        angle: float = 0 * degrees,
+    ):
         """Cylindrical lens, without paraxial approximation. The focal distance and the refractive index are used for the definition. When the refractive index decreases, the radius of curvature decrases and less paraxial. When refractive_index is None or 0, then the paraxial approximation is used
 
         Args:
@@ -1772,22 +1840,23 @@ class Scalar_mask_XY(Scalar_field_XY):
             phase = -k * Xrot**2 / (2 * focal)
         else:
             R = (refractive_index - 1) * focal
-            h = (np.sqrt(R**2 - Xrot**2) - R)
+            h = np.sqrt(R**2 - Xrot**2) - R
             h[R**2 - (Xrot**2) < 0] = 0
             phase = k * (refractive_index - 1) * h
 
         self.u = t * np.exp(1j * phase)
 
-
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def fresnel_lens(self,
-                     r0: tuple[float, float],
-                     focal: float,
-                     levels: tuple[float, float] = (1., 0.),
-                     kind: str = 'amplitude',
-                     phase: float = 0.,
-                     radius: float = 0.,
-                     angle: float = 0*degrees):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def fresnel_lens(
+        self,
+        r0: tuple[float, float],
+        focal: float,
+        levels: tuple[float, float] = (1.0, 0.0),
+        kind: str = "amplitude",
+        phase: float = 0.0,
+        radius: float = 0.0,
+        angle: float = 0 * degrees,
+    ):
         """Fresnel lens, amplitude (0,1) or phase (0-phase)
 
         Args:
@@ -1825,42 +1894,48 @@ class Scalar_mask_XY(Scalar_field_XY):
         # t2.u = np.cos(k * ((Xrot**2 / (2 * f1)) + Yrot**2 / (2 * f2)))
         t2.u = np.sin(k * ((Xrot**2 / (2 * f1)) + Yrot**2 / (2 * f2)))
 
-        if kind == 'amplitude':
+        if kind == "amplitude":
             t2.u[t2.u > 0] = levels[0]
             t2.u[t2.u <= 0] = levels[1]
 
-        if kind == 'phase':
+        if kind == "phase":
             t2.u[t2.u > 0] = 1
             t2.u[t2.u <= 0] = 0
             t2.u = np.exp(1j * t2.u * phase)
 
         self.u = t2.u * t1
 
-
-    @check_none('X', 'Y', raise_exception=bool_raise_exception)
-    def axicon(self, r0: tuple[float, float], refractive_index: float, angle: float,
-               radius: float = 0, off_axis_angle: float = 0*degrees, reflective: bool = False):
+    @check_none("X", "Y", raise_exception=bool_raise_exception)
+    def axicon(
+        self,
+        r0: tuple[float, float],
+        refractive_index: float,
+        angle: float,
+        radius: float = 0,
+        off_axis_angle: float = 0 * degrees,
+        reflective: bool = False,
+    ):
         """Axicon,
 
-                Args:
-            r0 (float, float): (x0,y0) - center of lens
-            refractive_index (float): refractive index
-            angle (float): angle of the axicon
-            radius (float): radius of lens mask
-            off_axis_angle (float) angle when it works off-axis
-            reflective (bool): True if the axicon works in reflective mode.
+            Args:
+        r0 (float, float): (x0,y0) - center of lens
+        refractive_index (float): refractive index
+        angle (float): angle of the axicon
+        radius (float): radius of lens mask
+        off_axis_angle (float) angle when it works off-axis
+        reflective (bool): True if the axicon works in reflective mode.
         """
 
         k = 2 * np.pi / self.wavelength
         x0, y0 = r0
 
-        r = np.sqrt((self.X - x0)**2 + (self.Y - y0)**2)
+        r = np.sqrt((self.X - x0) ** 2 + (self.Y - y0) ** 2)
 
         u_mask = np.zeros_like(self.X)
         ipasa = r < radius
         u_mask[ipasa] = 1
 
-        if off_axis_angle == 0*degrees:
+        if off_axis_angle == 0 * degrees:
             t_off_axis = 1
         else:
             t_off_axis = np.exp(-1j * k * self.X * np.sin(off_axis_angle))
@@ -1869,13 +1944,12 @@ class Scalar_mask_XY(Scalar_field_XY):
             self.u = u_mask * np.exp(-2j * k * r * np.tan(angle)) * t_off_axis
 
         else:
-            self.u = u_mask * \
-                np.exp(-1j * k * (refractive_index - 1) *
-                       r * np.tan(angle)) * t_off_axis
+            self.u = (
+                u_mask * np.exp(-1j * k * (refractive_index - 1) * r * np.tan(angle)) * t_off_axis
+            )
 
-
-    @check_none('X', 'Y', raise_exception=bool_raise_exception)
-    def axicon_binary(self, r0: tuple[float, float], period: float, radius: float = 0.):
+    @check_none("X", "Y", raise_exception=bool_raise_exception)
+    def axicon_binary(self, r0: tuple[float, float], period: float, radius: float = 0.0):
         """axicon_binary. Rings with equal period
 
         Args:
@@ -1889,7 +1963,7 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         x0, y0 = r0
 
-        r = np.sqrt((self.X - x0)**2 + (self.Y - y0)**2)
+        r = np.sqrt((self.X - x0) ** 2 + (self.Y - y0) ** 2)
 
         if radius > 0:
             u_mask = np.zeros_like(self.X)
@@ -1905,8 +1979,7 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         self.u = t
 
-
-    @check_none('X', raise_exception=bool_raise_exception)
+    @check_none("X", raise_exception=bool_raise_exception)
     def biprism_fresnel(self, r0: tuple[float, float], width: float, height: float, n: float):
         """Fresnel biprism.
 
@@ -1940,12 +2013,17 @@ class Scalar_mask_XY(Scalar_field_XY):
         ipasa = np.abs(self.X - x0) < width
         u[ipasa] = 1
 
-        self.u = u * np.exp(1.j * k * (n - 1) * h)
+        self.u = u * np.exp(1.0j * k * (n - 1) * h)
 
-
-    @check_none('X', 'Y', raise_exception=bool_raise_exception)
-    def radial_grating(self, r0: tuple[float, float], period: float, phase: float, radius: float,
-                       is_binary: bool = True):
+    @check_none("X", "Y", raise_exception=bool_raise_exception)
+    def radial_grating(
+        self,
+        r0: tuple[float, float],
+        period: float,
+        phase: float,
+        radius: float,
+        is_binary: bool = True,
+    ):
         """Radial grating.
 
         Args:
@@ -1961,7 +2039,7 @@ class Scalar_mask_XY(Scalar_field_XY):
         """
 
         x0, y0 = r0
-        r = np.sqrt((self.X - x0)**2 + (self.Y - y0)**2)
+        r = np.sqrt((self.X - x0) ** 2 + (self.Y - y0) ** 2)
         t = 0.5 * (1 + np.sin(2 * np.pi * (r - phase) / period))
         if is_binary is True:
             i0 = t <= 0.5
@@ -1973,10 +2051,15 @@ class Scalar_mask_XY(Scalar_field_XY):
         u[ipasa] = 1
         self.u = u * t
 
-
-    @check_none('X', 'Y', raise_exception=bool_raise_exception)
-    def angular_grating(self, r0: tuple[float, float], num_petals: int, phase: float, radius: float,
-                        is_binary: bool = True):
+    @check_none("X", "Y", raise_exception=bool_raise_exception)
+    def angular_grating(
+        self,
+        r0: tuple[float, float],
+        num_petals: int,
+        phase: float,
+        radius: float,
+        is_binary: bool = True,
+    ):
         """Angular grating.
 
         Args:
@@ -1992,10 +2075,10 @@ class Scalar_mask_XY(Scalar_field_XY):
         """
 
         x0, y0 = r0
-        r = np.sqrt((self.X - x0)**2 + (self.Y - y0)**2)
+        r = np.sqrt((self.X - x0) ** 2 + (self.Y - y0) ** 2)
         theta = np.arctan((self.Y - y0) / (self.X - x0))
 
-        t = (1 + np.cos((theta - phase) * num_petals))/2
+        t = (1 + np.cos((theta - phase) * num_petals)) / 2
         if is_binary is True:
             i0 = t <= 0.5
             t[i0] = 0
@@ -2008,8 +2091,17 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         self.u = u * t
 
-    @check_none('X', 'Y', raise_exception=bool_raise_exception)
-    def arrow(self, r0, length, width, percent=0.5, angle_arrow=45*degrees, has_draw=False, verbose=False):
+    @check_none("X", "Y", raise_exception=bool_raise_exception)
+    def arrow(
+        self,
+        r0,
+        length,
+        width,
+        percent=0.5,
+        angle_arrow=45 * degrees,
+        has_draw=False,
+        verbose=False,
+    ):
         """
         arrow. Geneates an arrow in the plane of the mask. The arrow is filled.
 
@@ -2022,43 +2114,51 @@ class Scalar_mask_XY(Scalar_field_XY):
             has_draw (bool, optional): If True, the arrow is drawn. Defaults to False.
             verbose (bool, optional): If True, the vertices of the arrow are printed. Defaults to False.
 
-        Todo: 
+        Todo:
             implement rotation of the arrow
         """
 
         dx, dy = r0
 
+        vertices = np.array(
+            [
+                (0, -width / 2),
+                (length * percent, -width / 2),
+                (length * percent, -length * percent * np.tan(angle_arrow)),
+                (length, 0),
+                (length * percent, length * percent * np.tan(angle_arrow)),
+                (length * percent, width / 2),
+                (0, width / 2),
+                (0, -width / 2),
+            ]
+        )
 
-        vertices = np.array([(0,  -width/2), 
-                            (length*percent, -width/2), 
-                            (length*percent, -length*percent*np.tan(angle_arrow)), 
-                            (length, 0), 
-                            (length*percent, length*percent*np.tan(angle_arrow)), 
-                            (length*percent, width/2), 
-                            (0,   width/2),
-                            (0,   -width/2),
-                            ])
-
-        vertices[:,0] = vertices[:,0] + dx
-        vertices[:,1] = vertices[:,1] + dy
+        vertices[:, 0] = vertices[:, 0] + dx
+        vertices[:, 1] = vertices[:, 1] + dy
 
         if verbose:
             print("Arrow vertices:")
             print(vertices)
 
         if has_draw:
-
             plt.figure()
-            plt.plot(vertices[:,0], vertices[:,1], 'ko', ms=4)
-            plt.fill(vertices[:,0], vertices[:,1], 'k', alpha=0.5)
-            plt.axis('scaled')
-
+            plt.plot(vertices[:, 0], vertices[:, 1], "ko", ms=4)
+            plt.fill(vertices[:, 0], vertices[:, 1], "k", alpha=0.5)
+            plt.axis("scaled")
 
         self.polygon(vertices)
 
-
-    @check_none('X', 'Y', raise_exception=bool_raise_exception)
-    def arrow_thin(self, r0, length, width, length_lateral, angle_arrow=45*degrees, has_draw=False, verbose=False):
+    @check_none("X", "Y", raise_exception=bool_raise_exception)
+    def arrow_thin(
+        self,
+        r0,
+        length,
+        width,
+        length_lateral,
+        angle_arrow=45 * degrees,
+        has_draw=False,
+        verbose=False,
+    ):
         """
         arrow. Geneates an arrow in the plane of the mask. The arrow is filled.
 
@@ -2071,53 +2171,55 @@ class Scalar_mask_XY(Scalar_field_XY):
             has_draw (bool, optional): If True, the arrow is drawn. Defaults to False.
             verbose (bool, optional): If True, the vertices of the arrow are printed. Defaults to False.
 
-        Todo: 
+        Todo:
             implement rotation of the arrow
         """
 
         x0, y0 = r0
 
-        l,w,s,a = length, width, length_lateral, angle_arrow
+        l, w, s, a = length, width, length_lateral, angle_arrow
 
+        vertices = np.array(
+            [
+                [0, -w / 2],
+                [l, -w / 2],
+                [l - s * np.cos(a), -w / 2 - s * np.sin(a)],
+                [l - s * np.cos(a) + w * np.sin(a), -w / 2 - s * np.sin(a) - w * np.cos(a)],
+                # [l+w, -w/2],
+                [l + w + 2 * w * np.cos(a), 0],
+                # [l+w, +w/2],
+                [l - s * np.cos(a) + w * np.sin(a), +w / 2 + s * np.sin(a) + w * np.cos(a)],
+                [l - s * np.cos(a), +w / 2 + s * np.sin(a)],
+                [l, +w / 2],
+                [0, +w / 2],
+                [0, -w / 2],
+            ]
+        )
 
-        vertices = np.array([[0,  -w/2], 
-                            [l, -w/2], 
-                            [l-s*np.cos(a), -w/2 - s*np.sin(a)], 
-                            [l-s*np.cos(a)+w*np.sin(a), -w/2 - s*np.sin(a)- w*np.cos(a)], 
-                            #[l+w, -w/2],
-                            [l+w+2*w*np.cos(a), 0],
-                            #[l+w, +w/2], 
-                            [l-s*np.cos(a)+w*np.sin(a), +w/2 + s*np.sin(a)+ w*np.cos(a)], 
-                            [l-s*np.cos(a), +w/2 + s*np.sin(a)],       
-                            [l, +w/2], 
-                            [0,   +w/2],
-                            [0,   -w/2],
-                            ])
-
-        vertices[:,0] = vertices[:,0] + x0
-        vertices[:,1] = vertices[:,1] + y0
+        vertices[:, 0] = vertices[:, 0] + x0
+        vertices[:, 1] = vertices[:, 1] + y0
 
         if verbose:
             print("Arrow vertices:")
             print(vertices)
 
         if has_draw:
-
             plt.figure()
-            plt.plot(vertices[:,0], vertices[:,1], 'ko', ms=4)
-            plt.fill(vertices[:,0], vertices[:,1], 'k', alpha=0.5)
-            plt.axis('scaled')
+            plt.plot(vertices[:, 0], vertices[:, 1], "ko", ms=4)
+            plt.fill(vertices[:, 0], vertices[:, 1], "k", alpha=0.5)
+            plt.axis("scaled")
 
         self.polygon(vertices)
 
-
-    @check_none('X', 'Y', raise_exception=bool_raise_exception)
-    def hyperbolic_grating(self,
-                           r0: tuple[float, float],
-                           period: float,
-                           radius: float,
-                           is_binary: bool,
-                           angle: float = 0*degrees):
+    @check_none("X", "Y", raise_exception=bool_raise_exception)
+    def hyperbolic_grating(
+        self,
+        r0: tuple[float, float],
+        period: float,
+        radius: float,
+        is_binary: bool,
+        angle: float = 0 * degrees,
+    ):
         """Hyperbolic grating.
 
         Args:
@@ -2137,10 +2239,10 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         Xrot, Yrot = self.__rotate__(angle, (x0, y0))
 
-        r = np.sqrt((self.X - x0)**2 + (self.Y)**2)
-        x_posiciones = np.sqrt(np.abs((Xrot)**2 - (Yrot)**2))
+        r = np.sqrt((self.X - x0) ** 2 + (self.Y) ** 2)
+        x_posiciones = np.sqrt(np.abs((Xrot) ** 2 - (Yrot) ** 2))
 
-        t = (1 + np.sin(2 * np.pi * x_posiciones / period))/2
+        t = (1 + np.sin(2 * np.pi * x_posiciones / period)) / 2
         if is_binary is True:
             i0 = t <= 0.5
             t[i0] = 0
@@ -2153,9 +2255,10 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         self.u = u * t
 
-
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def hammer(self, r0: tuple[float, float], size: float, hammer_width: float, angle: float = 0*degrees):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def hammer(
+        self, r0: tuple[float, float], size: float, hammer_width: float, angle: float = 0 * degrees
+    ):
         """Square with hammer (like in lithography). Not very useful, an example
 
         Args:
@@ -2168,7 +2271,7 @@ class Scalar_mask_XY(Scalar_field_XY):
              hammer(r0=(0*um, 0*um), size=(250*um, 120*um),
                     hammer_width=5*um, angle=0*degrees)
         """
-    
+
         if len(size) == 1:
             size = (size[0], size[0])
 
@@ -2182,32 +2285,30 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         x0, y0 = r0
         sizex, sizey = size
-        xmin = x0 - sizex/2
-        xmax = x0 + sizex/2
-        ymin = y0 - sizey/2
-        ymax = y0 + sizey/2
+        xmin = x0 - sizex / 2
+        xmax = x0 + sizex / 2
+        ymin = y0 - sizey / 2
+        ymax = y0 + sizey / 2
 
-        th1.square(r0=(xmin, ymin),
-                   size=(hammer_width, hammer_width),
-                   angle=angle)
-        th2.square(r0=(xmin, ymax),
-                   size=(hammer_width, hammer_width),
-                   angle=angle)
-        th3.square(r0=(xmax, ymin),
-                   size=(hammer_width, hammer_width),
-                   angle=angle)
-        th4.square(r0=(xmax, ymax),
-                   size=(hammer_width, hammer_width),
-                   angle=angle)
+        th1.square(r0=(xmin, ymin), size=(hammer_width, hammer_width), angle=angle)
+        th2.square(r0=(xmin, ymax), size=(hammer_width, hammer_width), angle=angle)
+        th3.square(r0=(xmax, ymin), size=(hammer_width, hammer_width), angle=angle)
+        th4.square(r0=(xmax, ymax), size=(hammer_width, hammer_width), angle=angle)
 
         t3 = t1.u + th1.u + th2.u + th3.u + th4.u
         t3[t3 > 0] = 1
         self.u = t3
 
-
-    @check_none('X', 'Y', raise_exception=bool_raise_exception)
-    def archimedes_spiral(self, r0: tuple[float, float], period: float, phase: float, p: int,
-                          radius: float, is_binary: bool):
+    @check_none("X", "Y", raise_exception=bool_raise_exception)
+    def archimedes_spiral(
+        self,
+        r0: tuple[float, float],
+        period: float,
+        phase: float,
+        p: int,
+        radius: float,
+        is_binary: bool,
+    ):
         """Archimedes spiral
 
         Args:
@@ -2226,11 +2327,15 @@ class Scalar_mask_XY(Scalar_field_XY):
         x0, y0 = r0
 
         # distance de la generatriz al eje del cono
-        r = np.sqrt((self.X - x0)**2 + (self.Y - y0)**2)
+        r = np.sqrt((self.X - x0) ** 2 + (self.Y - y0) ** 2)
         theta = np.arctan((self.Y - y0) / (self.X - x0))
         # Region de transmitancia
-        t = 0.5 * (1 + np.sin(2 * np.pi * np.sign(self.X) *
-                              ((r / period)**p + (theta - phase) / (2 * np.pi))))
+        t = 0.5 * (
+            1
+            + np.sin(
+                2 * np.pi * np.sign(self.X) * ((r / period) ** p + (theta - phase) / (2 * np.pi))
+            )
+        )
         if is_binary is True:
             i0 = t <= 0.5
             t[i0] = 0
@@ -2243,10 +2348,10 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         self.u = u * t
 
-
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def laguerre_gauss_spiral(self, r0: tuple[float, float], kind: str, n: int, l: int,
-                              w0: float, z: float):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def laguerre_gauss_spiral(
+        self, r0: tuple[float, float], kind: str, n: int, l: int, w0: float, z: float
+    ):
         """laguerre_gauss spiral
 
         Args:
@@ -2262,16 +2367,14 @@ class Scalar_mask_XY(Scalar_field_XY):
                 r0=(0*um, 0*um), kind='amplitude', l=1, w0=625*um, z=0.01*um)
         """
 
-        u_ilum = Scalar_source_XY(x=self.x,
-                                  y=self.y,
-                                  wavelength=self.wavelength)
-        
+        u_ilum = Scalar_source_XY(x=self.x, y=self.y, wavelength=self.wavelength)
+
         u_ilum.laguerre_beam(A=1, n=n, l=l, r0=r0, w0=w0, z=z, z0=0)
 
-        length = (self.x.max() - self.x[0])/2
+        length = (self.x.max() - self.x[0]) / 2
 
         t1 = Scalar_mask_XY(x=self.x, y=self.y, wavelength=self.wavelength)
-        t1.circle(r0=r0, radius=(length, length), angle=0*degrees)
+        t1.circle(r0=r0, radius=(length, length), angle=0 * degrees)
 
         intensity = np.angle(u_ilum.u)
         intensity = intensity / intensity.max()
@@ -2280,13 +2383,19 @@ class Scalar_mask_XY(Scalar_field_XY):
         mask[intensity > 0] = 1
 
         if kind == "phase":
-            mask = np.exp(1.j * np.pi * mask)
+            mask = np.exp(1.0j * np.pi * mask)
 
         self.u = t1.u * mask
 
-
-    def forked_grating(self, r0: tuple[float, float], period: float, l: int, alpha: int, kind: str,
-                       angle: float = 0*degrees):
+    def forked_grating(
+        self,
+        r0: tuple[float, float],
+        period: float,
+        l: int,
+        alpha: int,
+        kind: str,
+        angle: float = 0 * degrees,
+    ):
         """Forked grating: np.exp(1.j * alpha * np.cos(l * THETA - 2 * np.pi / period * (Xrot - r0[0])))
 
         Args:
@@ -2307,25 +2416,26 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         THETA = np.arctan2(Xrot, Yrot)
 
-        self.u = np.exp(1.j * alpha * np.cos(l * THETA - 2 * np.pi / period * (Xrot)))
+        self.u = np.exp(1.0j * alpha * np.cos(l * THETA - 2 * np.pi / period * (Xrot)))
 
         phase = np.angle(self.u)
 
         phase[phase < 0] = 0
         phase[phase > 0] = 1
 
-        if kind == 'amplitude':
+        if kind == "amplitude":
             self.u = phase
-        elif kind == 'phase':
-            self.u = np.exp(1.j * np.pi * phase)
+        elif kind == "phase":
+            self.u = np.exp(1.0j * np.pi * phase)
 
-
-    def sine_grating(self,
-                     x0: float,
-                     period: float,
-                     amp_min: float = 0,
-                     amp_max: float = 1,
-                     angle: float = 0*degrees):
+    def sine_grating(
+        self,
+        x0: float,
+        period: float,
+        amp_min: float = 0,
+        amp_max: float = 1,
+        angle: float = 0 * degrees,
+    ):
         """Sinusoidal grating:  self.u = amp_min + (amp_max - amp_min) * (1 + np.cos(2 * np.pi * (Xrot - phase) / period))/2
 
         Args:
@@ -2342,14 +2452,19 @@ class Scalar_mask_XY(Scalar_field_XY):
         Xrot, Yrot = self.__rotate__(angle, (x0, 0))
 
         # Definicion de la sinusoidal
-        self.u = amp_min + (amp_max -
-                            amp_min) * (1 + np.sin(2 * np.pi *
-                                                   (Xrot - x0) / period))/2
+        self.u = amp_min + (amp_max - amp_min) * (1 + np.sin(2 * np.pi * (Xrot - x0) / period)) / 2
 
-
-    @check_none('X', raise_exception=bool_raise_exception)
-    def sine_edge_grating(self, r0: tuple[float, float], period: float, lp: float, ap: float,
-                          phase: float, radius: float, is_binary: bool):
+    @check_none("X", raise_exception=bool_raise_exception)
+    def sine_edge_grating(
+        self,
+        r0: tuple[float, float],
+        period: float,
+        lp: float,
+        ap: float,
+        phase: float,
+        radius: float,
+        is_binary: bool,
+    ):
         """Generate sin grating
 
         Args:
@@ -2361,14 +2476,14 @@ class Scalar_mask_XY(Scalar_field_XY):
             radius (float): _description_
             is_binary (bool): _description_
         """
-      
+
         x0, y0 = r0
 
-        r = np.sqrt((self.X - x0)**2 + (self.Y - y0)**2)
+        r = np.sqrt((self.X - x0) ** 2 + (self.Y - y0) ** 2)
 
         phase_shift = phase + ap * np.sin(2 * np.pi * self.Y / lp)
 
-        t = (1 + np.sin(2 * np.pi * (self.X - phase_shift) / period))/2
+        t = (1 + np.sin(2 * np.pi * (self.X - phase_shift) / period)) / 2
 
         if is_binary:
             i0 = t <= 0.5
@@ -2382,10 +2497,10 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         self.u = u * t
 
-
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def ronchi_grating(self, x0: float, period: float, fill_factor: float = 0.5,
-                       angle: float = 0*degrees):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def ronchi_grating(
+        self, x0: float, period: float, fill_factor: float = 0.5, angle: float = 0 * degrees
+    ):
         """Amplitude binary grating with fill factor: self.u = amp_min + (amp_max - amp_min) * (1 + np.cos(2 * np.pi * (Xrot - phase) / period))/2
 
         Args:
@@ -2407,27 +2522,24 @@ class Scalar_mask_XY(Scalar_field_XY):
         t = Scalar_mask_XY(self.x, self.y, self.wavelength)
         y0 = np.cos(np.pi * fill_factor)
 
-        t.sine_grating(period=period,
-                       amp_min=-1,
-                       amp_max=1,
-                       x0=x0,
-                       angle=angle)
+        t.sine_grating(period=period, amp_min=-1, amp_max=1, x0=x0, angle=angle)
 
         t.u[t.u > y0] = 1
         t.u[t.u <= y0] = 0
 
         self.u = t.u
 
-
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def binary_grating(self,
-                       x0: float,
-                       period: float,
-                       fill_factor: float = 0.5,
-                       a_min: float = 0,
-                       a_max: float = 1,
-                       phase: float = 0*degrees,
-                       angle: float = 0*degrees):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def binary_grating(
+        self,
+        x0: float,
+        period: float,
+        fill_factor: float = 0.5,
+        a_min: float = 0,
+        a_max: float = 1,
+        phase: float = 0 * degrees,
+        angle: float = 0 * degrees,
+    ):
         """Binary grating (amplitude and/or phase). The minimum and maximum value of amplitude and phase can be controlled.
 
          Args:
@@ -2444,16 +2556,14 @@ class Scalar_mask_XY(Scalar_field_XY):
                            a_min=0, a_max=1, phase=0*degrees, angle=0*degrees)
         """
         t = Scalar_mask_XY(self.x, self.y, self.wavelength)
-        t.ronchi_grating(x0=x0,
-                         period=period,
-                         fill_factor=fill_factor,
-                         angle=angle)
+        t.ronchi_grating(x0=x0, period=period, fill_factor=fill_factor, angle=angle)
         amplitud = a_min + (a_max - a_min) * t.u
         self.u = amplitud * np.exp(1j * phase * t.u)
 
-
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def blazed_grating(self, period: float, phase_max: float, x0: float, angle: float = 0*degrees):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def blazed_grating(
+        self, period: float, phase_max: float, x0: float, angle: float = 0 * degrees
+    ):
         """Blazed grating.
 
          Args:
@@ -2472,17 +2582,20 @@ class Scalar_mask_XY(Scalar_field_XY):
         num_periods = (self.x[-1] - self.x[0]) / period
 
         # Height computation
-        phase = (Xrot - x0) * phase_max * num_periods / (self.x[-1] -
-                                                         self.x[0])
+        phase = (Xrot - x0) * phase_max * num_periods / (self.x[-1] - self.x[0])
 
         # normalization between 0 and 2pi
         phase = np.remainder(phase, phase_max)
         self.u = np.exp(1j * phase)
 
-
-  
-    def fourier_grating(self, x0: float, period: float, fourier: np.ndarray = None, orders: list = None, values: list = None):
-
+    def fourier_grating(
+        self,
+        x0: float,
+        period: float,
+        fourier: np.ndarray = None,
+        orders: list = None,
+        values: list = None,
+    ):
         """
         Generates a 2D diffraction grating profile using Fourier coefficients.
 
@@ -2498,32 +2611,35 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         if orders is not None:
             orders = np.array(orders)
-        
+
         if values is not None:
             values = np.array(values)
 
         if fourier is None:
             fourier = np.transpose([orders, values])
 
-        t = np.zeros_like(self.x, dtype=complex) 
+        t = np.zeros_like(self.x, dtype=complex)
 
         for n, a in fourier:
-            t += a * np.exp(1j * 2 * np.pi * n * self.x / period) 
+            t += a * np.exp(1j * 2 * np.pi * n * self.x / period)
 
-        Txy = np.tile(t, (len(self.y), 1))  # Replicate the x axis transmittance in every point of the y axis.
-                                                
+        Txy = np.tile(
+            t, (len(self.y), 1)
+        )  # Replicate the x axis transmittance in every point of the y axis.
+
         self.u = Txy
 
-
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def grating_2D(self,
-                   r0: tuple[float, float],
-                   period: float,
-                   fill_factor: float,
-                   a_min: float = 0,
-                   a_max: float = 1.,
-                   phase: float = 0,
-                   angle: float = 0*degrees):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def grating_2D(
+        self,
+        r0: tuple[float, float],
+        period: float,
+        fill_factor: float,
+        a_min: float = 0,
+        a_max: float = 1.0,
+        phase: float = 0,
+        angle: float = 0 * degrees,
+    ):
         """2D binary grating
 
          Args:
@@ -2545,26 +2661,27 @@ class Scalar_mask_XY(Scalar_field_XY):
         t1 = Scalar_mask_XY(self.x, self.y, self.wavelength)
         t2 = Scalar_mask_XY(self.x, self.y, self.wavelength)
 
-        t1.binary_grating(r0[0] + period[0] / 8, period[0], fill_factor, 0, 1,
-                          0, angle)
-        t2.binary_grating(r0[1] + period[1] / 4, period[1], fill_factor, 0, 1,
-                          0, angle + 90*degrees)
+        t1.binary_grating(r0[0] + period[0] / 8, period[0], fill_factor, 0, 1, 0, angle)
+        t2.binary_grating(
+            r0[1] + period[1] / 4, period[1], fill_factor, 0, 1, 0, angle + 90 * degrees
+        )
 
         t2_grating = t1 * t2
 
         self.u = a_min + (a_max - a_min) * t2_grating.u
         self.u = self.u * np.exp(1j * phase * t2_grating.u)
 
-
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def grating_2D_chess(self,
-                         r0: tuple[float, float],
-                         period: float,
-                         fill_factor: float,
-                         a_min: float = 0.,
-                         a_max: float = 1.,
-                         phase: float = 0.,
-                         angle: float = 0*degrees):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def grating_2D_chess(
+        self,
+        r0: tuple[float, float],
+        period: float,
+        fill_factor: float,
+        a_min: float = 0.0,
+        a_max: float = 1.0,
+        phase: float = 0.0,
+        angle: float = 0 * degrees,
+    ):
         """2D binary grating as chess
 
          Args:
@@ -2588,8 +2705,7 @@ class Scalar_mask_XY(Scalar_field_XY):
         t2 = Scalar_mask_XY(self.x, self.y, self.wavelength)
 
         t1.binary_grating(r0[0], period[0], fill_factor, 0, 1, 0, angle)
-        t2.binary_grating(r0[1], period[1], fill_factor, 0, 1, 0,
-                          angle + 90*degrees)
+        t2.binary_grating(r0[1], period[1], fill_factor, 0, 1, 0, angle + 90 * degrees)
 
         t2_grating = t1 * t2
         t2_grating.u = np.logical_xor(t1.u, t2.u)
@@ -2597,9 +2713,13 @@ class Scalar_mask_XY(Scalar_field_XY):
         self.u = a_min + (a_max - a_min) * t2_grating.u
         self.u = self.u * np.exp(1j * phase * t2_grating.u)
 
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def squares_nxm(self, kind: Options_squares_nxm = 'amplitude', num_levels: int | tuple[int, int] = 256,
-                    border_size: float = 0*um):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def squares_nxm(
+        self,
+        kind: Options_squares_nxm = "amplitude",
+        num_levels: int | tuple[int, int] = 256,
+        border_size: float = 0 * um,
+    ):
         """Generates a matrix with nxm squares with a different value of the transmittance
 
         Args:
@@ -2608,43 +2728,39 @@ class Scalar_mask_XY(Scalar_field_XY):
             border_size (float, optional): size of border of suqares. Defaults to 0.
         Returns:
             _type_: _description_
-        """ 
+        """
 
         if isinstance(num_levels, (int)):
             num_rows = num_columns = np.sqrt(num_levels).astype(int)
         else:
             num_rows, num_columns = num_levels
 
-        size_x = (self.x[-1] - self.x[0]-num_rows*border_size)/num_rows
-        size_y = (self.y[-1] - self.y[0]-num_columns*border_size)/num_columns
-        
-        pos_x = np.linspace(self.x[0]+size_x/2, self.x[-1]-size_x/2, num_rows)
-        pos_y = np.linspace(self.y[0]+size_y/2, self.y[-1]-size_y/2, num_columns)
+        size_x = (self.x[-1] - self.x[0] - num_rows * border_size) / num_rows
+        size_y = (self.y[-1] - self.y[0] - num_columns * border_size) / num_columns
 
-
+        pos_x = np.linspace(self.x[0] + size_x / 2, self.x[-1] - size_x / 2, num_rows)
+        pos_y = np.linspace(self.y[0] + size_y / 2, self.y[-1] - size_y / 2, num_columns)
 
         t1 = Scalar_mask_XY(self.x, self.y, self.wavelength)
-        
-        levels = range(num_rows*num_columns)
+
+        levels = range(num_rows * num_columns)
         k = 0
         for j in range(num_columns):
-            for i in range(num_rows-1,-1,-1):
-                #print(pos_x[i], pos_y[j])
-                t1.square(r0=(pos_x[i], pos_y[j]), size=(size_x, size_y), angle=0*degrees)
-                self.u = self.u + levels[k]*t1.u
+            for i in range(num_rows - 1, -1, -1):
+                # print(pos_x[i], pos_y[j])
+                t1.square(r0=(pos_x[i], pos_y[j]), size=(size_x, size_y), angle=0 * degrees)
+                self.u = self.u + levels[k] * t1.u
                 k += 1
-        
-        if kind == 'intensity':
-            self.u = self.u/self.intensity()
-        elif kind == 'amplitude':
-            self.u = self.u/self.u.max()
+
+        if kind == "intensity":
+            self.u = self.u / self.intensity()
+        elif kind == "amplitude":
+            self.u = self.u / self.u.max()
 
         return self
 
-
-
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def roughness(self, t: float, s: float, refractive_index: float = -1.):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def roughness(self, t: float, s: float, refractive_index: float = -1.0):
         """Generation of a rough surface. According to Ogilvy p.224
 
         Args:
@@ -2659,9 +2775,8 @@ class Scalar_mask_XY(Scalar_field_XY):
         h_corr = roughness_2D(self.x, self.y, t, s)
 
         k = 2 * np.pi / self.wavelength
-        self.u = np.exp(1.j * k * (refractive_index - 1) * h_corr)
+        self.u = np.exp(1.0j * k * (refractive_index - 1) * h_corr)
         return h_corr
-
 
     def circle_rough(self, r0: tuple[float, float], radius: float, angle: float, sigma: float):
         """Circle with a rough edge.
@@ -2679,14 +2794,14 @@ class Scalar_mask_XY(Scalar_field_XY):
         u = np.zeros(np.shape(self.X))
 
         random_part = np.random.randn(Yrot.shape[0], Yrot.shape[1])
-        ipasa = (Xrot - x0)**2 + (Yrot - y0)**2 - (radius +
-                                                   sigma * random_part)**2 < 0
+        ipasa = (Xrot - x0) ** 2 + (Yrot - y0) ** 2 - (radius + sigma * random_part) ** 2 < 0
         u[ipasa] = 1
         self.u = u
 
-
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def ring_rough(self, r0: tuple[float, float], radius1: float, radius2: float, angle: float, sigma: float):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def ring_rough(
+        self, r0: tuple[float, float], radius1: float, radius2: float, angle: float, sigma: float
+    ):
         """Ring with a rough edge
 
         Args:
@@ -2705,9 +2820,10 @@ class Scalar_mask_XY(Scalar_field_XY):
         # Al restar ring2.u-ring1.u se logra la transmitancia en el interior
         self.u = ring2.u - ring1.u
 
-
-    @check_none('x', 'y', raise_exception=bool_raise_exception)
-    def fresnel_lens_rough(self, r0: tuple[float, float], radius: float, focal, angle: float, sigma: float):
+    @check_none("x", "y", raise_exception=bool_raise_exception)
+    def fresnel_lens_rough(
+        self, r0: tuple[float, float], radius: float, focal, angle: float, sigma: float
+    ):
         """Ring with a rough edge
 
         Args:
@@ -2721,27 +2837,27 @@ class Scalar_mask_XY(Scalar_field_XY):
         ring = Scalar_mask_XY(self.x, self.y, self.wavelength)
 
         R0 = np.sqrt(self.wavelength * focal)
-        num_rings = int(round((radius / R0)**2))
+        num_rings = int(round((radius / R0) ** 2))
 
-        radius_0 = np.sqrt(self.wavelength * focal * 4)/2
+        radius_0 = np.sqrt(self.wavelength * focal * 4) / 2
         ring.circle_rough(r0, radius_0, angle, sigma)
         lens.u = lens.u + ring.u
 
         for m in range(3, num_rings + 2, 2):
             inner_radius = np.sqrt((m - 1) * self.wavelength * focal)
             outer_radius = np.sqrt(m * self.wavelength * focal)
-            ring.ring_rough(r0,
-                            inner_radius,
-                            outer_radius,
-                            angle=angle,
-                            sigma=sigma)
+            ring.ring_rough(r0, inner_radius, outer_radius, angle=angle, sigma=sigma)
             lens.u = lens.u + ring.u
         self.u = lens.u
 
-
-    @check_none('X', raise_exception=bool_raise_exception)
-    def super_ellipse(self, r0: tuple[float, float], radius: float, n: tuple[int, int] = (2, 2),
-                      angle: float = 0*degrees):
+    @check_none("X", raise_exception=bool_raise_exception)
+    def super_ellipse(
+        self,
+        r0: tuple[float, float],
+        radius: float,
+        n: tuple[int, int] = (2, 2),
+        angle: float = 0 * degrees,
+    ):
         """Super_ellipse. Abs((Xrot - x0) / radiusx)^n1 + Abs()(Yrot - y0) / radiusy)=n2
 
         Args:
@@ -2786,14 +2902,19 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         # Definition of transmittance
         u = np.zeros_like(self.X)
-        ipasa = np.abs((Xrot) / radiusx)**nx + np.abs((Yrot) / radiusy)**ny < 1
+        ipasa = np.abs((Xrot) / radiusx) ** nx + np.abs((Yrot) / radiusy) ** ny < 1
         u[ipasa] = 1
         self.u = u
 
-
-    @check_none('X', raise_exception=bool_raise_exception)
-    def superformula(self, r0: tuple[float, float], radius: float, n: tuple[int, int, int],
-                     m: float, angle: float = 0*degrees):
+    @check_none("X", raise_exception=bool_raise_exception)
+    def superformula(
+        self,
+        r0: tuple[float, float],
+        radius: float,
+        n: tuple[int, int, int],
+        m: float,
+        angle: float = 0 * degrees,
+    ):
         """superformula. Abs((Xrot - x0) / radiusx)^n1 + Abs()(Yrot - y0) / radiusy)=n2
 
         Args:
@@ -2814,7 +2935,7 @@ class Scalar_mask_XY(Scalar_field_XY):
             https://mathworld.wolfram.com/Superellipse.html
 
         Example:
-            superformula(r0=(0*um, 0*um),  radius=(1.5*mm, 1.5*mm), n=(1, 1, 1), m=8, angle=0*degrees)       
+            superformula(r0=(0*um, 0*um),  radius=(1.5*mm, 1.5*mm), n=(1, 1, 1), m=8, angle=0*degrees)
         """
 
         if isinstance(r0, (float, int)):
@@ -2839,15 +2960,14 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         factor = max(radiusx, radiusy)
 
-        term1 = np.abs(np.cos(0.25 * m * Theta) / (radiusx / factor))**n2
-        term2 = np.abs(np.sin(0.25 * m * Theta) / (radiusy / factor))**n3
-        r_theta = (term1 + term2)**(-1 / n1) * factor
+        term1 = np.abs(np.cos(0.25 * m * Theta) / (radiusx / factor)) ** n2
+        term2 = np.abs(np.sin(0.25 * m * Theta) / (radiusy / factor)) ** n3
+        r_theta = (term1 + term2) ** (-1 / n1) * factor
 
-        ipasa = R < r_theta
+        ipasa = r_theta > R
 
         u[ipasa] = 1
         self.u = u
-
 
     def elliptical_phase(self, f1, f2, angle: float):
         """Elliptical phase
@@ -2866,14 +2986,15 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         self.u = np.exp(1j * phase)
 
-
-    def sinusoidal_slit(self,
-                        size: float,
-                        x0: float,
-                        amplitude: float,
-                        phase: float,
-                        period: float,
-                        angle: float = 0*degrees):
+    def sinusoidal_slit(
+        self,
+        size: float,
+        x0: float,
+        amplitude: float,
+        phase: float,
+        period: float,
+        angle: float = 0 * degrees,
+    ):
         """
         This function will create a sinusoidal wave-like slit.
 
@@ -2905,15 +3026,13 @@ class Scalar_mask_XY(Scalar_field_XY):
         Xrot, Yrot = self.__rotate__(angle, (x0, 0))
 
         u = np.zeros_like(self.X)
-        X_sin1 = +size/2 + amplitude1 * np.sin(2 * np.pi * Yrot / period1)
-        X_sin2 = -size/2 + amplitude2 * np.sin(2 * np.pi * Yrot / period2 +
-                                                 phase)
+        X_sin1 = +size / 2 + amplitude1 * np.sin(2 * np.pi * Yrot / period1)
+        X_sin2 = -size / 2 + amplitude2 * np.sin(2 * np.pi * Yrot / period2 + phase)
         ipasa_1 = (X_sin1 > Xrot) & (X_sin2 < Xrot)
         u[ipasa_1] = 1
         self.u = u
 
-
-    def crossed_slits(self, r0: tuple[float, float], slope: float, angle: float = 0*degrees):
+    def crossed_slits(self, r0: tuple[float, float], slope: float, angle: float = 0 * degrees):
         """This function will create a crossed slit mask.
 
         Args:
@@ -2955,8 +3074,7 @@ class Scalar_mask_XY(Scalar_field_XY):
         u[ipasa] = 1
         self.u = u
 
-
-    @check_none('X', 'Y', raise_exception=bool_raise_exception)
+    @check_none("X", "Y", raise_exception=bool_raise_exception)
     def hermite_gauss_binary(self, r0: tuple[float, float], w0: tuple[float], n: int, m: int):
         """Binary phase mask to generate an Hermite Gauss beam.
 
@@ -2979,7 +3097,7 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         self.u = np.exp(1j * phase)
 
-    @check_none('X', 'Y', raise_exception=bool_raise_exception)
+    @check_none("X", "Y", raise_exception=bool_raise_exception)
     def laguerre_gauss_binary(self, r0: tuple[float, float], w0: tuple[float], n: float, l: float):
         """Binary phase mask to generate an Hermite Gauss beam.
 

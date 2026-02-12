@@ -21,20 +21,17 @@ from multiprocessing import Pool
 import numpy as np
 
 
-from .utils_typing import npt, Any, NDArray,  NDArrayFloat, NDArrayComplex
+from .utils_typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
 
 
 def _pickle_method(method):
-    """function for multiprocessing in class
-
-    """
+    """function for multiprocessing in class"""
     func_name = method.im_func.__name__
     obj = method.im_self
     cls = method.im_class
-    if func_name.startswith(
-            '__') and not func_name.endswith('__'):  # deal with mangled names
-        cls_name = cls.__name__.lstrip('_')
-        func_name = '_' + cls_name + func_name
+    if func_name.startswith("__") and not func_name.endswith("__"):  # deal with mangled names
+        cls_name = cls.__name__.lstrip("_")
+        func_name = "_" + cls_name + func_name
     return _unpickle_method, (func_name, obj, cls)
 
 
@@ -57,8 +54,7 @@ copyreg.pickle(types.MethodType, _pickle_method, _unpickle_method)
 
 # Funcion inversa a la anterior
 def separate_from_iterable(iterable, shape=0):
-    """This function does somehow the opposite of the previous one, it takes an iterable made of lists and separates each one in a different variable, reshaped with the desired shape
-    """
+    """This function does somehow the opposite of the previous one, it takes an iterable made of lists and separates each one in a different variable, reshaped with the desired shape"""
     # Averiguar el numero de variables diferentes que habra
     N_var = len(iterable[0])
     # Make iterable array
@@ -74,17 +70,12 @@ def separate_from_iterable(iterable, shape=0):
     return variables
 
 
-class auxiliar_multiprocessing():
-
+class auxiliar_multiprocessing:
     def __init__(self):
         pass
 
     # Method that executes the multiprocessing
-    def execute_multiprocessing(self,
-                                function,
-                                var_iterable,
-                                dict_constants=dict(),
-                                Ncores=8):
+    def execute_multiprocessing(self, function, var_iterable, dict_constants=dict(), Ncores=8):
         """_summary_
 
         Args:
@@ -102,16 +93,16 @@ class auxiliar_multiprocessing():
         # Start multiprocessing if more than one core is required
         if Ncores > 1:
             pool = Pool(Ncores)
-            print('Starting multiprocessing')
+            print("Starting multiprocessing")
             result = pool.map(self.method_single_proc, var_iterable)
-            print('Multiprocessing finished')
+            print("Multiprocessing finished")
             pool.close()
             pool.join()
         # When only one core is asked, don't go to multiprocessing
         else:
             N = len(var_iterable)
             result = range(N)
-            print('Starting process in only 1 core')
+            print("Starting process in only 1 core")
             for ind, elem in enumerate(var_iterable):
                 result[ind] = function(elem, dict_constants)
 
@@ -124,10 +115,9 @@ class auxiliar_multiprocessing():
         return self.external_function(elem_iterable, self.dict_constants)
 
 
-def execute_multiprocessing(__function_process__,
-                            dict_Parameters,
-                            num_processors,
-                            verbose: bool = False):
+def execute_multiprocessing(
+    __function_process__, dict_Parameters, num_processors, verbose: bool = False
+):
     """Executes multiprocessing reading a dictionary.
 
     Args:

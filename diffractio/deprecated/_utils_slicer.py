@@ -1,4 +1,3 @@
-
 """Example of an elaborate dialog showing a multiple views on the same data, with 3 cuts synchronized.
 
 This example shows how to have multiple views on the same data, how to
@@ -27,6 +26,7 @@ on it is strongly simplified by turning off interaction, and choosing
 specific scene interactor styles. Indeed, non-technical users can be
 confused with too rich interaction.
 """
+
 import sys
 
 try:
@@ -39,6 +39,7 @@ except ImportError:
 try:
     from traits.api import Array, HasTraits, Instance, on_trait_change
     from traitsui.api import Group, HGroup, Item, View
+
     is_traits = True
 except ImportError:
     print("traits is not imported.")
@@ -75,36 +76,35 @@ class VolumeSlicer(HasTraits):
     def __init__(self, **traits):
         if is_traits is False:
             return
-        super(VolumeSlicer, self).__init__(**traits)
+        super().__init__(**traits)
         # Force the creation of the image_plane_widgets:
         self.ipw_3d_x
         self.ipw_3d_y
         self.ipw_3d_z
 
     def _data_src3d_default(self):
-        return mlab.pipeline.scalar_field(self.data,
-                                          figure=self.scene3d.mayavi_scene)
+        return mlab.pipeline.scalar_field(self.data, figure=self.scene3d.mayavi_scene)
 
     def make_ipw_3d(self, axis_name):
         ipw = mlab.pipeline.image_plane_widget(
             self.data_src3d,
             figure=self.scene3d.mayavi_scene,
-            plane_orientation='%s_axes' % axis_name)
+            plane_orientation="%s_axes" % axis_name,
+        )
         return ipw
 
     def _ipw_3d_x_default(self):
-        return self.make_ipw_3d('x')
+        return self.make_ipw_3d("x")
 
     def _ipw_3d_y_default(self):
-        return self.make_ipw_3d('y')
+        return self.make_ipw_3d("y")
 
     def _ipw_3d_z_default(self):
-        return self.make_ipw_3d('z')
+        return self.make_ipw_3d("z")
 
-    @on_trait_change('scene3d.activated')
+    @on_trait_change("scene3d.activated")
     def display_scene3d(self):
-        mlab.pipeline.outline(self.data_src3d,
-                              figure=self.scene3d.mayavi_scene)
+        mlab.pipeline.outline(self.data_src3d, figure=self.scene3d.mayavi_scene)
         self.scene3d.mlab.view(40, 50)
         # Interaction properties can only be changed after the scene
         # has been created, and thus the interactor exists
@@ -113,11 +113,10 @@ class VolumeSlicer(HasTraits):
             ipw.ipw.interaction = 0
         self.scene3d.scene.background = (0, 0, 0)
         # Keep the view always pointing up
-        self.scene3d.scene.interactor.interactor_style = tvtk.InteractorStyleTerrain(
-        )
+        self.scene3d.scene.interactor.interactor_style = tvtk.InteractorStyleTerrain()
 
     def make_side_view(self, axis_name):
-        scene = getattr(self, 'scene_%s' % axis_name)
+        scene = getattr(self, "scene_%s" % axis_name)
 
         # To avoid copying the data, we take a reference to the
         # raw VTK dataset, and pass it on to mlab. Mlab will create
@@ -128,15 +127,12 @@ class VolumeSlicer(HasTraits):
             self.data_src3d.mlab_source.dataset,
             figure=scene.mayavi_scene,
         )
-        ipw = mlab.pipeline.image_plane_widget(outline,
-                                               plane_orientation='%s_axes' %
-                                               axis_name)
-        setattr(self, 'ipw_%s' % axis_name, ipw)
+        ipw = mlab.pipeline.image_plane_widget(outline, plane_orientation="%s_axes" % axis_name)
+        setattr(self, "ipw_%s" % axis_name, ipw)
 
         # Synchronize positions between the corresponding image plane
         # widgets on different views.
-        ipw.ipw.sync_trait('slice_position',
-                           getattr(self, 'ipw_3d_%s' % axis_name).ipw)
+        ipw.ipw.sync_trait("slice_position", getattr(self, "ipw_3d_%s" % axis_name).ipw)
 
         # Make left-clicking create a crosshair
         ipw.ipw.left_button_action = 0
@@ -148,15 +144,14 @@ class VolumeSlicer(HasTraits):
             for other_axis, axis_number in self._axis_names.items():
                 if other_axis == axis_name:
                     continue
-                ipw3d = getattr(self, 'ipw_3d_%s' % other_axis)
+                ipw3d = getattr(self, "ipw_3d_%s" % other_axis)
                 ipw3d.ipw.slice_position = position[axis_number]
 
-        ipw.ipw.add_observer('InteractionEvent', move_view)
-        ipw.ipw.add_observer('StartInteractionEvent', move_view)
+        ipw.ipw.add_observer("InteractionEvent", move_view)
+        ipw.ipw.add_observer("StartInteractionEvent", move_view)
 
         # Center the image plane widget
-        ipw.ipw.slice_position = 0.5 * self.data.shape[
-            self._axis_names[axis_name]]
+        ipw.ipw.slice_position = 0.5 * self.data.shape[self._axis_names[axis_name]]
 
         # Position the view for the scene
         views = dict(
@@ -169,17 +164,17 @@ class VolumeSlicer(HasTraits):
         scene.scene.interactor.interactor_style = tvtk.InteractorStyleImage()
         scene.scene.background = (0, 0, 0)
 
-    @on_trait_change('scene_x.activated')
+    @on_trait_change("scene_x.activated")
     def display_scene_x(self):
-        return self.make_side_view('x')
+        return self.make_side_view("x")
 
-    @on_trait_change('scene_y.activated')
+    @on_trait_change("scene_y.activated")
     def display_scene_y(self):
-        return self.make_side_view('y')
+        return self.make_side_view("y")
 
-    @on_trait_change('scene_z.activated')
+    @on_trait_change("scene_z.activated")
     def display_scene_z(self):
-        return self.make_side_view('z')
+        return self.make_side_view("z")
 
     # ---------------------------------------------------------------------------
     # The layout of the dialog created
@@ -187,44 +182,30 @@ class VolumeSlicer(HasTraits):
     view = View(
         HGroup(
             Group(
-                Item('scene_y',
-                     editor=SceneEditor(scene_class=Scene),
-                     height=250,
-                     width=300),
-                Item('scene_z',
-                     editor=SceneEditor(scene_class=Scene),
-                     height=250,
-                     width=300),
+                Item("scene_y", editor=SceneEditor(scene_class=Scene), height=250, width=300),
+                Item("scene_z", editor=SceneEditor(scene_class=Scene), height=250, width=300),
                 show_labels=False,
             ),
             Group(
-                Item('scene_x',
-                     editor=SceneEditor(scene_class=Scene),
-                     height=250,
-                     width=300),
-                Item('scene3d',
-                     editor=SceneEditor(scene_class=MayaviScene),
-                     height=250,
-                     width=300),
+                Item("scene_x", editor=SceneEditor(scene_class=Scene), height=250, width=300),
+                Item("scene3d", editor=SceneEditor(scene_class=MayaviScene), height=250, width=300),
                 show_labels=False,
             ),
         ),
         resizable=True,
-        title='Diffractio',
+        title="Diffractio",
     )
 
 
 def slicerLM(fxyz):
-    modules_name = 'tvtk', 'traits', 'mayavi'
+    modules_name = "tvtk", "traits", "mayavi"
     is_all_charged = True
     for module_name in modules_name:
         if module_name not in sys.modules:
-            print('Module {} has not been imported'.format(module_name))
+            print(f"Module {module_name} has not been imported")
             is_all_charged = False
     if is_all_charged is True:
         m = VolumeSlicer(data=fxyz)
         m.configure_traits()
     else:
-        print(
-            "slicerLM cannot be used since tvtk, traits or mayavi modules are not imported"
-        )
+        print("slicerLM cannot be used since tvtk, traits or mayavi modules are not imported")

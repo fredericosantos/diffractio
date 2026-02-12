@@ -12,14 +12,13 @@
 # ----------------------------------------------------------------------
 
 
-""" Functions for drawing """
+"""Functions for drawing"""
 
 # flake8: noqa
 
-
 import os
 
-from .utils_typing import npt, Any, NDArray,  NDArrayFloat, NDArrayComplex
+from .utils_typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
 
 import matplotlib.animation as manimation
 import matplotlib.image as mpimg
@@ -60,7 +59,7 @@ def concatenate_drawings(
 
     files_text = ""
     for file in sorted(files_list):
-        if file[-3:] == kind1 and file[0: len(raiz)] == raiz:
+        if file[-3:] == kind1 and file[0 : len(raiz)] == raiz:
             print(file)
             files_text = files_text + " " + directory + file
 
@@ -163,13 +162,14 @@ def draw2D(
 
 
 def draw_several_fields(
-        fields: list,
-        titles: tuple[str] = "",
-        title: str = "",
-        figsize: tuple[float, float] | None = None,
-        kinds: tuple[str] = "",
-        logarithm: tuple[float] | float = False,
-        normalize: bool = False):
+    fields: list,
+    titles: tuple[str] = "",
+    title: str = "",
+    figsize: tuple[float, float] | None = None,
+    kinds: tuple[str] = "",
+    logarithm: tuple[float] | float = False,
+    normalize: bool = False,
+):
     """Draws several fields in subplots
 
     Args:
@@ -215,7 +215,7 @@ def draw_several_fields(
             image = intensity
             colormap = CONF_DRAWING["color_intensity"]
         elif kind == "phase":
-            phase = phase/degrees
+            phase = phase / degrees
             phase[intensity < percentage_intensity * (intensity.max())] = 0
             colormap = CONF_DRAWING["color_phase"]
             image = phase
@@ -258,10 +258,8 @@ def draw_several_fields(
 
 
 def change_image_size(
-        image_name: str,
-        length: str = "800x600",
-        final_filename: str = "prueba.png",
-        dpi: int = 100):
+    image_name: str, length: str = "800x600", final_filename: str = "prueba.png", dpi: int = 100
+):
     """change the size with imageMagick
 
     Args:
@@ -290,8 +288,9 @@ def change_image_size(
     os.system(texto)
 
 
-def extract_image_from_video(nombre_video: str | None = None, num_frame: str = "[0, ]",
-                             final_filename: str = "prueba.png"):
+def extract_image_from_video(
+    nombre_video: str | None = None, num_frame: str = "[0, ]", final_filename: str = "prueba.png"
+):
     """Extract images form a video using imageMagick.
 
     convert 'animacion.avi[15,]' animacion_frame.png. Extracts frame 15 (ony 15)
@@ -304,7 +303,9 @@ def extract_image_from_video(nombre_video: str | None = None, num_frame: str = "
     os.system(texto)
 
 
-def normalize_draw(u, logarithm: float | bool = False, normalize: bool = False, cut_value: float | None = None):
+def normalize_draw(
+    u, logarithm: float | bool = False, normalize: bool = False, cut_value: float | None = None
+):
     """
     Gets a field and changes its caracteristics for drawing
 
@@ -335,8 +336,9 @@ def normalize_draw(u, logarithm: float | bool = False, normalize: bool = False, 
     return u
 
 
-def prepare_drawing(u, kind: str = "intensity", logarithm: float | bool = False,
-                    normalize: bool = False):
+def prepare_drawing(
+    u, kind: str = "intensity", logarithm: float | bool = False, normalize: bool = False
+):
     """It is necessary that figure is previously defined: plt.figure()
 
     Args:
@@ -396,8 +398,8 @@ def make_video_from_file(self, files: list, filename: str = ""):
     if not (filename) == "":
         print("Making movie animation.mpg - this make take a while")
         texto = (
-            "mencoder 'mf://_tmp*.png' -mf kind=png:fps=10 -ovc lavc -lavcopts vcodec=wmv2 -oac copy -o " +
-            filename
+            "mencoder 'mf://_tmp*.png' -mf kind=png:fps=10 -ovc lavc -lavcopts vcodec=wmv2 -oac copy -o "
+            + filename
         )
         # texto = "mencoder 'mf://home/_tmp*.png' -mf kind=png:fps=10 -ovc lavc -lavcopts vcodec=wmv2 -oac copy -o " + filename
         os.system(texto)
@@ -410,9 +412,13 @@ def make_video_from_file(self, files: list, filename: str = ""):
     print("exit", files)
 
 
-def reduce_matrix_size(reduce_matrix: str | tuple[int], x: NDArrayFloat,
-                       y: NDArrayFloat, image: NDArrayFloat,
-                       verbose: bool = False):
+def reduce_matrix_size(
+    reduce_matrix: str | tuple[int],
+    x: NDArrayFloat,
+    y: NDArrayFloat,
+    image: NDArrayFloat,
+    verbose: bool = False,
+):
     """Reduces the size of matrix for drawing purposes. If the matrix is very big, the drawing process is slow.
 
     Args:
@@ -442,17 +448,13 @@ def reduce_matrix_size(reduce_matrix: str | tuple[int], x: NDArrayFloat,
         image = image[:: reduce_matrix[0], :: reduce_matrix[1]]
 
     if verbose:
-        print(
-            (
-                "reduce_matrix_size: size ini = {}, size_final = {}".format(
-                    image_ini, image.shape
-                )
-            )
-        )
+        print(("reduce_matrix_size: size ini = {}, size_final = {}".format(image_ini, image.shape)))
     return image
 
 
-def draw_edges(vector_field, plt, draw_borders: bool=True, color: str='w.', ms: float=0.1) -> None:
+def draw_edges(
+    vector_field, plt, draw_borders: bool = True, color: str = "w.", ms: float = 0.1
+) -> None:
     """
     draw_edges _summary_
 
@@ -467,7 +469,7 @@ def draw_edges(vector_field, plt, draw_borders: bool=True, color: str='w.', ms: 
         ms (float, optional): _description_. Defaults to 0.05.
     """
     min_incr: float = 0.0005
-    
+
     if draw_borders is True:
         vector_field.borders = np.array(vector_field.borders)
         vector_field.surface_detection(1, min_incr)

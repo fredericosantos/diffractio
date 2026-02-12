@@ -11,7 +11,7 @@
 # Licence:     GPLv3
 # ----------------------------------------------------------------------
 
-""" Common functions to classes """
+"""Common functions to classes"""
 # flake8: noqa
 
 import datetime
@@ -23,12 +23,17 @@ import psutil
 from scipy.io import loadmat, savemat
 from scipy.ndimage import center_of_mass
 
-from .config import (bool_raise_exception, Options_add, Options_sub, Options_rmul,
-                     get_scalar_options, get_vector_options)
+from .config import (
+    bool_raise_exception,
+    Options_add,
+    Options_sub,
+    Options_rmul,
+    get_scalar_options,
+    get_vector_options,
+)
 
 
-
-def check_none(*variables, raise_exception = bool_raise_exception):
+def check_none(*variables, raise_exception=bool_raise_exception):
     def decorator(func):
         def wrapper(self, *args, **kwargs):
             for variable in variables:
@@ -39,16 +44,18 @@ def check_none(*variables, raise_exception = bool_raise_exception):
                         print(f"{variable} is None")
                     return  # Return immediately, do not execute the method
             return func(self, *args, **kwargs)
+
         return wrapper
+
     return decorator
 
 
-@check_none('Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
-def get_vector(cls, kind: get_vector_options, mode='modulus', **kwargs):
+@check_none("Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
+def get_vector(cls, kind: get_vector_options, mode="modulus", **kwargs):
     """Takes the vector field and divide in Scalar_field_X.
 
     Args:
-        kind (str): 'fields', 'intensity', 'intensities', 'phases', 'poynting_vector', 'poynting_vector_averaged', 
+        kind (str): 'fields', 'intensity', 'intensities', 'phases', 'poynting_vector', 'poynting_vector_averaged',
         'poynting_total', 'energy_density', 'irradiance', 'stokes', 'params_ellipse', 'directions'
 
     Returns:
@@ -57,11 +64,11 @@ def get_vector(cls, kind: get_vector_options, mode='modulus', **kwargs):
 
     if kind == "E":
         return cls.Ex, cls.Ey, cls.Ez
-    
+
     if kind == "H":
         return cls.Hx, cls.Hy, cls.Hz
 
-    if kind == "EH" or kind == 'fields':
+    if kind == "EH" or kind == "fields":
         return (cls.Ex, cls.Ey, cls.Ez), (cls.Hx, cls.Hy, cls.Hz)
 
     elif kind == "intensity":
@@ -80,56 +87,60 @@ def get_vector(cls, kind: get_vector_options, mode='modulus', **kwargs):
         phase_z = np.angle(cls.Ez)
         return phase_x, phase_y, phase_z
 
-    elif kind == 'poynting_vector':
+    elif kind == "poynting_vector":
         Sx = np.real(cls.Ey * cls.Hz - cls.Ez * cls.Hy)
         Sy = np.real(cls.Ez * cls.Hx - cls.Ex * cls.Hz)
         Sz = np.real(cls.Ex * cls.Hy - cls.Ey * cls.Hx)
         return Sx, Sy, Sz
 
-    elif kind == 'poynting_vector_averaged':
+    elif kind == "poynting_vector_averaged":
         Sx = np.real(cls.Ey * cls.Hz.conjugate() - cls.Ez * cls.Hy.conjugate()).squeeze()
         Sy = np.real(cls.Ez * cls.Hx.conjugate() - cls.Ex * cls.Hz.conjugate()).squeeze()
         Sz = np.real(cls.Ex * cls.Hy.conjugate() - cls.Ey * cls.Hx.conjugate()).squeeze()
         return Sx, Sy, Sz
 
-    elif kind == 'poynting_total':
-        Sx, Sy, Sz = cls.get('poynting_vector_averaged')
+    elif kind == "poynting_total":
+        Sx, Sy, Sz = cls.get("poynting_vector_averaged")
 
-        S_total = np.sqrt(np.abs(Sx)**2 + np.abs(Sy)**2 + np.abs(Sz)**2)
+        S_total = np.sqrt(np.abs(Sx) ** 2 + np.abs(Sy) ** 2 + np.abs(Sz) ** 2)
         return S_total
 
-    elif kind == 'energy_density':
-        permeability = 4*np.pi*1e-7
+    elif kind == "energy_density":
+        permeability = 4 * np.pi * 1e-7
         epsilon = cls.n**2 * permeability
-        U = epsilon * np.real(np.abs(cls.Ex)**2 + np.abs(cls.Ey)**2 + np.abs(cls.Ez)**2) + permeability * (np.abs(cls.Hx)**2 + np.abs(cls.Hy)**2 + np.abs(cls.Hz)**2)
+        U = epsilon * np.real(
+            np.abs(cls.Ex) ** 2 + np.abs(cls.Ey) ** 2 + np.abs(cls.Ez) ** 2
+        ) + permeability * (np.abs(cls.Hx) ** 2 + np.abs(cls.Hy) ** 2 + np.abs(cls.Hz) ** 2)
         return U
-    
-    elif kind == 'energy_density2':
-        permeability = 4*np.pi*1e-7
-        c_light = 299792458*1e6
-        epsilon = cls.n**2 / (permeability*c_light**2)
-        U = epsilon * np.real(np.abs(cls.Ex)**2 + np.abs(cls.Ey)**2 + np.abs(cls.Ez)**2) + permeability * (np.abs(cls.Hx)**2 + np.abs(cls.Hy)**2 + np.abs(cls.Hz)**2)
-        return 0.5*U*1e8
 
-    elif kind == 'irradiance':
-        permeability = 4*np.pi*1e-7
+    elif kind == "energy_density2":
+        permeability = 4 * np.pi * 1e-7
+        c_light = 299792458 * 1e6
+        epsilon = cls.n**2 / (permeability * c_light**2)
+        U = epsilon * np.real(
+            np.abs(cls.Ex) ** 2 + np.abs(cls.Ey) ** 2 + np.abs(cls.Ez) ** 2
+        ) + permeability * (np.abs(cls.Hx) ** 2 + np.abs(cls.Hy) ** 2 + np.abs(cls.Hz) ** 2)
+        return 0.5 * U * 1e8
+
+    elif kind == "irradiance":
+        permeability = 4 * np.pi * 1e-7
         epsilon = cls.n**2 * permeability
 
-        Sx, Sy, Sz = cls.get('poynting_vector_averaged')
-        
-        if mode == 'modulus':
+        Sx, Sy, Sz = cls.get("poynting_vector_averaged")
+
+        if mode == "modulus":
             irradiance = np.sqrt(Sx**2 + Sy**2 + Sz**2)
-            
-        elif mode == 'Sz':
+
+        elif mode == "Sz":
             irradiance = Sz
-            
+
         elif isinstance(mode, (list, tuple, np.ndarray)):
             mode = np.array(mode)
-            mode = mode/np.linalg.norm(mode)
+            mode = mode / np.linalg.norm(mode)
             irradiance = mode[0] * Sx + mode[1] * Sy + mode[2] * Sz
         return irradiance
 
-    elif kind == 'stokes':
+    elif kind == "stokes":
         # S0, S1, S2, S3
         S0 = np.abs(cls.Ex) ** 2 + np.abs(cls.Ey) ** 2
         S1 = np.abs(cls.Ex) ** 2 - np.abs(cls.Ey) ** 2
@@ -139,7 +150,7 @@ def get_vector(cls, kind: get_vector_options, mode='modulus', **kwargs):
 
     elif kind == "params_ellipse":
         # A, B, theta, h
-        S0, S1, S2, S3 = cls.get('stokes')
+        S0, S1, S2, S3 = cls.get("stokes")
         Ip = np.sqrt(S1**2 + S2**2 + S3**2)
         L = S1 + 1.0j * S2
 
@@ -148,15 +159,18 @@ def get_vector(cls, kind: get_vector_options, mode='modulus', **kwargs):
         theta = 0.5 * np.angle(L)
         h = np.sign(S3)
         return A, B, theta, h
-    
-    elif kind == 'directions':
-        Sx, Sy, Sz = cls.get('poynting_vector_averaged')
+
+    elif kind == "directions":
+        Sx, Sy, Sz = cls.get("poynting_vector_averaged")
         direction = np.arctan2(Sx, Sz)
         return direction
-    
-    else:
-        print("The parameter '{}'' in .get(kind='') is wrong. Use one of this: {}".format(kind, get_vector_options))
 
+    else:
+        print(
+            "The parameter '{}'' in .get(kind='') is wrong. Use one of this: {}".format(
+                kind, get_vector_options
+            )
+        )
 
 
 def get_scalar(cls, kind: get_scalar_options):
@@ -183,77 +197,69 @@ def get_scalar(cls, kind: get_scalar_options):
         return intensity, phase
 
 
-def oversampling(cls, factor_rate: int | tuple):# -> Any:
+def oversampling(cls, factor_rate: int | tuple):  # -> Any:
     """Function to oversampling the field
 
     Args:
         factor_rate (int | tuple, optional): factor rate. Defaults to 2.
     """
 
+    if cls.type in ("Scalar_mask_X", "Scalar_field_X", "Scalar_source_X"):
+        cls.x = np.linspace(cls.x[0], cls.x[-1], factor_rate * len(cls.x))
+        cls.u = cls.u.repeat(factor_rate[0], axis=0)
 
-    if cls.type in ('Scalar_mask_X', 'Scalar_field_X', 'Scalar_source_X') :
+    if cls.type in ("Scalar_field_Z"):
+        cls.z = np.linspace(cls.z[0], cls.z[-1], factor_rate * len(cls.x))
+        cls.u = cls.u.repeat(factor_rate[0], axis=0)
 
-        cls.x = np.linspace(cls.x[0], cls.x[-1], factor_rate*len(cls.x))
-        cls.u =  cls.u.repeat(factor_rate[0],axis=0)
-
-
-    if cls.type in ('Scalar_field_Z') :
-
-        cls.z = np.linspace(cls.z[0], cls.z[-1], factor_rate*len(cls.x))
-        cls.u =  cls.u.repeat(factor_rate[0],axis=0)
-
-
-    elif cls.type in ('Scalar_mask_XY', 'Scalar_field_XY', 'Scalar_source_XY') :
-        
-        if isinstance(factor_rate, int):
-            factor_rate = (factor_rate, factor_rate)    
-
-        cls.x = np.linspace(cls.x[0], cls.x[-1], factor_rate[0]*len(cls.x))
-        cls.y = np.linspace(cls.y[0], cls.y[-1], factor_rate[1]*len(cls.y))
-        cls.X, cls.Y = np.meshgrid(cls.x, cls.y)
-
-        new_matrix =  cls.u.repeat(factor_rate[0],axis=0)
-        cls.u =  new_matrix.repeat(factor_rate[1],axis=1)
-
-    elif cls.type in ('Scalar_mask_XYZ', 'Scalar_field_XYZ') :
-
-        if isinstance(factor_rate, int):
-            factor_rate = (factor_rate, factor_rate, factor_rate)
-
-        cls.x = np.linspace(cls.x[0], cls.x[-1], factor_rate[0]*len(cls.x))
-        cls.y = np.linspace(cls.y[0], cls.y[-1], factor_rate[1]*len(cls.y))
-        cls.z = np.linspace(cls.z[0], cls.z[-1], factor_rate[2]*len(cls.z))
-        cls.X, cls.Y, cls.Z = np.meshgrid(cls.x, cls.y, cls.z)
-
-        new_matrix =  cls.u.repeat(factor_rate[0],axis=0)
-        new_matrix =  new_matrix(factor_rate[1],axis=1)
-        cls.u =  new_matrix.repeat(factor_rate[2],axis=2)
-
-        new_matrix =  cls.n.repeat(factor_rate[0],axis=0)
-        new_matrix =  new_matrix(factor_rate[1],axis=1)
-        cls.n =  new_matrix.repeat(factor_rate[2],axis=2)
-
-    elif cls.type in ('Scalar_mask_XZ', 'Scalar_field_XZ') :
-        
+    elif cls.type in ("Scalar_mask_XY", "Scalar_field_XY", "Scalar_source_XY"):
         if isinstance(factor_rate, int):
             factor_rate = (factor_rate, factor_rate)
 
-        cls.x = np.linspace(cls.x[0], cls.x[-1], factor_rate[0]*len(cls.x))
-        cls.z = np.linspace(cls.z[0], cls.z[-1], factor_rate[1]*len(cls.z))
+        cls.x = np.linspace(cls.x[0], cls.x[-1], factor_rate[0] * len(cls.x))
+        cls.y = np.linspace(cls.y[0], cls.y[-1], factor_rate[1] * len(cls.y))
+        cls.X, cls.Y = np.meshgrid(cls.x, cls.y)
+
+        new_matrix = cls.u.repeat(factor_rate[0], axis=0)
+        cls.u = new_matrix.repeat(factor_rate[1], axis=1)
+
+    elif cls.type in ("Scalar_mask_XYZ", "Scalar_field_XYZ"):
+        if isinstance(factor_rate, int):
+            factor_rate = (factor_rate, factor_rate, factor_rate)
+
+        cls.x = np.linspace(cls.x[0], cls.x[-1], factor_rate[0] * len(cls.x))
+        cls.y = np.linspace(cls.y[0], cls.y[-1], factor_rate[1] * len(cls.y))
+        cls.z = np.linspace(cls.z[0], cls.z[-1], factor_rate[2] * len(cls.z))
+        cls.X, cls.Y, cls.Z = np.meshgrid(cls.x, cls.y, cls.z)
+
+        new_matrix = cls.u.repeat(factor_rate[0], axis=0)
+        new_matrix = new_matrix(factor_rate[1], axis=1)
+        cls.u = new_matrix.repeat(factor_rate[2], axis=2)
+
+        new_matrix = cls.n.repeat(factor_rate[0], axis=0)
+        new_matrix = new_matrix(factor_rate[1], axis=1)
+        cls.n = new_matrix.repeat(factor_rate[2], axis=2)
+
+    elif cls.type in ("Scalar_mask_XZ", "Scalar_field_XZ"):
+        if isinstance(factor_rate, int):
+            factor_rate = (factor_rate, factor_rate)
+
+        cls.x = np.linspace(cls.x[0], cls.x[-1], factor_rate[0] * len(cls.x))
+        cls.z = np.linspace(cls.z[0], cls.z[-1], factor_rate[1] * len(cls.z))
         cls.X, cls.Z = np.meshgrid(cls.x, cls.z)
 
-        new_matrix =  cls.u.repeat(factor_rate[0],axis=0)
-        cls.u =  new_matrix.repeat(factor_rate[1],axis=1)
+        new_matrix = cls.u.repeat(factor_rate[0], axis=0)
+        cls.u = new_matrix.repeat(factor_rate[1], axis=1)
 
-        new_matrix =  cls.n.repeat(factor_rate[0],axis=0)
-        cls.n =  new_matrix.repeat(factor_rate[1],axis=1)
+        new_matrix = cls.n.repeat(factor_rate[0], axis=0)
+        cls.n = new_matrix.repeat(factor_rate[1], axis=1)
 
     return cls
 
 
-def add(self, other, kind: Options_add  = 'source'):
+def add(self, other, kind: Options_add = "source"):
     """adds two fields. For example two light sources or two masks. The fields are added as complex numbers and then normalized so that the maximum amplitude is 1.
-    
+
     Args:
         other (Other field): 2nd field to add
         kind (str): instruction how to add the fields: ['source', 'mask', 'refractive_index', 'phases', 'no_overlap', 'distances'].
@@ -266,7 +272,7 @@ def add(self, other, kind: Options_add  = 'source'):
     Returns:
         sum of the two fields.
     """
-    
+
     from diffractio.scalar_sources_X import Scalar_source_X
     from diffractio.scalar_sources_XY import Scalar_source_XY
     from diffractio.scalar_masks_X import Scalar_mask_X
@@ -285,7 +291,7 @@ def add(self, other, kind: Options_add  = 'source'):
     elif isinstance(self, Scalar_mask_X):
         t = Scalar_mask_X(self.x, self.wavelength)
     elif isinstance(self, Scalar_source_X):
-        t = Scalar_source_X(self.x,  self.wavelength)
+        t = Scalar_source_X(self.x, self.wavelength)
     elif isinstance(self, Scalar_mask_XZ):
         t = Scalar_mask_XZ(self.x, self.z, self.wavelength)
     elif isinstance(self, Scalar_field_XZ):
@@ -299,40 +305,41 @@ def add(self, other, kind: Options_add  = 'source'):
     elif isinstance(self, Scalar_field_XY):
         t = Scalar_field_XY(self.x, self.y, self.wavelength)
 
-    if kind == 'source':
+    if kind == "source":
         if isinstance(other, tuple):
             t.u = self.u
             for o in other:
                 t.u += o.u
-        else:        
+        else:
             t.u = self.u + other.u
-    
-    elif kind == 'mask':
+
+    elif kind == "mask":
         t1 = np.abs(self.u)
         f1 = np.angle(self.u)
         if isinstance(other, tuple):
-
             t.u = self.u
             for o in other:
                 t2 = np.abs(o.u)
                 f2 = np.angle(o.u)
                 t.u += o.u
-                i_change = t1+t2>1
-                t.u[i_change]=(np.exp(1j*f1[i_change])+np.exp(1j*f2[i_change])).astype(np.complex128)
-                t.u[i_change]= t.u[i_change]/np.abs( t.u[i_change])
+                i_change = t1 + t2 > 1
+                t.u[i_change] = (np.exp(1j * f1[i_change]) + np.exp(1j * f2[i_change])).astype(
+                    np.complex128
+                )
+                t.u[i_change] = t.u[i_change] / np.abs(t.u[i_change])
         else:
             t2 = np.abs(other.u)
             f2 = np.angle(other.u)
 
             t.u = self.u + other.u
-            i_change = t1+t2>1
-            t.u[i_change]=np.exp(1j*f1[i_change])+np.exp(1j*f2[i_change])
-            t.u[i_change]= t.u[i_change]/np.abs(t.u[i_change])
-    
-    elif kind == 'phases':
+            i_change = t1 + t2 > 1
+            t.u[i_change] = np.exp(1j * f1[i_change]) + np.exp(1j * f2[i_change])
+            t.u[i_change] = t.u[i_change] / np.abs(t.u[i_change])
+
+    elif kind == "phases":
         t1 = np.abs(self.u)
         f1 = np.angle(self.u)
-        
+
         if isinstance(other, tuple):
             t.u = self.u
             for o in other:
@@ -343,45 +350,42 @@ def add(self, other, kind: Options_add  = 'source'):
         else:
             t2 = np.abs(other.u)
             f2 = np.angle(other.u)
-        
+
             ts = t1 + t2
-            ts[ts > 0] = 1.
+            ts[ts > 0] = 1.0
             t.u = ts * np.exp(1j * (f1 + f2))
 
-    elif kind == 'no_overlap':
-        
+    elif kind == "no_overlap":
         if isinstance(other, tuple):
             t.u = self.u
             for i, o in enumerate(other):
-                i_pos1 = np.abs(t.u)>0
-                i_pos2 = np.abs(o.u)>0
-                print((i_pos1*i_pos2).sum())
+                i_pos1 = np.abs(t.u) > 0
+                i_pos2 = np.abs(o.u) > 0
+                print((i_pos1 * i_pos2).sum())
                 if (i_pos1 & i_pos2).any():
-                    raise ValueError('The field {i} overlap with a previous one')
+                    raise ValueError("The field {i} overlap with a previous one")
                 t.u += o.u
         else:
             t1 = np.abs(self.u)
             t2 = np.abs(other.u)
-            i_pos1 = t1>0
-            i_pos2 = t2>0
+            i_pos1 = t1 > 0
+            i_pos2 = t2 > 0
             if (i_pos1 & i_pos2).any():
-                raise ValueError('The two fields overlap')
-    
+                raise ValueError("The two fields overlap")
 
-    elif kind == 'refractive_index':
+    elif kind == "refractive_index":
         if isinstance(other, tuple):
             t.n = self.n
             for o in other:
                 t.n += o.n - o.n_background
-        else:        
+        else:
             t.n = self.n + other.n - other.n_background
-        
-        
-    elif kind == 'distances':
-        #todo: with simultaneous control of distances, not with for loop.
+
+    elif kind == "distances":
+        # todo: with simultaneous control of distances, not with for loop.
         if isinstance(other, tuple):
             pass
-            
+
             """t.u = self.u
 
             for o in other:
@@ -405,35 +409,35 @@ def add(self, other, kind: Options_add  = 'source'):
 
                 t.u[i_menor*overlap] = t.u[i_menor*overlap]
                 t.u[i_mayor*overlap] = o.u[i_mayor*overlap]"""
-        else:  #only for 1D    
+        else:  # only for 1D
             print("not valid for 2D")
             t.u = self.u + other.u
-            com3 = center_of_mass(np.abs(self.u)>0)
-            com4 = center_of_mass(np.abs(other.u)>0)
-            
-            self_max =  np.abs(self.u)>0
-            other_max =  np.abs(other.u)>0
+            com3 = center_of_mass(np.abs(self.u) > 0)
+            com4 = center_of_mass(np.abs(other.u) > 0)
+
+            self_max = np.abs(self.u) > 0
+            other_max = np.abs(other.u) > 0
             overlap = self_max * other_max
-            
+
             x3_center = self.x[int(com3[0])]
             x4_center = other.x[int(com4[0])]
-            
-            dist_self = np.abs(self.x-x3_center) * (np.abs(self.u)>0)
-            dist_other = np.abs(other.x-x4_center) * (np.abs(other.u)>0)
 
-            t.u = self.u+other.u
-            i_menor = dist_self<dist_other
-            i_mayor = dist_self>=dist_other
+            dist_self = np.abs(self.x - x3_center) * (np.abs(self.u) > 0)
+            dist_other = np.abs(other.x - x4_center) * (np.abs(other.u) > 0)
 
-            t.u[i_menor*overlap] = self.u[i_menor*overlap]
-            t.u[i_mayor*overlap] = other.u[i_mayor*overlap]
-        
+            t.u = self.u + other.u
+            i_menor = dist_self < dist_other
+            i_mayor = dist_self >= dist_other
+
+            t.u[i_menor * overlap] = self.u[i_menor * overlap]
+            t.u[i_mayor * overlap] = other.u[i_mayor * overlap]
+
     return t
 
 
-def sub(self, other, kind: Options_sub  = 'source'):
+def sub(self, other, kind: Options_sub = "source"):
     """substracts two fields. For example two light sources or two masks. The fields are added as complex numbers and then normalized so that the maximum amplitude is 1.
-    
+
     Args:
         other (Other field): 2nd field to add
         kind (str): instruction how to add the fields: ['source', 'mask', 'phases', 'no_overlap', 'refractive_index'].
@@ -445,7 +449,7 @@ def sub(self, other, kind: Options_sub  = 'source'):
     Returns:
         Substraction of the two fields.
     """
-    
+
     from diffractio.scalar_sources_X import Scalar_source_X
     from diffractio.scalar_sources_XY import Scalar_source_XY
     from diffractio.scalar_masks_X import Scalar_mask_X
@@ -455,7 +459,6 @@ def sub(self, other, kind: Options_sub  = 'source'):
     from diffractio.scalar_fields_Z import Scalar_field_Z
     from diffractio.scalar_fields_XYZ import Scalar_field_XYZ
     from diffractio.scalar_masks_XYZ import Scalar_mask_XYZ
-    
 
     if isinstance(self, Scalar_mask_XY):
         t = Scalar_mask_XY(self.x, self.y, self.wavelength)
@@ -464,7 +467,7 @@ def sub(self, other, kind: Options_sub  = 'source'):
     elif isinstance(self, Scalar_mask_X):
         t = Scalar_mask_X(self.x, self.wavelength)
     elif isinstance(self, Scalar_source_X):
-        t = Scalar_source_X(self.x,  self.wavelength)
+        t = Scalar_source_X(self.x, self.wavelength)
     elif isinstance(self, Scalar_field_XZ):
         t = Scalar_field_XZ(self.x, self.z, self.wavelength)
     elif isinstance(self, Scalar_field_Z):
@@ -476,17 +479,17 @@ def sub(self, other, kind: Options_sub  = 'source'):
     elif isinstance(self, Scalar_field_XYZ):
         t = Scalar_field_XYZ(self.x, self.y, self.z, self.wavelength)
     elif isinstance(self, Scalar_mask_XYZ):
-        t = Scalar_mask_XYZ(self.x, self.y, self.z, self.wavelength)  
+        t = Scalar_mask_XYZ(self.x, self.y, self.z, self.wavelength)
 
-    if kind == 'source':
+    if kind == "source":
         if isinstance(other, tuple):
             t.u = self.u
             for o in other:
                 t.u -= o.u
-        else:        
+        else:
             t.u = self.u - other.u
-    
-    elif kind == 'mask':
+
+    elif kind == "mask":
         t1 = np.abs(self.u)
         f1 = np.angle(self.u)
         if isinstance(other, tuple):
@@ -495,22 +498,24 @@ def sub(self, other, kind: Options_sub  = 'source'):
                 t2 = np.abs(o.u)
                 f2 = np.angle(o.u)
                 t.u = t.u - o.u
-                i_change = t1-t2<0
-                t.u[i_change]=(np.exp(1j*f1[i_change])-np.exp(1j*f2[i_change])).astype(np.complex128)
-                t.u[i_change]= t.u[i_change]/np.abs( t.u[i_change])
+                i_change = t1 - t2 < 0
+                t.u[i_change] = (np.exp(1j * f1[i_change]) - np.exp(1j * f2[i_change])).astype(
+                    np.complex128
+                )
+                t.u[i_change] = t.u[i_change] / np.abs(t.u[i_change])
         else:
             t2 = np.abs(other.n)
             f2 = np.angle(other.n)
 
             t.n = self.n - other.n
-            i_change = t1-t2<0
-            t.n[i_change]=np.exp(1j*f1[i_change])-np.exp(1j*f2[i_change])
-            t.n[i_change]= t.n[i_change]/np.abs(t.n[i_change])
-    
-    elif kind == 'phases':
+            i_change = t1 - t2 < 0
+            t.n[i_change] = np.exp(1j * f1[i_change]) - np.exp(1j * f2[i_change])
+            t.n[i_change] = t.n[i_change] / np.abs(t.n[i_change])
+
+    elif kind == "phases":
         t1 = np.abs(self.u)
         f1 = np.angle(self.u)
-        
+
         if isinstance(other, tuple):
             t.u = self.u
             for o in other:
@@ -521,52 +526,50 @@ def sub(self, other, kind: Options_sub  = 'source'):
         else:
             t2 = np.abs(other.u)
             f2 = np.angle(other.u)
-        
+
             ts = t1 - t2
-            ts[ts < 0] = 0.
+            ts[ts < 0] = 0.0
             t.u = ts * np.exp(1j * (f1 - f2))
 
-    elif kind == 'no_overlap':
-        
+    elif kind == "no_overlap":
         if isinstance(other, tuple):
             t.u = self.u
             for i, o in enumerate(other):
-                i_pos1 = np.abs(t.u)>0
-                i_pos2 = np.abs(o.u)>0
+                i_pos1 = np.abs(t.u) > 0
+                i_pos2 = np.abs(o.u) > 0
                 if (i_pos1 & i_pos2).any():
-                    raise ValueError('The field {i} overlap with a previous one')
+                    raise ValueError("The field {i} overlap with a previous one")
                 t.u -= o.u
         else:
             t1 = np.abs(self.u)
             t2 = np.abs(other.u)
-            i_pos1 = t1>0
-            i_pos2 = t2>0
+            i_pos1 = t1 > 0
+            i_pos2 = t2 > 0
             if (i_pos1 & i_pos2).any():
-                raise ValueError('The two fields overlap')
+                raise ValueError("The two fields overlap")
 
-    elif kind == 'refractive_index':
+    elif kind == "refractive_index":
         if isinstance(other, tuple):
             t.n = self.n
             for o in other:
-                t.n -= (o.n - o.n_background)
-        else:        
+                t.n -= o.n - o.n_background
+        else:
             t.n = self.n - (other.n - other.n_background)
-            
+
     return t
 
 
-
-def rmul(cls, number: float | complex | int, kind: Options_rmul  = 'intensity'):
+def rmul(cls, number: float | complex | int, kind: Options_rmul = "intensity"):
     """Multiply a field by a number.  For example  :math: `u_1(x)= m * u_0(x)`.
 
-    This function is general for all the SCALAR modules of the package. After, this function is called by the rmul method of each class. 
+    This function is general for all the SCALAR modules of the package. After, this function is called by the rmul method of each class.
     When module is for sources, any value for the number is valid. When module is for masks, the modulus is <=1.
 
     The kind parameter is used to specify how to multiply the field. The options are:
     - 'intensity': Multiply the intensity of the field by the number.
     - 'amplitude': Multiply the amplitude of the field by the number.
     - 'phase': Multiply the phase of the field by the number.
-    
+
     Args:
         number (float | complex | int): number to multiply the field.
         kind (str): instruction how to add the fields: ['intensity', 'amplitude', 'phase'].
@@ -577,7 +580,7 @@ def rmul(cls, number: float | complex | int, kind: Options_rmul  = 'intensity'):
     Returns:
         The field multiplied by the number.
     """
-    
+
     from diffractio.scalar_sources_X import Scalar_source_X
     from diffractio.scalar_sources_XY import Scalar_source_XY
     from diffractio.scalar_masks_X import Scalar_mask_X
@@ -596,7 +599,7 @@ def rmul(cls, number: float | complex | int, kind: Options_rmul  = 'intensity'):
     elif isinstance(cls, Scalar_mask_X):
         t = Scalar_mask_X(cls.x, cls.wavelength)
     elif isinstance(cls, Scalar_source_X):
-        t = Scalar_source_X(cls.x,  cls.wavelength)
+        t = Scalar_source_X(cls.x, cls.wavelength)
     elif isinstance(cls, Scalar_mask_XZ):
         t = Scalar_mask_XZ(cls.x, cls.z, cls.wavelength)
     elif isinstance(cls, Scalar_field_XZ):
@@ -610,17 +613,17 @@ def rmul(cls, number: float | complex | int, kind: Options_rmul  = 'intensity'):
     elif isinstance(cls, Scalar_field_XY):
         t = Scalar_field_XY(cls.x, cls.y, cls.wavelength)
 
-    if kind == 'intensity':
+    if kind == "intensity":
         t.u = cls.u * np.sqrt(number)
-    
-    elif kind == 'amplitude':
+
+    elif kind == "amplitude":
         t.u = cls.u * number
 
-    elif kind == 'phase':
+    elif kind == "phase":
         ampltiude = np.abs(cls.u)
         phase = np.angle(cls.u)
         t.u = ampltiude * np.exp(1j * number * phase)
-        
+
     return t
 
 
@@ -643,8 +646,7 @@ def computer_parameters(verbose: bool = False) -> tuple[int, float, float, float
 
     freq_max = psutil.cpu_freq()
     info_memory = psutil.virtual_memory()[0] / 1024**3
-    memory_available = psutil.virtual_memory(
-    ).available * 100 / psutil.virtual_memory().total
+    memory_available = psutil.virtual_memory().available * 100 / psutil.virtual_memory().total
 
     num_max_processors = multiprocessing.cpu_count()
 
@@ -665,7 +667,7 @@ def clear_all():
 
 
 def several_propagations(source, masks, distances: tuple[float]):
-    '''performs RS propagation through several masks
+    """performs RS propagation through several masks
 
     Args:
         source (Scalar_source_XY): illumination
@@ -676,7 +678,7 @@ def several_propagations(source, masks, distances: tuple[float]):
     Returns:
         Scalar_field_XY: u0 field at the last plane given by distances
         Scalar_field_XY: u1 field just at the plane of the last mask
-    '''
+    """
 
     u0 = source
 
@@ -698,11 +700,9 @@ def get_date():
     return date
 
 
-def save_data_common(cls,
-                     filename: str,
-                     add_name: str = '',
-                     description: str = '',
-                     verbose: bool = False) -> str:
+def save_data_common(
+    cls, filename: str, add_name: str = "", description: str = "", verbose: bool = False
+) -> str:
     """Common save data function to be used in all the modules.
     The methods included are: npz, matlab
 
@@ -719,22 +719,22 @@ def save_data_common(cls,
     now = datetime.datetime.now()
     date = now.strftime("%Y-%m-%d_%H_%M_%S")
 
-    if add_name == 'date':
+    if add_name == "date":
         add_name = "_" + date
-    extension = filename.split('.')[-1]
-    file = filename.split('.')[0]
-    final_filename = file + add_name + '.' + extension
+    extension = filename.split(".")[-1]
+    file = filename.split(".")[0]
+    final_filename = file + add_name + "." + extension
 
     if verbose:
         print(final_filename)
 
-    cls.__dict__['date'] = date
-    cls.__dict__['description'] = description
+    cls.__dict__["date"] = date
+    cls.__dict__["description"] = description
 
-    if extension == 'npz':
+    if extension == "npz":
         np.savez_compressed(file=final_filename, dict=cls.__dict__)
 
-    elif extension == 'mat':
+    elif extension == "mat":
         savemat(final_filename, cls.__dict__)
 
     return final_filename
@@ -753,16 +753,16 @@ def load_data_common(cls, filename: str, verbose: bool = False):
     def print_data_dict(dict0: dict):
         for k, v in dict0.items():
             print("{:12} = {}".format(k, v))
-        print("\nnumber of data = {}".format(len(dict0['x'])))
+        print("\nnumber of data = {}".format(len(dict0["x"])))
 
-    extension = filename.split('.')[-1]
+    extension = filename.split(".")[-1]
 
     try:
-        if extension in ('npy', 'npz'):
+        if extension in ("npy", "npz"):
             npzfile = np.load(filename, allow_pickle=True)
-            dict0 = npzfile['dict'].tolist()
+            dict0 = npzfile["dict"].tolist()
 
-        elif extension == 'mat':
+        elif extension == "mat":
             dict0 = loadmat(file_name=filename, mdict=cls.__dict__)
 
         else:
@@ -775,12 +775,12 @@ def load_data_common(cls, filename: str, verbose: bool = False):
             if isinstance(dict0, dict):
                 cls.__dict__ = dict0
             else:
-                raise Exception('no dictionary in load_data')
+                raise Exception("no dictionary in load_data")
 
         return dict0
 
     except IOError:
-        print('could not open {}'.format(filename))
+        print("could not open {}".format(filename))
         return None
 
     # with h5py.File('file.h5', 'r', libver='latest') as f:
@@ -801,8 +801,7 @@ def print_axis_info(cls, axis: str):
     length = x1 - x0
     Dx = eval("cls.{}[1]-cls.{}[0]".format(axis, axis))
     axis_info = dict(axis=axis, min=x0, max=x1, length=length, Dx=Dx)
-    print("   axis={axis}: min={min}, max={max}, length={length}, Dx={Dx}".
-          format(**axis_info))
+    print("   axis={axis}: min={min}, max={max}, length={length}, Dx={Dx}".format(**axis_info))
 
 
 def date_in_name(filename: str) -> str:
@@ -824,7 +823,6 @@ def date_in_name(filename: str) -> str:
     return filename_2
 
 
-
 def get_instance_size_MB(cls, verbose: bool = False) -> float:
     size = 0
     for key, value in cls.__dict__.items():
@@ -833,14 +831,14 @@ def get_instance_size_MB(cls, verbose: bool = False) -> float:
             size += value.nbytes
         else:
             size += sys.getsizeof(value)
-        
+
     if verbose:
         if size < 1024:
             print("size = {} bytes".format(size))
         elif size < 1024**2:
-            print("size = {:2.2f} Kbytes".format(size/1024))
+            print("size = {:2.2f} Kbytes".format(size / 1024))
         elif size < 1024**3:
-            print("size = {:2.2f} Mbytes".format(size/1024**2))
+            print("size = {:2.2f} Mbytes".format(size / 1024**2))
         elif size < 1024**4:
-            print("size = {:2.2f} Gbytes".format(size/1024**3))
-    return size/1024**2
+            print("size = {:2.2f} Gbytes".format(size / 1024**3))
+    return size / 1024**2

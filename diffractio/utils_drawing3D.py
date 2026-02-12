@@ -14,16 +14,17 @@
 
 
 import numpy as np
-
 import pyvista
 import pyvista as pv
 from pyvista.core.utilities.helpers import wrap
 
-from .config import CONF_DRAWING, Draw_XYZ_Options, Draw_pyvista_Options, video_isovalue_Options
+from .config import CONF_DRAWING, Draw_pyvista_Options, Draw_XYZ_Options, video_isovalue_Options
 from .utils_drawing import normalize_draw
 
 
-def load_stl(filename: str, has_draw: bool = False, verbose: bool = False):  # -> tuple[MultiBlock | UnstructuredGrid | DataSet | pyvista_n...:
+def load_stl(
+    filename: str, has_draw: bool = False, verbose: bool = False
+):  # -> tuple[MultiBlock | UnstructuredGrid | DataSet | pyvista_n...:
     """
     load_stl _summary_
 
@@ -91,7 +92,7 @@ def voxelize_volume_diffractio(self, mesh, refractive_index, check_surface=True)
     surface = mesh.extract_geometry()  # filter preserves topology
     if not surface.faces.size:
         # we have a point cloud or an empty mesh
-        raise ValueError('Input mesh must have faces for voxelization.')
+        raise ValueError("Input mesh must have faces for voxelization.")
     if not surface.is_all_triangles:
         # reduce chance for artifacts, see gh-1743
         surface.triangulate(inplace=True)
@@ -101,7 +102,7 @@ def voxelize_volume_diffractio(self, mesh, refractive_index, check_surface=True)
 
     # get part of the mesh within the mesh's bounding surface.
     selection = voi.select_enclosed_points(surface, tolerance=0.0, check_surface=check_surface)
-    mask_vol = selection.point_data['SelectedPoints'].view(np.bool_)
+    mask_vol = selection.point_data["SelectedPoints"].view(np.bool_)
 
     data = np.array(mask_vol.tolist())
     data = data.reshape(len(self.z), len(self.y), len(self.x))
@@ -110,10 +111,10 @@ def voxelize_volume_diffractio(self, mesh, refractive_index, check_surface=True)
     cell_ids = np.unique(voi.extract_points(np.argwhere(mask_vol))["vtkOriginalCellIds"])
     # Create new element of grid where all cells _within_ mesh boundary are
     # given new name 'MeshCells' and a discrete value of 1
-    voi['InsideMesh'] = self.n_background*np.ones(voi.n_cells)
-    voi['InsideMesh'][cell_ids] = refractive_index
+    voi["InsideMesh"] = self.n_background * np.ones(voi.n_cells)
+    voi["InsideMesh"][cell_ids] = refractive_index
 
-    volume_n = self.n_background + (refractive_index-self.n_background)*data
+    volume_n = self.n_background + (refractive_index - self.n_background) * data
     self.n = volume_n.reshape(len(self.z), len(self.x), len(self.y))
 
     self.n = np.transpose(self.n, axes=(2, 1, 0))
@@ -127,8 +128,8 @@ def draw(
     drawing: Draw_pyvista_Options = "volume",
     has_grid: bool = False,
     filename: str = "",
-    logarithm: float = 0.,
-    **kwargs
+    logarithm: float = 0.0,
+    **kwargs,
 ):
     """_summary_
 
@@ -139,72 +140,70 @@ def draw(
         filename (str, optional): saves images: html, png or svg. Defaults to ''.
     """
 
-    x_center = (self.x[-1]+self.x[0])/2
-    y_center = (self.y[-1]+self.y[0])/2
-    z_center = (self.z[-1]+self.z[0])/2
+    x_center = (self.x[-1] + self.x[0]) / 2
+    y_center = (self.y[-1] + self.y[0]) / 2
+    z_center = (self.z[-1] + self.z[0]) / 2
 
     len_x = len(self.x)
     len_y = len(self.y)
     len_z = len(self.z)
 
-    delta_x = self.x[1]-self.x[0]
-    delta_y = self.y[1]-self.y[0]
-    delta_z = self.z[1]-self.z[0]
+    delta_x = self.x[1] - self.x[0]
+    delta_y = self.y[1] - self.y[0]
+    delta_z = self.z[1] - self.z[0]
 
-    if 'opacity' in kwargs.keys():
+    if "opacity" in kwargs:
         opacity = kwargs["opacity"]
     else:
-        opacity = 'sigmoid'
+        opacity = "sigmoid"
 
-    if 'dimensions' in kwargs.keys():
+    if "dimensions" in kwargs:
         dimensions = kwargs["dimensions"]
     else:
         dimensions = (len_y, len_z, len_x)
 
-    if 'scale' in kwargs.keys():
+    if "scale" in kwargs:
         scale = kwargs["scale"]
     else:
         scale = (len_y, len_z, len_x)
 
-    if 'cmap' in kwargs.keys():
+    if "cmap" in kwargs:
         cmap = kwargs["cmap"]
     else:
-        cmap = 'gist_heat'
+        cmap = "gist_heat"
 
-    if 'spacing' in kwargs.keys():
+    if "spacing" in kwargs:
         spacing = kwargs["spacing"]
     else:
         spacing = np.array((delta_y, delta_x, delta_z))
 
-    if 'cpos' in kwargs.keys():
+    if "cpos" in kwargs:
         cpos = kwargs["cpos"]
     else:
-        cpos = [(540, -617, 180),
-                (128, 126., 111.),
-                (-0, 0, 0)]
+        cpos = [(540, -617, 180), (128, 126.0, 111.0), (-0, 0, 0)]
 
-    if 'background_color' in kwargs.keys():
+    if "background_color" in kwargs:
         background_color = kwargs["background_color"]
     else:
-        background_color = (1., 1., 1.)
+        background_color = (1.0, 1.0, 1.0)
 
-    if 'camera_position' in kwargs.keys():
+    if "camera_position" in kwargs:
         camera_position = kwargs["camera_position"]
     else:
-        camera_position = 'xy'
+        camera_position = "xy"
 
     grid = pv.ImageData(dimensions=dimensions, spacing=spacing)
 
     if kind == "intensity":
         intensity = self.intensity()
-        intensity = intensity/intensity.max()
+        intensity = intensity / intensity.max()
         intensity = normalize_draw(intensity, logarithm)
 
         data = intensity
 
     elif kind == "refractive_index":
         data = np.abs(self.n)
-        cmap = CONF_DRAWING['color_n']
+        cmap = CONF_DRAWING["color_n"]
 
     else:
         print("bad kind in draw_XYZ")
@@ -219,16 +218,16 @@ def draw(
         vol = pl.add_volume(data, cmap=cmap, opacity=opacity, shade=False)
 
         pl.set_scale(
-            xscale=1/scale[2],
-            yscale=1/scale[0],
-            zscale=1/scale[1],
+            xscale=1 / scale[2],
+            yscale=1 / scale[0],
+            zscale=1 / scale[1],
             reset_camera=True,
-            render=True)
+            render=True,
+        )
         pl.set_position((1, 1, 1))
         pl.reset_camera(self)
 
     elif drawing == "clip":
-
         grid["scalars"] = np.transpose(data, axes=(2, 0, 1)).flatten()
 
         pl = pyvista.Plotter()
@@ -236,24 +235,24 @@ def draw(
         pl.add_volume_clip_plane(grid, normal="z", opacity=opacity, cmap=cmap)
         pl.add_volume_clip_plane(grid, normal="x", opacity=opacity, cmap=cmap)
         pl.set_scale(
-            xscale=1/scale[2],
-            yscale=1/scale[0],
-            zscale=1/scale[1],
+            xscale=1 / scale[2],
+            yscale=1 / scale[0],
+            zscale=1 / scale[1],
             reset_camera=True,
-            render=True)
+            render=True,
+        )
         pl.camera_position = camera_position
 
     elif drawing == "slices":
-
         grid["scalars"] = np.transpose(data, axes=(2, 0, 1)).flatten()
 
         pl = pyvista.Plotter()
         slice = grid.slice_orthogonal()
         dargs = dict(cmap=cmap)
         pl.set_scale(
-            xscale=1/scale[2],
-            yscale=1/scale[0],
-            zscale=1/scale[1],
+            xscale=1 / scale[2],
+            yscale=1 / scale[0],
+            zscale=1 / scale[1],
             reset_camera=True,
             render=True,
         )
@@ -277,9 +276,9 @@ def draw(
         pl.subplot(1, 1)
         pl.add_mesh(slice4, **dargs)
         pl.set_scale(
-            xscale=1/scale[2],
-            yscale=1/scale[0],
-            zscale=1/scale[1],
+            xscale=1 / scale[2],
+            yscale=1 / scale[0],
+            zscale=1 / scale[1],
             reset_camera=True,
             render=True,
         )
@@ -287,9 +286,9 @@ def draw(
         pl.subplot(0, 0)
         pl.add_mesh(slice1, **dargs)
         pl.set_scale(
-            xscale=1/scale[2],
-            yscale=1/scale[0],
-            zscale=1/scale[1],
+            xscale=1 / scale[2],
+            yscale=1 / scale[0],
+            zscale=1 / scale[1],
             reset_camera=True,
             render=True,
         )
@@ -302,9 +301,9 @@ def draw(
         pl.subplot(0, 1)
         pl.add_mesh(slice2, **dargs)
         pl.set_scale(
-            xscale=1/scale[2],
-            yscale=1/scale[0],
-            zscale=1/scale[1],
+            xscale=1 / scale[2],
+            yscale=1 / scale[0],
+            zscale=1 / scale[1],
             reset_camera=True,
             render=True,
         )
@@ -316,9 +315,9 @@ def draw(
         pl.subplot(1, 0)
         pl.add_mesh(slice3, **dargs)
         pl.set_scale(
-            xscale=1/scale[2],
-            yscale=1/scale[0],
-            zscale=1/scale[1],
+            xscale=1 / scale[2],
+            yscale=1 / scale[0],
+            zscale=1 / scale[1],
             reset_camera=True,
             render=True,
         )
@@ -327,7 +326,7 @@ def draw(
         pl.camera_position = "zy"
         pl.enable_parallel_projection()
 
-    elif drawing == 'video_isovalue':
+    elif drawing == "video_isovalue":
         # data = np.transpose(data, axes=(0,1,2)) # prueba y error - bien en volume
 
         grid["scalars"] = np.transpose(data, axes=(2, 0, 1)).flatten()
@@ -404,7 +403,9 @@ def draw(
     return pl
 
 
-def video_isovalue(self, filename: str, kind: video_isovalue_Options = "refractive_index", **kwargs):
+def video_isovalue(
+    self, filename: str, kind: video_isovalue_Options = "refractive_index", **kwargs
+):
     """_summary_
 
     Args:
@@ -412,56 +413,54 @@ def video_isovalue(self, filename: str, kind: video_isovalue_Options = "refracti
         kind (str, optional): "intensity" or "refractive_index". Defaults to 'refractive_index'.
     """
 
-    x_center = (self.x[-1]+self.x[0])/2
-    y_center = (self.y[-1]+self.y[0])/2
-    z_center = (self.z[-1]+self.z[0])/2
+    x_center = (self.x[-1] + self.x[0]) / 2
+    y_center = (self.y[-1] + self.y[0]) / 2
+    z_center = (self.z[-1] + self.z[0]) / 2
 
     len_x = len(self.x)
     len_y = len(self.y)
     len_z = len(self.z)
 
-    delta_x = self.x[1]-self.x[0]
-    delta_y = self.y[1]-self.y[0]
-    delta_z = self.z[1]-self.z[0]
+    delta_x = self.x[1] - self.x[0]
+    delta_y = self.y[1] - self.y[0]
+    delta_z = self.z[1] - self.z[0]
 
-    if 'opacity' in kwargs.keys():
+    if "opacity" in kwargs:
         opacity = kwargs["opacity"]
     else:
-        opacity = 'sigmoid'
+        opacity = "sigmoid"
 
-    if 'dimensions' in kwargs.keys():
+    if "dimensions" in kwargs:
         dimensions = kwargs["dimensions"]
     else:
         dimensions = (len_y, len_z, len_x)
 
-    if 'scale' in kwargs.keys():
+    if "scale" in kwargs:
         scale = kwargs["scale"]
     else:
         scale = (len_y, len_z, len_x)
 
-    if 'cmap' in kwargs.keys():
+    if "cmap" in kwargs:
         cmap = kwargs["cmap"]
     else:
-        cmap = 'hot'
+        cmap = "hot"
 
-    if 'spacing' in kwargs.keys():
+    if "spacing" in kwargs:
         spacing = kwargs["spacing"]
     else:
         spacing = np.array((delta_y, delta_x, delta_z))
 
-    if 'cpos' in kwargs.keys():
+    if "cpos" in kwargs:
         cpos = kwargs["cpos"]
     else:
-        cpos = [(540, -617, 180),
-                (128, 126., 111.),
-                (-0, 0, 0)]
+        cpos = [(540, -617, 180), (128, 126.0, 111.0), (-0, 0, 0)]
 
-    if 'background_color' in kwargs.keys():
+    if "background_color" in kwargs:
         background_color = kwargs["background_color"]
     else:
-        background_color = (1., 1., 1.)
+        background_color = (1.0, 1.0, 1.0)
 
-    if 'camera_position' in kwargs.keys():
+    if "camera_position" in kwargs:
         camera_position = kwargs["camera_position"]
     else:
         camera_position = "xy"
@@ -476,9 +475,9 @@ def video_isovalue(self, filename: str, kind: video_isovalue_Options = "refracti
         data = intensity
     elif kind == "refractive_index":
         data = self.n
-        data = data-data.min()
+        data = data - data.min()
         data /= data.max()
-        cmap = CONF_DRAWING['color_n']
+        cmap = CONF_DRAWING["color_n"]
         print("refractive_index")
 
     print(data.min(), data.max())

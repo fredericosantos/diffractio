@@ -53,12 +53,19 @@ The magnitude is related to microns: `micron = 1.`
     * draw: intensity, intensities, phases, fields, stokes, param_ellipse, ellipses
 
 """
+
 import copy
 import time
 
 from .__init__ import degrees, eps, mm, np, plt
-from .config import bool_raise_exception, CONF_DRAWING, Draw_Vector_XY_Options, Draw_Vector_XZ_Options, get_vector_options
-from .utils_typing import npt, Any, NDArray,  NDArrayFloat, NDArrayComplex
+from .config import (
+    bool_raise_exception,
+    CONF_DRAWING,
+    Draw_Vector_XY_Options,
+    Draw_Vector_XZ_Options,
+    get_vector_options,
+)
+from .utils_typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
 from .utils_common import get_date, load_data_common, save_data_common, check_none, get_vector
 from .utils_common import get_instance_size_MB
 
@@ -88,10 +95,10 @@ from numpy.lib.scimath import sqrt as csqrt
 from scipy.fftpack import fft, fftshift, ifft, ifftshift, fft2, ifft2
 
 
-percentage_intensity = CONF_DRAWING['percentage_intensity']
+percentage_intensity = CONF_DRAWING["percentage_intensity"]
 
 
-class Vector_field_XYZ():
+class Vector_field_XYZ:
     """Class for vectorial fields.
 
     Args:
@@ -111,9 +118,15 @@ class Vector_field_XYZ():
         self.Ez (numpy.array): Electric_z field
     """
 
-    def __init__(self, x: NDArrayFloat | None = None, y: NDArrayFloat | None = None,
-                 z: NDArrayFloat | None = None, wavelength: float | None = None,
-                 n_background: float = 1., info: str = ""):
+    def __init__(
+        self,
+        x: NDArrayFloat | None = None,
+        y: NDArrayFloat | None = None,
+        z: NDArrayFloat | None = None,
+        wavelength: float | None = None,
+        n_background: float = 1.0,
+        info: str = "",
+    ):
         self.x = x
         self.y = y
         self.z = z
@@ -127,21 +140,20 @@ class Vector_field_XYZ():
         self.Hy = None
         self.Hz = None
 
-        self.n = n_background*np.ones_like(self.X, dtype=complex)
+        self.n = n_background * np.ones_like(self.X, dtype=complex)
 
         self.Ex0 = None
         self.Ey0 = None
         self.Ez0 = None
 
-        self.reduce_matrix = 'standard'  # 'None, 'standard', (5,5)
+        self.reduce_matrix = "standard"  # 'None, 'standard', (5,5)
         self.n_background = n_background
-        self.type = 'Vector_field_XYZ'
+        self.type = "Vector_field_XYZ"
         self.info = info
         self.date = get_date()
         self.CONF_DRAWING = CONF_DRAWING
 
-
-    @check_none('x', 'y', 'z', 'Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
+    @check_none("x", "y", "z", "Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
     def __str__(self):
         """Represents data from class."""
 
@@ -149,20 +161,28 @@ class Vector_field_XYZ():
         Imin = intensity.min()
         Imax = intensity.max()
 
-        print("{}\n - x:  {},   y:  {},  z:  {},   Ex:  {}".format(
-            self.type, self.x.shape, self.y.shape, self.z.shape, self.Ex.shape))
+        print(
+            "{}\n - x:  {},   y:  {},  z:  {},   Ex:  {}".format(
+                self.type, self.x.shape, self.y.shape, self.z.shape, self.Ex.shape
+            )
+        )
 
         print(
-            " - xmin:       {:2.2f} um,  xmax:      {:2.2f} um,  Dx:   {:2.2f} um"
-            .format(self.x[0], self.x[-1], self.x[1] - self.x[0]))
+            " - xmin:       {:2.2f} um,  xmax:      {:2.2f} um,  Dx:   {:2.2f} um".format(
+                self.x[0], self.x[-1], self.x[1] - self.x[0]
+            )
+        )
         print(
-            " - ymin:       {:2.2f} um,  ymay:      {:2.2f} um,  Dy:   {:2.2f} um"
-            .format(self.y[0], self.y[-1], self.y[1] - self.y[0]))
+            " - ymin:       {:2.2f} um,  ymay:      {:2.2f} um,  Dy:   {:2.2f} um".format(
+                self.y[0], self.y[-1], self.y[1] - self.y[0]
+            )
+        )
         print(
-            " - zmin:       {:2.2f} um,  zmaz:      {:2.2f} um,  Dz:   {:2.2f} um"
-            .format(self.z[0], self.z[-1], self.z[1] - self.z[0]))
-        print(" - Imin:       {:2.2f},     Imax:      {:2.2f}".format(
-            Imin, Imax))
+            " - zmin:       {:2.2f} um,  zmaz:      {:2.2f} um,  Dz:   {:2.2f} um".format(
+                self.z[0], self.z[-1], self.z[1] - self.z[0]
+            )
+        )
+        print(" - Imin:       {:2.2f},     Imax:      {:2.2f}".format(Imin, Imax))
 
         print(" - wavelength: {:2.2f} um".format(self.wavelength))
         print(" - date:       {}".format(self.date))
@@ -170,8 +190,7 @@ class Vector_field_XYZ():
             print(" - info:       {}".format(self.info))
         return ""
 
-
-    @check_none('x', 'y', 'z', 'Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
+    @check_none("x", "y", "z", "Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
     def __add__(self, other):
         """adds two Vector_field_XY. For example two light sources or two masks
 
@@ -191,9 +210,9 @@ class Vector_field_XYZ():
 
         return EM
 
-
-    def save_data(self, filename: str, add_name: str = "",
-                  description: str = "", verbose: bool = False):
+    def save_data(
+        self, filename: str, add_name: str = "", description: str = "", verbose: bool = False
+    ):
         """Common save data function to be used in all the modules.
         The methods included are: npz, matlab
 
@@ -208,12 +227,10 @@ class Vector_field_XYZ():
         """
 
         try:
-            final_filename = save_data_common(self, filename, add_name,
-                                              description, verbose)
+            final_filename = save_data_common(self, filename, add_name, description, verbose)
             return final_filename
         except:
             return False
-
 
     def load_data(self, filename: str, verbose: bool = False):
         """Load data from a file to a Vector_field_XY.
@@ -229,20 +246,18 @@ class Vector_field_XYZ():
             if isinstance(dict0, dict):
                 self.__dict__ = dict0
             else:
-                raise Exception('no dictionary in load_data')
+                raise Exception("no dictionary in load_data")
 
         if verbose is True:
             print(dict0.keys())
 
-    @check_none('Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
+    @check_none("Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
     def clear_field(self):
-        """simple - removes the field: self.E=0 """
+        """simple - removes the field: self.E=0"""
 
         self.Ex = np.zeros_like(self.Ex, dtype=complex)
         self.Ey = np.zeros_like(self.Ex, dtype=complex)
         self.Ez = np.zeros_like(self.Ex, dtype=complex)
-
-
 
     def size(self, verbose: bool = False):
         """returns the size of the instance in MB.
@@ -256,7 +271,6 @@ class Vector_field_XYZ():
 
         return get_instance_size_MB(self, verbose)
 
-
     def duplicate(self, clear: bool = False):
         """Duplicates the instance"""
         new_field = copy.deepcopy(self)
@@ -264,10 +278,8 @@ class Vector_field_XYZ():
             new_field.clear_field()
         return new_field
 
-
-
-    @check_none('Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
-    def get(self, kind: get_vector_options, mode: str = 'modulus', **kwargs):
+    @check_none("Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
+    def get(self, kind: get_vector_options, mode: str = "modulus", **kwargs):
         """Takes the vector field and divide in Scalar_field_X.
 
         Args:
@@ -280,12 +292,16 @@ class Vector_field_XYZ():
         data = get_vector(self, kind, mode, **kwargs)
         return data
 
+    @check_none("x", "Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
+    def incident_field(
+        self,
+        E0: Vector_field_XY | None = None,
+        u0: Scalar_field_XY | None = None,
+        j0: Jones_vector | None = None,
+        z0: float | None = None,
+    ):
+        """Includes the incident field in Vector_field_XZ.
 
-    @check_none('x', 'Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
-    def incident_field(self, E0: Vector_field_XY  | None = None, u0: Scalar_field_XY  | None = None, 
-                       j0: Jones_vector  | None = None, z0: float | None = None):
-        """Includes the incident field in Vector_field_XZ. 
-        
         It can be performed using a Vector_field_X E0 or a Scalar_field_X u0 + Jones_vector j0.
 
         Args:
@@ -300,24 +316,23 @@ class Vector_field_XYZ():
             E0.Ex = u0.u * j0.M[0]
             E0.Ey = u0.u * j0.M[1]
 
-        if z0 in (None, '', []):
+        if z0 in (None, "", []):
             self.Ex0 = E0.Ex
             self.Ey0 = E0.Ey
 
-            self.Ex[:,:,0] = self.Ex[:,:,0] + E0.Ex
-            self.Ey[:,:,0] = self.Ey[:,:,0] + E0.Ey
+            self.Ex[:, :, 0] = self.Ex[:, :, 0] + E0.Ex
+            self.Ey[:, :, 0] = self.Ey[:, :, 0] + E0.Ey
         else:
             self.Ex0 = None
             self.Ey0 = None
             iz, _, _ = nearest(self.z, z0)
-            self.Ex[:,:,iz] = self.Ex[:,:,iz] + E0.Ex
-            self.Ey[:,:,iz] = self.Ey[:,:,iz] + E0.Ey
-
+            self.Ex[:, :, iz] = self.Ex[:, :, iz] + E0.Ex
+            self.Ey[:, :, iz] = self.Ey[:, :, iz] + E0.Ey
 
     def refractive_index_from_scalarXYZ(self, u_xyz: Scalar_mask_XYZ):
         """
         refractive_index_from_scalarXZ. Gets the refractive index from a Scalar field and passes to a vector field.
-        
+
         Obviously, the refractive index is isotropic.
 
         Args:
@@ -325,14 +340,19 @@ class Vector_field_XYZ():
             u_xz (Scalar_mask_XZ): Scalar_mask_XZ
         """
         self.n = u_xyz.n
-        
+
         # edges = self.surface_detection( min_incr = 0.1, reduce_matrix = 'standard', has_draw = False)
-               
-        # self.borders = edges           
+
+        # self.borders = edges
         # return edges
 
-
-    def FP_WPM(self, has_edges: bool = True, pow_edge: int = 80, matrix: bool = False, verbose: bool = False):
+    def FP_WPM(
+        self,
+        has_edges: bool = True,
+        pow_edge: int = 80,
+        matrix: bool = False,
+        verbose: bool = False,
+    ):
         """
         WPM Method. 'schmidt methodTrue is very fast, only needs discrete number of refractive indexes'
 
@@ -361,8 +381,8 @@ class Vector_field_XYZ():
         dy = y[1] - y[0]
         dz = z[1] - z[0]
 
-        self.Ex[:,:,0] = self.Ex0
-        self.Ey[:,:,0] = self.Ey0
+        self.Ex[:, :, 0] = self.Ex0
+        self.Ey[:, :, 0] = self.Ey0
 
         self.Hx = np.zeros_like(self.Ex)
         self.Hy = np.zeros_like(self.Ex)
@@ -385,55 +405,56 @@ class Vector_field_XYZ():
         else:
             has_filter = has_edges
 
-        width_edge = 0.95*(self.x[-1]-self.x[0])/2
-        x_center = (self.x[-1]+self.x[0])/2
-        y_center = (self.y[-1]+self.y[0])/2
+        width_edge = 0.95 * (self.x[-1] - self.x[0]) / 2
+        x_center = (self.x[-1] + self.x[0]) / 2
+        y_center = (self.y[-1] + self.y[0]) / 2
 
-        filter_x = np.exp(-(np.abs(self.X[:, :, 0]-x_center) / width_edge)**pow_edge)
-        filter_y = np.exp(-(np.abs(self.Y[:, :, 0]-y_center) / width_edge)**pow_edge)
-        filter_function = filter_x*filter_y
+        filter_x = np.exp(-((np.abs(self.X[:, :, 0] - x_center) / width_edge) ** pow_edge))
+        filter_y = np.exp(-((np.abs(self.Y[:, :, 0] - y_center) / width_edge) ** pow_edge))
+        filter_function = filter_x * filter_y
 
-        radius = np.sqrt((self.X[:, :, 0]-x_center)**2+(self.Y[:, :, 0]-y_center)**2)
+        radius = np.sqrt((self.X[:, :, 0] - x_center) ** 2 + (self.Y[:, :, 0] - y_center) ** 2)
 
-        filter_function = np.exp(-(radius / width_edge)**pow_edge)
-
+        filter_function = np.exp(-((radius / width_edge) ** pow_edge))
 
         t1 = time.time_ns()
 
         num_steps = len(self.z)
         for j in range(1, num_steps):
-
             if has_filter[j] == 0:
                 filter_edge = 1
             else:
                 filter_edge = filter_function
 
-            E_step, H_step = FP_WPM_schmidt_kernel(
-                self.Ex[:,:,j-1],
-                self.Ey[:,:,j-1],
-                self.n[:,:,j-1],
-                self.n[:,:,j],
-                k0,
-                kx,
-                ky,
-                self.wavelength,
-                dz,
-            ) * filter_edge
+            E_step, H_step = (
+                FP_WPM_schmidt_kernel(
+                    self.Ex[:, :, j - 1],
+                    self.Ey[:, :, j - 1],
+                    self.n[:, :, j - 1],
+                    self.n[:, :, j],
+                    k0,
+                    kx,
+                    ky,
+                    self.wavelength,
+                    dz,
+                )
+                * filter_edge
+            )
 
-            self.Ex[:,:,j] = self.Ex[:,:,j] + E_step[0] * filter_edge
-            self.Ey[:,:,j] = self.Ey[:,:,j] + E_step[1] * filter_edge
-            self.Ez[:,:,j] = E_step[2] * filter_edge
+            self.Ex[:, :, j] = self.Ex[:, :, j] + E_step[0] * filter_edge
+            self.Ey[:, :, j] = self.Ey[:, :, j] + E_step[1] * filter_edge
+            self.Ez[:, :, j] = E_step[2] * filter_edge
 
-            self.Hx[:,:,j] = H_step[0] * filter_edge
-            self.Hy[:,:,j] = H_step[1] * filter_edge
-            self.Hz[:,:,j] = H_step[2] * filter_edge
+            self.Hx[:, :, j] = H_step[0] * filter_edge
+            self.Hy[:, :, j] = H_step[1] * filter_edge
+            self.Hz[:, :, j] = H_step[2] * filter_edge
 
         # at the initial point the Ez field is not computed.
-        self.Ez[:,:,0] = self.Ez[:,:,1]
-        
-        self.Hx[:,:,0] = self.Hx[:,:,1]
-        self.Hy[:,:,0] = self.Hy[:,:,1]
-        self.Hz[:,:,0] = self.Hz[:,:,1]
+        self.Ez[:, :, 0] = self.Ez[:, :, 1]
+
+        self.Hx[:, :, 0] = self.Hx[:, :, 1]
+        self.Hy[:, :, 0] = self.Hy[:, :, 1]
+        self.Hz[:, :, 0] = self.Hz[:, :, 1]
 
         t2 = time.time_ns()
         if verbose is True:
@@ -447,20 +468,16 @@ class Vector_field_XYZ():
             return (self.Ex, self.Ey, self.Ez), (self.Hx, self.Hy, self.Hz)
 
         return self
-        
 
-    @check_none('Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
+    @check_none("Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
     def intensity(self):
-        """"Returns intensity.
-        """
-        intensity = np.abs(self.Ex)**2 + np.abs(self.Ey)**2 + np.abs(
-            self.Ez)**2
+        """ "Returns intensity."""
+        intensity = np.abs(self.Ex) ** 2 + np.abs(self.Ey) ** 2 + np.abs(self.Ez) ** 2
 
         return intensity
 
-    
-    @check_none('x', 'y', 'z', 'Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
-    def normalize(self, kind='amplitude', new_field: bool = False):
+    @check_none("x", "y", "z", "Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
+    def normalize(self, kind="amplitude", new_field: bool = False):
         """Normalizes the field so that intensity.max()=1.
 
         Args:
@@ -472,11 +489,8 @@ class Vector_field_XYZ():
         """
         return normalize_field(self, kind, new_field)
 
-
-    @check_none('x', 'y', 'z', 'Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
-    def to_Vector_field_XY(self,
-                           iz0: int | None = None,
-                           z0: float | None = None):
+    @check_none("x", "y", "z", "Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
+    def to_Vector_field_XY(self, iz0: int | None = None, z0: float | None = None):
         """pass results to Scalar_field_XY. Only one of the first two variables (iz0,z0) should be used
 
         Args:
@@ -485,9 +499,7 @@ class Vector_field_XYZ():
             class (bool): If True it returns a class
             matrix (bool): If True it returns a matrix
         """
-        field_output = Vector_field_XY(x=self.x,
-                                       y=self.y,
-                                       wavelength=self.wavelength)
+        field_output = Vector_field_XY(x=self.x, y=self.y, wavelength=self.wavelength)
         if iz0 is None:
             iz, _, _ = nearest(self.z, z0)
         else:
@@ -507,11 +519,8 @@ class Vector_field_XYZ():
 
         return field_output
 
-
-    @check_none('x', 'y', 'z', 'Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
-    def to_Vector_field_XZ(self,
-                           iy0: int | None = None,
-                           y0: float | None = None):
+    @check_none("x", "y", "z", "Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
+    def to_Vector_field_XZ(self, iy0: int | None = None, y0: float | None = None):
         """pass results to Vector_field_XZ. Only one of the first two variables (iy0,y0) should be used
 
         Args:
@@ -522,9 +531,8 @@ class Vector_field_XYZ():
 
         """
         from .vector_fields_XZ import Vector_field_XZ
-        field_output = Vector_field_XZ(x=self.x,
-                                       z=self.z,
-                                       wavelength=self.wavelength)
+
+        field_output = Vector_field_XZ(x=self.x, z=self.z, wavelength=self.wavelength)
         if iy0 is None:
             iy, _, _ = nearest(self.y, y0)
         else:
@@ -538,20 +546,16 @@ class Vector_field_XYZ():
             field_output.Hz = np.squeeze(self.Hz[iy, :, :]).transpose()
         except:
             pass
-        
+
         try:
             field_output.n = np.squeeze(self.n[iy, :, :]).transpose()
         except:
             pass
-        
-        
+
         return field_output
 
-
-    @check_none('x', 'y', 'z', 'Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
-    def to_Vector_field_YZ(self,
-                           ix0: int | None = None,
-                           x0: float | None = None):
+    @check_none("x", "y", "z", "Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
+    def to_Vector_field_YZ(self, ix0: int | None = None, x0: float | None = None):
         """pass results to Vector_field_XZ. Only one of the first two variables (iy0,y0) should be used
 
         Args:
@@ -562,9 +566,8 @@ class Vector_field_XYZ():
 
         """
         from .vector_fields_XZ import Vector_field_XZ
-        field_output = Vector_field_XZ(x=self.y,
-                                       z=self.z,
-                                       wavelength=self.wavelength)
+
+        field_output = Vector_field_XZ(x=self.y, z=self.z, wavelength=self.wavelength)
         if ix0 is None:
             ix, _, _ = nearest(self.x, x0)
         else:
@@ -578,7 +581,7 @@ class Vector_field_XYZ():
             field_output.Hz = np.squeeze(self.Hz[:, ix, :]).transpose()
         except:
             pass
-        
+
         try:
             field_output.n = np.squeeze(self.n[:, ix, :]).transpose()
         except:
@@ -586,10 +589,15 @@ class Vector_field_XYZ():
 
         return field_output
 
-    @check_none('x', 'y', 'z', 'Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
-    def to_Vector_field_Z(self, kind: str = 'amplitude', x0: int | None = None,
-                          y0: int | None = None, has_draw: bool = True,
-                          z_scale: str = 'um'):
+    @check_none("x", "y", "z", "Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
+    def to_Vector_field_Z(
+        self,
+        kind: str = "amplitude",
+        x0: int | None = None,
+        y0: int | None = None,
+        has_draw: bool = True,
+        z_scale: str = "um",
+    ):
         """pass results to u(z). Only one of the first two variables (iy0,y0) and (ix0,x0) should be used.
 
         Args:
@@ -610,47 +618,48 @@ class Vector_field_XYZ():
         Ey = np.squeeze(self.Ey[iy, ix, :])
         Ez = np.squeeze(self.Ez[iy, ix, :])
 
-        if kind == 'amplitude':
+        if kind == "amplitude":
             field_x = np.abs(Ex)
             field_y = np.abs(Ey)
             field_z = np.abs(Ez)
-        elif kind == 'intensity':
-            field_x = np.abs(Ex)**2
-            field_y = np.abs(Ey)**2
-            field_z = np.abs(Ez)**2
-        elif kind == 'phase':
+        elif kind == "intensity":
+            field_x = np.abs(Ex) ** 2
+            field_y = np.abs(Ey) ** 2
+            field_z = np.abs(Ez) ** 2
+        elif kind == "phase":
             field_x = np.angle(Ex)
             field_y = np.angle(Ey)
             field_z = np.angle(Ez)
 
         if has_draw is True:
-            if z_scale == 'mm':
-                plt.plot(self.z / mm, field_x, 'k', lw=2)
-                plt.xlabel(r'$z\,(mm)$')
+            if z_scale == "mm":
+                plt.plot(self.z / mm, field_x, "k", lw=2)
+                plt.xlabel(r"$z\,(mm)$")
                 plt.xlim(left=self.z[0] / mm, right=self.z[-1] / mm)
 
-            elif z_scale == 'um':
-                plt.plot(self.z, field_x, 'k', lw=2)
-                plt.xlabel(r'$z\,(\mu m)$')
+            elif z_scale == "um":
+                plt.plot(self.z, field_x, "k", lw=2)
+                plt.xlabel(r"$z\,(\mu m)$")
                 plt.xlim(left=self.z[0], right=self.z[-1])
 
             plt.ylabel(kind)
 
         return (field_x, field_y, field_z)
 
-
-    @check_none('x', 'y', 'z', 'Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
-    def draw_XY(self,
-                z0: float,
-                kind: Draw_Vector_XY_Options = 'intensity',
-                logarithm: float = 0,
-                normalize: str = 'maximum',
-                title: str = '',
-                filename: str = '',
-                cut_value: float | None = None,
-                has_colorbar: bool = 'False',
-                reduce_matrix=''):
-        """ longitudinal profile XY at a given z value
+    @check_none("x", "y", "z", "Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
+    def draw_XY(
+        self,
+        z0: float,
+        kind: Draw_Vector_XY_Options = "intensity",
+        logarithm: float = 0,
+        normalize: str = "maximum",
+        title: str = "",
+        filename: str = "",
+        cut_value: float | None = None,
+        has_colorbar: bool = "False",
+        reduce_matrix="",
+    ):
+        """longitudinal profile XY at a given z value
 
         Args:
             z0 (float): value of z for interpolation
@@ -665,25 +674,28 @@ class Vector_field_XYZ():
         """
 
         ufield = self.to_Vector_field_XY(z0=z0)
-        ufield.draw(kind=kind,
-                    logarithm=logarithm,
-                    normalize=normalize,
-                    title=title,
-                    filename=filename,
-                    cut_value=cut_value,
-                    has_colorbar=has_colorbar,
-                    reduce_matrix=reduce_matrix)
+        ufield.draw(
+            kind=kind,
+            logarithm=logarithm,
+            normalize=normalize,
+            title=title,
+            filename=filename,
+            cut_value=cut_value,
+            has_colorbar=has_colorbar,
+            reduce_matrix=reduce_matrix,
+        )
 
-
-    @check_none('x', 'y', 'z', 'Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
-    def draw_XZ(self,
-                kind: Draw_Vector_XZ_Options = 'intensity',
-                y0: float = 0*mm,
-                logarithm: float = 0,
-                normalize: bool = False,
-                draw_borders: bool = False,
-                filename: str = '',
-                **kwargs):
+    @check_none("x", "y", "z", "Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
+    def draw_XZ(
+        self,
+        kind: Draw_Vector_XZ_Options = "intensity",
+        y0: float = 0 * mm,
+        logarithm: float = 0,
+        normalize: bool = False,
+        draw_borders: bool = False,
+        filename: str = "",
+        **kwargs,
+    ):
         """Longitudinal profile XZ at a given x0 value.
 
         Args:
@@ -696,21 +708,21 @@ class Vector_field_XYZ():
 
         plt.figure()
         ufield = self.to_Vector_field_XZ(y0=y0)
-        h1 = ufield.draw(kind, logarithm, normalize, draw_borders, filename,
-                         **kwargs)
+        h1 = ufield.draw(kind, logarithm, normalize, draw_borders, filename, **kwargs)
 
         return h1
 
-
-    @check_none('x', 'y', 'z', 'Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
-    def draw_YZ(self,
-                kind: Draw_Vector_XZ_Options = 'intensity',
-                x0: float = 0*mm,
-                logarithm: float = 0,
-                normalize: bool = False,
-                draw_borders: bool = False,
-                filename: str = '',
-                **kwargs):
+    @check_none("x", "y", "z", "Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
+    def draw_YZ(
+        self,
+        kind: Draw_Vector_XZ_Options = "intensity",
+        x0: float = 0 * mm,
+        logarithm: float = 0,
+        normalize: bool = False,
+        draw_borders: bool = False,
+        filename: str = "",
+        **kwargs,
+    ):
         """Longitudinal profile XZ at a given x0 value.
 
         Args:
@@ -723,12 +735,9 @@ class Vector_field_XYZ():
 
         plt.figure()
         ufield = self.to_Vector_field_YZ(x0=x0)
-        h1 = ufield.draw(kind, logarithm, normalize, draw_borders, filename,
-                         **kwargs)
+        h1 = ufield.draw(kind, logarithm, normalize, draw_borders, filename, **kwargs)
 
         return h1
-
-
 
 
 def FP_WPM_schmidt_kernel(Ex, Ey, n1, n2, k0, kx, ky, wavelength, dz):
@@ -766,7 +775,6 @@ def FP_WPM_schmidt_kernel(Ex, Ey, n1, n2, k0, kx, ky, wavelength, dz):
     Hy_final = np.zeros_like(Ex, dtype=complex)
     Hz_final = np.zeros_like(Ex, dtype=complex)
 
-
     for r, n_r in enumerate(Nr):
         for s, n_s in enumerate(Ns):
             Imz = np.array(np.logical_and(n1 == n_r, n2 == n_s))
@@ -797,68 +805,65 @@ def FP_PWD_kernel_simple(Ex, Ey, n1, n2, k0, kx, ky, wavelength, dz):
     Returns:
         E  list(Ex, Ey, Ez): Field E(z+dz) at at distance dz from the incident field.
         H  list(Ex, Ey, Ez): Field H(z+dz) at at distance dz from the incident field.
-        
+
     """
 
     # amplitude of waveplanes
     Exk = fftshift(fft2(Ex))
     Eyk = fftshift(fft2(Ey))
 
-    kr = n1 * k0 # first layer
-    ks = n2 * k0 # second layer
-            
+    kr = n1 * k0  # first layer
+    ks = n2 * k0  # second layer
+
     KX, KY = np.meshgrid(kx, ky)
     Kperp2 = KX**2 + KY**2
     Kperp = np.sqrt(Kperp2)
 
-    kz_r = np.sqrt(kr**2 - Kperp2) # first layer
-    kz_s = np.sqrt(ks**2 - Kperp2) # second layer
+    kz_r = np.sqrt(kr**2 - Kperp2)  # first layer
+    kz_s = np.sqrt(ks**2 - Kperp2)  # second layer
 
     P = np.exp(1j * kz_s * dz)
-    Gamma = kz_r*kz_s + kz_s * Kperp2 / kz_r
-    
+    Gamma = kz_r * kz_s + kz_s * Kperp2 / kz_r
 
     # Fresnel coefficients
     t_TM, t_TE, _, _ = fresnel_equations_kx(KX, wavelength, n1, n2, [1, 1, 0, 0], has_draw=False)
 
-    T00 = P * (t_TM*KX**2*Gamma + t_TE*KY**2*kr*ks) / (Kperp2*kr*ks) 
-    T01 = P * (t_TM*KX*KY*Gamma - t_TE*KX*KY*kr*ks) / (Kperp2*kr*ks) 
-    T10 = P * (t_TM*KX*KY*Gamma - t_TE*KX*KY*kr*ks) / (Kperp2*kr*ks) 
-    T11 = P * (t_TM*KY**2*Gamma + t_TE*KX**2*kr*ks) / (Kperp2*kr*ks) 
-        
-    nan_indices = np.where(np.isnan(T00)) 
+    T00 = P * (t_TM * KX**2 * Gamma + t_TE * KY**2 * kr * ks) / (Kperp2 * kr * ks)
+    T01 = P * (t_TM * KX * KY * Gamma - t_TE * KX * KY * kr * ks) / (Kperp2 * kr * ks)
+    T10 = P * (t_TM * KX * KY * Gamma - t_TE * KX * KY * kr * ks) / (Kperp2 * kr * ks)
+    T11 = P * (t_TM * KY**2 * Gamma + t_TE * KX**2 * kr * ks) / (Kperp2 * kr * ks)
 
-    if nan_indices is not None: 
-        T00_b = P * (t_TM*KX**2*Gamma + t_TE*KY**2*kr*ks) / (Kperp2*kr*ks+1e-10) 
-        T01_b = P * (t_TM*KX*KY*Gamma - t_TE*KX*KY*kr*ks) / (Kperp2*kr*ks+1e-10) 
-        T10_b = P * (t_TM*KX*KY*Gamma - t_TE*KX*KY*kr*ks) / (Kperp2*kr*ks+1e-10) 
-        T11_b = P * (t_TM*KY**2*Gamma + t_TE*KX**2*kr*ks) / (Kperp2*kr*ks+1e-10) 
-    
-        T00[nan_indices]=T00_b[nan_indices]
-        T01[nan_indices]=T01_b[nan_indices]
-        T10[nan_indices]=T10_b[nan_indices]
-        T11[nan_indices]=T11_b[nan_indices] 
-    
+    nan_indices = np.where(np.isnan(T00))
+
+    if nan_indices is not None:
+        T00_b = P * (t_TM * KX**2 * Gamma + t_TE * KY**2 * kr * ks) / (Kperp2 * kr * ks + 1e-10)
+        T01_b = P * (t_TM * KX * KY * Gamma - t_TE * KX * KY * kr * ks) / (Kperp2 * kr * ks + 1e-10)
+        T10_b = P * (t_TM * KX * KY * Gamma - t_TE * KX * KY * kr * ks) / (Kperp2 * kr * ks + 1e-10)
+        T11_b = P * (t_TM * KY**2 * Gamma + t_TE * KX**2 * kr * ks) / (Kperp2 * kr * ks + 1e-10)
+
+        T00[nan_indices] = T00_b[nan_indices]
+        T01[nan_indices] = T01_b[nan_indices]
+        T10[nan_indices] = T10_b[nan_indices]
+        T11[nan_indices] = T11_b[nan_indices]
 
     ex0 = T00 * Exk + T01 * Eyk
-    ey0 = T10 * Exk + T11 * Eyk 
-    ez0 = - (KX*ex0+KY*ey0) / (kz_s)
-    
+    ey0 = T10 * Exk + T11 * Eyk
+    ez0 = -(KX * ex0 + KY * ey0) / (kz_s)
+
     # thesis Fertig 2011 (3.40) pág 66 I do not feel confident yet
-    TM00 = -KX*KY*Gamma 
-    TM01 = -(KY*KY*Gamma + kz_s**2)
-    TM10 = +(KX*KX*Gamma + kz_s**2)
-    TM11 = +KX*KY*Gamma
-    TM20 = -KY*kz_s
-    TM21 = +KX*kz_s
-        
+    TM00 = -KX * KY * Gamma
+    TM01 = -(KY * KY * Gamma + kz_s**2)
+    TM10 = +(KX * KX * Gamma + kz_s**2)
+    TM11 = +KX * KY * Gamma
+    TM20 = -KY * kz_s
+    TM21 = +KX * kz_s
+
     Z0 = 376.82  # ohms (impedance of free space)
     H_factor = n2 / (ks * kz_s * Z0)
-    
-    hx0 = (TM00*ex0+TM01*ey0) * H_factor
-    hy0 = (TM10*ex0+TM11*ey0) * H_factor
-    hz0 = (TM20*ex0+TM21*ey0) * H_factor
-        
+
+    hx0 = (TM00 * ex0 + TM01 * ey0) * H_factor
+    hy0 = (TM10 * ex0 + TM11 * ey0) * H_factor
+    hz0 = (TM20 * ex0 + TM21 * ey0) * H_factor
 
     Ex_final = ifft2(ifftshift(ex0))
     Ey_final = ifft2(ifftshift(ey0))
@@ -871,9 +876,9 @@ def FP_PWD_kernel_simple(Ex, Ey, n1, n2, k0, kx, ky, wavelength, dz):
     return (Ex_final, Ey_final, Ez_final), (Hx_final, Hy_final, Hz_final)
 
 
-
-def _compute1Elipse__(x0: float, y0: float, A: float, B: float, theta: float,
-                      amplification: float = 1):
+def _compute1Elipse__(
+    x0: float, y0: float, A: float, B: float, theta: float, amplification: float = 1
+):
     """computes polarization ellipse for drawing.
 
     Args:
@@ -892,7 +897,7 @@ def _compute1Elipse__(x0: float, y0: float, A: float, B: float, theta: float,
     cf = np.cos(fi - theta)
     sf = np.sin(fi - theta)
 
-    r = 1 / np.sqrt(np.abs(cf / (A + eps)**2 + sf**2 / (B + eps)**2))
+    r = 1 / np.sqrt(np.abs(cf / (A + eps) ** 2 + sf**2 / (B + eps) ** 2))
 
     x = r * np.cos(fi) + x0
     y = r * np.sin(fi) + y0

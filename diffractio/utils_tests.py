@@ -13,7 +13,7 @@
 
 # flake8: noqa
 
-""" Common functions to classes """
+"""Common functions to classes"""
 
 import datetime
 import multiprocessing
@@ -35,7 +35,7 @@ NUM_PIXELS = 2**n
 NUM_PROCESSES = max_num_cores  # 8
 
 if no_date is True:
-    date = '0'
+    date = "0"
 else:
     now = datetime.datetime.now()
     date = now.strftime("%Y-%m-%d_%H")
@@ -55,14 +55,14 @@ def _test_slit_RS_XY(num_pixels: int):
     Returns:
         u: field
     """
-    length = 512*um
-    x = np.linspace(-length/2, length/2, num_pixels)
-    y = np.linspace(-length/2, length/2, num_pixels)
-    wavelength = 0.6328*um
+    length = 512 * um
+    x = np.linspace(-length / 2, length / 2, num_pixels)
+    y = np.linspace(-length / 2, length / 2, num_pixels)
+    wavelength = 0.6328 * um
 
     u1 = Scalar_mask_XY(x, y, wavelength)
-    u1.slit(x0=0, size=25*um)
-    u1.RS(z=1*mm, new_field=False, verbose=False)
+    u1.slit(x0=0, size=25 * um)
+    u1.RS(z=1 * mm, new_field=False, verbose=False)
     return u1
 
 
@@ -84,19 +84,17 @@ def run_benchmark(num_pixels: int):
 
         plt.figure()
         plt.plot(NUM_CORES, time_array)
-        plt.xlabel('num_cores')
-        plt.ylabel('time_array')
-        plt.title('num_pixels: {}, num_processes: {}'.format(
-            str(num_pixeles), str(NUM_PROCESSES)))
-        save_figure_test(newpath, func_name, '_time_numpixels')
+        plt.xlabel("num_cores")
+        plt.ylabel("time_array")
+        plt.title("num_pixels: {}, num_processes: {}".format(str(num_pixeles), str(NUM_PROCESSES)))
+        save_figure_test(newpath, func_name, "_time_numpixels")
 
         plt.figure()
         plt.plot(NUM_CORES, time_array[0] / time_array)
-        plt.title('num_pixels: {}, num_processes: {}'.format(
-            str(num_pixeles), str(NUM_PROCESSES)))
-        plt.xlabel('num_cores')
-        plt.ylabel('aceleracion')
-        save_figure_test(newpath, func_name, '_acc')
+        plt.title("num_pixels: {}, num_processes: {}".format(str(num_pixeles), str(NUM_PROCESSES)))
+        plt.xlabel("num_cores")
+        plt.ylabel("aceleracion")
+        save_figure_test(newpath, func_name, "_acc")
 
 
 def comparison(proposal: NDArrayFloat, solution: NDArrayFloat, maximum_diff: float):
@@ -116,7 +114,7 @@ def comparison(proposal: NDArrayFloat, solution: NDArrayFloat, maximum_diff: flo
     return comparison1
 
 
-def save_figure_test(newpath: str, func_name: str, add_name: str = ''):
+def save_figure_test(newpath: str, func_name: str, add_name: str = ""):
     """_summary_
 
     Args:
@@ -124,11 +122,11 @@ def save_figure_test(newpath: str, func_name: str, add_name: str = ''):
         func_name (str): _description_
         add_name (str, optional): _description_. Defaults to ''.
     """
-    title = '{}{}'.format(func_name, add_name)
+    title = "{}{}".format(func_name, add_name)
     plt.suptitle(title)
-    filename = '{}{}{}.{}'.format(newpath, func_name, add_name, 'png')
+    filename = "{}{}{}.{}".format(newpath, func_name, add_name, "png")
     plt.savefig(filename)
-    plt.close('all')
+    plt.close("all")
 
 
 def ejecute_multiprocessing(num_cores: int, n_pixels: int):
@@ -157,7 +155,7 @@ def benchmark_num_pixels(function, n_max: int = 10):
 
     n = np.array(range(6, n_max + 1))
     NUM_PIXELS = 2**n
-    time_array = np.zeros_like(NUM_PIXELS, dtype='double')
+    time_array = np.zeros_like(NUM_PIXELS, dtype="double")
 
     for n_pixels, i in zip(NUM_PIXELS, range(len(NUM_PIXELS))):
         t1 = time.time_ns()()
@@ -167,9 +165,9 @@ def benchmark_num_pixels(function, n_max: int = 10):
         print(n[i], n_pixels, t1, t2, time_array[i])
 
     plt.figure()
-    plt.plot(n, time_array, 'ko', ms=12)
+    plt.plot(n, time_array, "ko", ms=12)
     plt.figure()
-    plt.plot(NUM_PIXELS, time_array / NUM_PIXELS, 'ko', ms=12)
+    plt.plot(NUM_PIXELS, time_array / NUM_PIXELS, "ko", ms=12)
 
 
 def benchmark_processors_n_pixels(n_pixels: int):
@@ -182,7 +180,7 @@ def benchmark_processors_n_pixels(n_pixels: int):
         _type_: _description_
     """
 
-    time_array = np.zeros_like(NUM_CORES, dtype='float')
+    time_array = np.zeros_like(NUM_CORES, dtype="float")
     for i, core in enumerate(NUM_CORES):
         t1 = time.time()
         ejecute_multiprocessing(num_cores=core, n_pixels=n_pixels)
@@ -191,7 +189,7 @@ def benchmark_processors_n_pixels(n_pixels: int):
     return time_array
 
 
-def save_data_test(cls, newpath: str, func_name: str, add_name: str = ''):
+def save_data_test(cls, newpath: str, func_name: str, add_name: str = ""):
     """_summary_
 
     Args:
@@ -200,6 +198,6 @@ def save_data_test(cls, newpath: str, func_name: str, add_name: str = ''):
         add_name (str, optional): _description_. Defaults to ''.
     """
 
-    filename = '{}{}{}.{}'.format(newpath, func_name, add_name, 'npz')
+    filename = "{}{}{}.{}".format(newpath, func_name, add_name, "npz")
     print(filename)
     np.savez_compressed(file=filename, dict=cls.__dict__)

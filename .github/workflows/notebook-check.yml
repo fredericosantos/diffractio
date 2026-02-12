@@ -1,4 +1,4 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# This workflow will execute Jupyter notebooks to validate they run correctly
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
 name: Jupyter notebook build check
@@ -6,6 +6,7 @@ name: Jupyter notebook build check
 env:
   NOTEBOOK_DIR: 'docs'
   EXECUTION_TIMEOUT: 10
+
 on:
   push:
     branches: [ "main" ]
@@ -15,24 +16,24 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.10"]
-
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
+    
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "latest"
+    
+    - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: ${{ matrix.python-version }}
-        cache: 'pip' # caching pip dependencies
-        # https://github.com/actions/setup-python?tab=readme-ov-file#caching-packages-dependencies
+        python-version: "3.13"
+    
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install .
-        pip install jupyter papermill
+        uv sync --dev
+        uv pip install jupyter papermill
+    
     - name: Execute notebooks
       continue-on-error: true
       run: |
@@ -43,11 +44,11 @@ jobs:
           do
             echo "[notebook_path] $notebook_path"
             # Execute notebooks using papermill and silence output
-            python -m papermill "$notebook_path" /dev/null  \
+            uv run python -m papermill "$notebook_path" /dev/null  \
               --execution-timeout "$EXECUTION_TIMEOUT"  \
               --no-request-save-on-cell-execute --autosave-cell-every 0
-            # --no-progress-bar
           done
         else
           echo "No Jupyter notebooks found in the 'docs' directory."
         fi
+

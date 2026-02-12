@@ -21,22 +21,23 @@ Diffractio: A scientific computing package for Scalar and Vector Optical Interfe
 
 import datetime
 import multiprocessing
-from matplotlib import cm, rcParams
+
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sp
+from matplotlib import cm, rcParams
 
 __author__ = """Luis Miguel Sanchez Brea"""
-__email__ = 'optbrea@ucm.es'
-__version__ = '1.0.0'
-name = 'diffractio'
+__email__ = "optbrea@ucm.es"
+__version__ = "1.0.0"
+name = "diffractio"
 
-um = 1.
-mm = 1000.*um
-nm = um / 1000.
-degrees = np.pi / 180.
-s = 1.
-seconds = 1.
+um = 1.0
+mm = 1000.0 * um
+nm = um / 1000.0
+degrees = np.pi / 180.0
+s = 1.0
+seconds = 1.0
 
 eps = 1e-6
 num_decimals = 4
@@ -48,4 +49,4 @@ date_test = now.strftime("%Y-%m-%d_%H")
 
 num_max_processors = multiprocessing.cpu_count()
 
-rcParams['figure.dpi'] = 75
+rcParams["figure.dpi"] = 75

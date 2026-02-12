@@ -1,0 +1,118 @@
+[project]
+name = "diffractio"
+version = "1.0.0"
+description = "Python Scalar and Vector Diffraction and Interference"
+readme = "README.md"
+license = { text = "GPL-3.0-or-later" }
+authors = [
+    { name = "Luis Miguel Sanchez Brea", email = "optbrea@ucm.es" },
+]
+keywords = ["optics", "diffraction", "interference", "scalar", "vector", "physics", "simulation"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+requires-python = ">=3.13"
+dependencies = [
+    "ezdxf>=1.4.3",
+    "matplotlib>=3.10.8",
+    "numexpr>=2.14.1",
+    "numpy>=2.4.2",
+    "pandas>=3.0.0",
+    "pillow>=12.1.1",
+    "psutil>=7.2.2",
+    "py-pol>=1.3.0",
+    "pyvista>=0.47.0",
+    "scipy>=1.17.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/optbrea/diffractio"
+Documentation = "https://diffractio.readthedocs.io"
+Repository = "https://github.com/optbrea/diffractio.git"
+Issues = "https://github.com/optbrea/diffractio/issues"
+
+[build-system]
+requires = ["uv_build>=0.9.13,<0.10.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
+    "pytest-xdist>=3.8.0",
+    "ruff>=0.15.0",
+    "ty>=0.0.16",
+]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "E", "F", "I", "N", "W", "UP", "B", "C4", "SIM", "ARG", "PTH",
+    "PL", "PERF", "RUF", "C90", "FBT", "G", "INP", "PIE", "PT",
+    "RET", "SLF", "SLOT", "TID", "TCH", "INT", "PYI", "Q", "ASYNC",
+    "BLE", "A", "DTZ", "T10", "EM", "EXE", "FA", "FIX", "FLY",
+    "ICN", "LOG", "PGH", "TRY", "FURB",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.mccabe]
+max-complexity = 15
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "ARG", "PLR2004"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.ruff.lint.isort]
+known-first-party = ["diffractio"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--verbose",
+    "--tb=short",
+    "-ra",
+]
+markers = [
+    "slow: marks tests as slow",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]
+
+[tool.coverage.run]
+source = ["diffractio"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.ty.environment]
+python-version = "3.13"
+python-platform = "linux"
+
+[tool.ty.rules]
+possibly-unresolved-reference = "error"
+unresolved-import = "error"
+
+[tool.ty.src]
+include = ["diffractio/**/*.py", "tests/**/*.py"]
+exclude = ["**/deprecated/**", "**/other/**"]

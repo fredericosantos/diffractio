@@ -11,21 +11,30 @@
 # ----------------------------------------------------------------------
 
 
-
 # https://docs.python.org/3/library/typing.html
 # https://numpy.org/devdocs/reference/typing.html
 
 
-import numpy as np
-from typing import Any, List, Literal
-import numpy.typing as npt
+from typing import Any
 
+import numpy as np
+import numpy.typing as npt
 
 NDArray = npt.NDArray
 NDArrayInt = npt.NDArray[np.integer]
 NDArrayFloat = npt.NDArray[np.floating]
 NDArrayComplex = npt.NDArray[np.complexfloating]
 integer = np.integer
+
+__all__ = [
+    "Any",
+    "npt",
+    "NDArray",
+    "NDArrayInt",
+    "NDArrayFloat",
+    "NDArrayComplex",
+    "integer",
+]
 
 
 # Para 3.12 o posterior, es decir, es muy nuevo

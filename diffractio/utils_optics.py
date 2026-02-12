@@ -12,13 +12,13 @@
 
 # flake8: noqa
 
-""" General purpose optics functions """
+"""General purpose optics functions"""
 
 import pandas as pd
 from scipy.signal import argrelextrema
 from scipy.interpolate import CubicSpline, PchipInterpolator, Akima1DInterpolator
 
-from .utils_typing import npt, Any, NDArray,  NDArrayFloat, NDArrayComplex
+from .utils_typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
 
 
 from .__init__ import degrees, np, plt, um
@@ -62,7 +62,7 @@ def roughness_1D(x: NDArrayFloat, t: float, s: float, kind: str = "normal"):
     if kind == "normal":
         h_no_corr = s * np.random.randn(2 * N_width + 2)
         h_corr = fft_convolution1d(h_no_corr, weigths)
-        h_corr = h_corr[0: len(x)]
+        h_corr = h_corr[0 : len(x)]
     elif kind == "uniform":
         h_corr = s * (np.random.rand(len(x)) - 0.5)
 
@@ -115,7 +115,7 @@ def roughness_2D(x: NDArrayFloat, y: tuple[float, float], t: float, s: float):
 
     h_no_corr = s * np.random.randn(2 * N_width + 2, 2 * N_length + 2)
     h_corr = fft_convolution2d(h_no_corr, weigths)
-    h_corr = h_corr[0: len(x), 0: len(y)]
+    h_corr = h_corr[0 : len(x), 0 : len(y)]
 
     return h_corr
 
@@ -135,7 +135,7 @@ def beam_width_1D(u: NDArrayComplex, x: NDArrayFloat, remove_background: bool = 
         https://en.wikipedia.org/wiki/Beam_diameter
     """
 
-    intensity = np.abs(u)**2
+    intensity = np.abs(u) ** 2
 
     if remove_background is True:
         intensity = intensity - intensity - min()
@@ -147,7 +147,9 @@ def beam_width_1D(u: NDArrayComplex, x: NDArrayFloat, remove_background: bool = 
     return width_x, x_mean
 
 
-def width_percentage(x: NDArrayFloat, y: NDArrayFloat, percentage: float = 0.5, verbose: bool = False):
+def width_percentage(
+    x: NDArrayFloat, y: NDArrayFloat, percentage: float = 0.5, verbose: bool = False
+):
     """beam width (2*sigma) given at a certain height from maximum
 
     Args:
@@ -195,8 +197,14 @@ def width_percentage(x: NDArrayFloat, y: NDArrayFloat, percentage: float = 0.5, 
     return width, x_list, i_list
 
 
-def beam_width_2D(x: NDArrayFloat, y: NDArrayFloat, intensity: NDArrayFloat,
-                  remove_background: bool = False, has_draw: bool = False, verbose: bool = False):
+def beam_width_2D(
+    x: NDArrayFloat,
+    y: NDArrayFloat,
+    intensity: NDArrayFloat,
+    remove_background: bool = False,
+    has_draw: bool = False,
+    verbose: bool = False,
+):
     """2D beam width, ISO11146 width
 
     Args:
@@ -247,9 +255,7 @@ def beam_width_2D(x: NDArrayFloat, y: NDArrayFloat, intensity: NDArrayFloat,
         print("dx: {:4.2f} um".format(dx / um))
         print("dy: {:4.2f} um".format(dy / um))
         print("principal_axis: {:4.2f} degrees".format(principal_axis / degrees))
-        print(
-            "x_mean: {:4.2f} um, y_mean: {:4.2f} um".format(x_mean / um, y_mean / um)
-        )
+        print("x_mean: {:4.2f} um, y_mean: {:4.2f} um".format(x_mean / um, y_mean / um))
         print(
             "x2_mean: {:4.2f} um^2, y2_mean: {:4.2f} um^2, xy_mean: {:4.2f} um^2".format(
                 x2_mean / um**2, y2_mean / um**2, xy_mean / um**2
@@ -264,9 +270,7 @@ def beam_width_2D(x: NDArrayFloat, y: NDArrayFloat, intensity: NDArrayFloat,
         u0 = Scalar_field_XY(x, y, 1)
         u0.u = np.sqrt(intensity)
         u0.draw()
-        ellipse = Ellipse(
-            xy=(x_mean, y_mean), width=dy, height=dx, angle=-principal_axis/degrees
-        )
+        ellipse = Ellipse(xy=(x_mean, y_mean), width=dy, height=dx, angle=-principal_axis / degrees)
 
         ax = plt.gca()
         ax.add_artist(ellipse)
@@ -279,8 +283,7 @@ def beam_width_2D(x: NDArrayFloat, y: NDArrayFloat, intensity: NDArrayFloat,
     return dx, dy, principal_axis, (x_mean, y_mean, x2_mean, y2_mean, xy_mean)
 
 
-def refractive_index(filename: str, wavelength: float, raw: bool = False,
-                     has_draw: bool = bool):
+def refractive_index(filename: str, wavelength: float, raw: bool = False, has_draw: bool = bool):
     """gets refractive index from https://refractiveindex.info .
 
     * Files has to be converted to xlsx format.
@@ -330,11 +333,16 @@ def refractive_index(filename: str, wavelength: float, raw: bool = False,
         return f_n(wavelength), f_kappa(wavelength)
 
 
-def FWHM1D(x: NDArrayFloat, intensity: NDArrayFloat, percentage: float = 0.5,
-           remove_background: str | None = None, has_draw: bool = False):
-    """ FWHM
+def FWHM1D(
+    x: NDArrayFloat,
+    intensity: NDArrayFloat,
+    percentage: float = 0.5,
+    remove_background: str | None = None,
+    has_draw: bool = False,
+):
+    """FWHM
 
-    remove_background = 
+    remove_background =
 
     Args:
         x (NDArrayFloat): x array
@@ -371,9 +379,7 @@ def FWHM1D(x: NDArrayFloat, intensity: NDArrayFloat, percentage: float = 0.5,
     slope_left = (intensity[i_left + 1] - intensity[i_left]) / delta_x
 
     i_right, _, distance_right = nearest(right, percentage * amp_max)
-    slope_right = (
-        intensity[i_max + i_right] - intensity[i_max + i_right - 1]
-    ) / delta_x
+    slope_right = (intensity[i_max + i_right] - intensity[i_max + i_right - 1]) / delta_x
 
     i_right = i_right + i_max
 
@@ -405,9 +411,16 @@ def FWHM1D(x: NDArrayFloat, intensity: NDArrayFloat, percentage: float = 0.5,
     return np.squeeze(FWHM_x)
 
 
-def FWHM2D(x: NDArrayFloat, y: NDArrayFloat, intensity: NDArrayFloat, percentage: float = 0.5,
-           remove_background: bool = False, has_draw: bool = False, xlim: tuple[float] | None = None):
-    """ Get FWHM2D  in x and i direction
+def FWHM2D(
+    x: NDArrayFloat,
+    y: NDArrayFloat,
+    intensity: NDArrayFloat,
+    percentage: float = 0.5,
+    remove_background: bool = False,
+    has_draw: bool = False,
+    xlim: tuple[float] | None = None,
+):
+    """Get FWHM2D  in x and i direction
 
 
     Args:
@@ -445,8 +458,14 @@ def FWHM2D(x: NDArrayFloat, y: NDArrayFloat, intensity: NDArrayFloat, percentage
     return FWHM_x, FWHM_y
 
 
-def DOF(z: NDArrayFloat, widths: NDArrayFloat, w_factor: float = np.sqrt(2), w_fixed: float = 0,
-        has_draw: bool = False, verbose: bool = False):
+def DOF(
+    z: NDArrayFloat,
+    widths: NDArrayFloat,
+    w_factor: float = np.sqrt(2),
+    w_fixed: float = 0,
+    has_draw: bool = False,
+    verbose: bool = False,
+):
     """Determines Depth-of_focus (DOF) in terms of the width at different distances
 
     Args:
@@ -520,8 +539,13 @@ def DOF(z: NDArrayFloat, widths: NDArrayFloat, w_factor: float = np.sqrt(2), w_f
     return z_rayleigh, beam_waist, np.array([z[i_left], z[i_w0], z[i_right + i_w0]])
 
 
-def detect_intensity_range(x: NDArrayFloat, intensity: NDArrayFloat, percentage: float = 0.95,
-                           has_draw: bool = True, logarithm=True):
+def detect_intensity_range(
+    x: NDArrayFloat,
+    intensity: NDArrayFloat,
+    percentage: float = 0.95,
+    has_draw: bool = True,
+    logarithm=True,
+):
     """Determines positions x_min, x_max where intensity of the beam is percentage
 
     Args:
@@ -537,7 +561,7 @@ def detect_intensity_range(x: NDArrayFloat, intensity: NDArrayFloat, percentage:
 
     I_cum = intensity.cumsum()
 
-    pc = percentage + (1 - percentage)/2
+    pc = percentage + (1 - percentage) / 2
     Icum_min = (1 - pc) * I_cum.max()
     Icum_max = I_cum.max() * pc
 
@@ -575,12 +599,13 @@ def detect_intensity_range(x: NDArrayFloat, intensity: NDArrayFloat, percentage:
     return x_min, x_max
 
 
-
-def get_MTF_frequency(freqs, MTF, level: float = 0.5, has_draw: bool = True, verbose: bool =   True) -> float:
+def get_MTF_frequency(
+    freqs, MTF, level: float = 0.5, has_draw: bool = True, verbose: bool = True
+) -> float:
     """Get frequency at which MTF crosses specified level (e.g., 0.5 for cutoff).
     Uses linear interpolation between points.
     Returns frequency or None if level not crossed."""
-    
+
     nearest_idx = np.argmin(np.abs(MTF - level))
 
     freq_MTF = freqs[nearest_idx]  # in cycles/mm
@@ -588,14 +613,15 @@ def get_MTF_frequency(freqs, MTF, level: float = 0.5, has_draw: bool = True, ver
     if verbose:
         print(r"frequency at MTF = {}: {:2.4f} cycles/mm".format(level, freq_MTF))
 
-
     if has_draw:
         plt.figure()
-        plt.plot(freqs, MTF, 'b', label='MTF')
-        plt.axhline(level, color='r', linestyle='--', label=f'Level {level}')
-        plt.axvline(freq_MTF, color='k', linestyle='--', label=f'Freq at level: {freq_MTF:.2f} cycles/mm')
-        plt.xlabel('Frequency (cycles/mm)')
-        plt.ylabel('MTF')
+        plt.plot(freqs, MTF, "b", label="MTF")
+        plt.axhline(level, color="r", linestyle="--", label=f"Level {level}")
+        plt.axvline(
+            freq_MTF, color="k", linestyle="--", label=f"Freq at level: {freq_MTF:.2f} cycles/mm"
+        )
+        plt.xlabel("Frequency (cycles/mm)")
+        plt.ylabel("MTF")
         plt.xlim(0, freqs[-1])
         plt.ylim(-0.01, 1.01)
         plt.grid()
@@ -618,9 +644,16 @@ def get_cut_frequency(focal: float, diameter: float, wavelength: float):
 
     return freq_cut
 
-def MTF_ideal(wavelength: float, diameter: float, focal: float,
-              frequencies: NDArrayFloat | None = None, kind: str = '1D', 
-              verbose: bool = False, has_draw: bool = False):
+
+def MTF_ideal(
+    wavelength: float,
+    diameter: float,
+    focal: float,
+    frequencies: NDArrayFloat | None = None,
+    kind: str = "1D",
+    verbose: bool = False,
+    has_draw: bool = False,
+):
     """Determines the ideal MTF of a lens.
 
     References:
@@ -641,17 +674,13 @@ def MTF_ideal(wavelength: float, diameter: float, focal: float,
         (float) freq_cut: maximum frequency of the lens
     """
 
-
-    
-
     F_number = focal / diameter
     freq_cut = 1000.0 / (wavelength * F_number)  # porque mido en micras
 
     if frequencies is None:
-        frequencies = np.linspace(0, 1.25*freq_cut, 1000)
+        frequencies = np.linspace(0, 1.25 * freq_cut, 1000)
 
     fx_norm = np.abs(frequencies / freq_cut)
-
 
     if kind == "1D":
         MTF = 1 - np.abs(fx_norm)
@@ -687,7 +716,7 @@ def MTF_ideal(wavelength: float, diameter: float, focal: float,
 
 
 def lines_mm_2_cycles_degree(lines_mm: NDArrayFloat, focal: float):
-    """ Converts lines/mm to cycles/degree. JA Gomez-Pedrero 
+    """Converts lines/mm to cycles/degree. JA Gomez-Pedrero
     Args:
         lines_mm (numpy.array or float): lines_per_mm
         focal (float): focal of lens
@@ -698,7 +727,9 @@ def lines_mm_2_cycles_degree(lines_mm: NDArrayFloat, focal: float):
     return frec_cycles_deg
 
 
-def MTF_parameters(MTF: NDArrayFloat, MTF_ideal: NDArrayFloat, lines_mm: float = 50, verbose: bool = False):
+def MTF_parameters(
+    MTF: NDArrayFloat, MTF_ideal: NDArrayFloat, lines_mm: float = 50, verbose: bool = False
+):
     """MTF Args: strehl_ratio, mtf_50_ratio, freq_50_real, freq_50_ideal
 
     References:
@@ -749,20 +780,14 @@ def MTF_parameters(MTF: NDArrayFloat, MTF_ideal: NDArrayFloat, lines_mm: float =
         print(" MTF Args:")
         print("- Strehl_ratio      = {:2.2f}".format(strehl_ratio))
         print("- MTF_ratio @ {:2.2f}  = {:2.2f}".format(lines_mm, mtf_50_ratio))
-        print(
-            "- freq @ {:2.2f}  real (lines/mm) = {:2.2f}".format(lines_mm, freq_50_real)
-        )
-        print(
-            "- freq @ {:2.2f}  ideal (lines/mm) = {:2.2f}".format(
-                lines_mm, freq_50_ideal
-            )
-        )
+        print("- freq @ {:2.2f}  real (lines/mm) = {:2.2f}".format(lines_mm, freq_50_real))
+        print("- freq @ {:2.2f}  ideal (lines/mm) = {:2.2f}".format(lines_mm, freq_50_ideal))
 
     return strehl_ratio, mtf_50_ratio, freq_50_real, freq_50_ideal
 
 
 def gauss_spectrum(wavelengths: NDArrayFloat, w_central: float, Dw: float, normalize: bool = True):
-    """ 
+    """
     Returns weigths for a gaussian spectrum
 
     Args:
@@ -783,8 +808,10 @@ def gauss_spectrum(wavelengths: NDArrayFloat, w_central: float, Dw: float, norma
     return weights
 
 
-def lorentz_spectrum(wavelengths: NDArrayFloat, w_central: float, Dw: float, normalize: bool = True):
-    """ 
+def lorentz_spectrum(
+    wavelengths: NDArrayFloat, w_central: float, Dw: float, normalize: bool = True
+):
+    """
     Returns weigths for a Lorentz spectrum
 
     Args:
@@ -797,7 +824,7 @@ def lorentz_spectrum(wavelengths: NDArrayFloat, w_central: float, Dw: float, nor
         weights (float): Lorentz spectrum
     """
 
-    weigths = 1 / (1 + ((wavelengths - w_central) / (Dw/2)) ** 2)
+    weigths = 1 / (1 + ((wavelengths - w_central) / (Dw / 2)) ** 2)
 
     if normalize is True:
         weights = weigths / weigths.sum()
@@ -823,7 +850,7 @@ def uniform_spectrum(wavelengths: NDArrayFloat, normalize: bool = True):
     return weights
 
 
-def normalize_field(self, kind='amplitude', new_field: bool = False):
+def normalize_field(self, kind="amplitude", new_field: bool = False):
     """Normalize the field to maximum intensity.
 
     Args:
@@ -835,12 +862,10 @@ def normalize_field(self, kind='amplitude', new_field: bool = False):
     """
 
     if self.type[0:6] == "Scalar":
-
-        if kind == 'amplitude':
-                maximum = np.sqrt(np.abs(self.u) ** 2).max()
-        elif kind == 'intensity':
-                maximum = (np.abs(self.u) ** 2).max()
-
+        if kind == "amplitude":
+            maximum = np.sqrt(np.abs(self.u) ** 2).max()
+        elif kind == "intensity":
+            maximum = (np.abs(self.u) ** 2).max()
 
         if new_field is False:
             self.u = self.u / maximum
@@ -850,12 +875,12 @@ def normalize_field(self, kind='amplitude', new_field: bool = False):
             return field_new
 
     elif self.type[0:6] == "Vector":
-
-        if kind == 'amplitude':
-                maximum  = np.sqrt(np.abs(self.Ex) ** 2 + np.abs(self.Ey) ** 2 + np.abs(self.Ez) ** 2).max()
-        elif kind == 'intensity':
-                maximum  = (np.abs(self.Ex) ** 2 + np.abs(self.Ey) ** 2 + np.abs(self.Ez) ** 2).max()
-
+        if kind == "amplitude":
+            maximum = np.sqrt(
+                np.abs(self.Ex) ** 2 + np.abs(self.Ey) ** 2 + np.abs(self.Ez) ** 2
+            ).max()
+        elif kind == "intensity":
+            maximum = (np.abs(self.Ex) ** 2 + np.abs(self.Ey) ** 2 + np.abs(self.Ez) ** 2).max()
 
         if new_field is False:
             self.Ex = self.Ex / maximum
@@ -918,8 +943,9 @@ def convert_phase2heigths(phase: NDArrayFloat, wavelength: float, n: float, n_ba
     return phase / (k * (n - n_background))
 
 
-def convert_amplitude2heigths(amplitude: NDArrayComplex, wavelength: float,
-                              kappa: float, n_background: float):
+def convert_amplitude2heigths(
+    amplitude: NDArrayComplex, wavelength: float, kappa: float, n_background: float
+):
     """Amplitude and it is converted to a depth. It is useful to convert Scalar_mask_X to Scalar_mask_XZ.
 
     Args:
@@ -941,10 +967,15 @@ def convert_amplitude2heigths(amplitude: NDArrayComplex, wavelength: float,
     return depth
 
 
-def fresnel_equations_kx(kx: NDArrayComplex, wavelength: float, n1: float, n2: float,
-                         outputs: tuple[bool, bool, bool, bool] = [True, True, True, True], 
-                         has_draw: bool = True,
-                         kind: str = "amplitude_phase"):
+def fresnel_equations_kx(
+    kx: NDArrayComplex,
+    wavelength: float,
+    n1: float,
+    n2: float,
+    outputs: tuple[bool, bool, bool, bool] = [True, True, True, True],
+    has_draw: bool = True,
+    kind: str = "amplitude_phase",
+):
     """Fresnel_equations where input are kx part of wavevector.
 
     Args:
@@ -984,9 +1015,7 @@ def fresnel_equations_kx(kx: NDArrayComplex, wavelength: float, n1: float, n2: f
     if outputs[1]:
         t_TE = 2 * kz_1 / (kz_1 + kz_2)  # perpendicular
     if outputs[2]:
-        r_TM = (n2**2 * kz_1 - n1**2 * kz_2) / (
-            n2**2 * kz_1 + n1**2 * kz_2
-        )  # parallel
+        r_TM = (n2**2 * kz_1 - n1**2 * kz_2) / (n2**2 * kz_1 + n1**2 * kz_2)  # parallel
     if outputs[3]:
         r_TE = (kz_1 - kz_2) / (kz_1 + kz_2)  # perpendicular
 
@@ -1011,13 +1040,13 @@ def fresnel_equations_kx(kx: NDArrayComplex, wavelength: float, n1: float, n2: f
             axs[0].set_title("amplitude")
 
             if outputs[0]:
-                axs[1].plot(kx, np.angle(t_TM)/degrees, "r", label=r"$t_{\parallel, TM}$")
+                axs[1].plot(kx, np.angle(t_TM) / degrees, "r", label=r"$t_{\parallel, TM}$")
             if outputs[1]:
-                axs[1].plot(kx, np.angle(t_TE)/degrees, "b", label=r"$t_{\perp, TE}$")
+                axs[1].plot(kx, np.angle(t_TE) / degrees, "b", label=r"$t_{\perp, TE}$")
             if outputs[2]:
-                axs[1].plot(kx, np.angle(r_TM)/degrees, "r-.", label=r"$r_{\parallel, TM}$")
+                axs[1].plot(kx, np.angle(r_TM) / degrees, "r-.", label=r"$r_{\parallel, TM}$")
             if outputs[3]:
-                axs[1].plot(kx, np.angle(r_TE)/degrees, "b-.", label=r"$r_{\perp, TE}$")
+                axs[1].plot(kx, np.angle(r_TE) / degrees, "b-.", label=r"$r_{\perp, TE}$")
 
             axs[1].legend()
             axs[1].grid()
@@ -1045,13 +1074,13 @@ def fresnel_equations_kx(kx: NDArrayComplex, wavelength: float, n1: float, n2: f
             axs[0].set_title("real")
 
             if outputs[0]:
-                axs[1].plot(kx, np.imag(t_TM)/degrees, "r", label=r"$t_{\parallel, TM}$")
+                axs[1].plot(kx, np.imag(t_TM) / degrees, "r", label=r"$t_{\parallel, TM}$")
             if outputs[1]:
-                axs[1].plot(kx, np.imag(t_TE)/degrees, "b", label=r"$t_{\perp, TE}$")
+                axs[1].plot(kx, np.imag(t_TE) / degrees, "b", label=r"$t_{\perp, TE}$")
             if outputs[2]:
-                axs[1].plot(kx, np.imag(r_TM)/degrees, "r-.", label=r"$r_{\parallel, TM}$")
+                axs[1].plot(kx, np.imag(r_TM) / degrees, "r-.", label=r"$r_{\parallel, TM}$")
             if outputs[3]:
-                axs[1].plot(kx, np.imag(r_TE)/degrees, "b-.", label=r"$r_{\perp, TE}$")
+                axs[1].plot(kx, np.imag(r_TE) / degrees, "b-.", label=r"$r_{\perp, TE}$")
 
             axs[1].legend()
             axs[1].grid()
@@ -1061,7 +1090,7 @@ def fresnel_equations_kx(kx: NDArrayComplex, wavelength: float, n1: float, n2: f
 
     if t_TM is not None:
         t_TM = t_TM.astype(np.complex128)
-    if t_TE is not None:  
+    if t_TE is not None:
         t_TE = t_TE.astype(np.complex128)
     if r_TE is not None:
         r_TE = r_TE.astype(np.complex128)
@@ -1071,8 +1100,14 @@ def fresnel_equations_kx(kx: NDArrayComplex, wavelength: float, n1: float, n2: f
     return t_TM, t_TE, r_TM, r_TE  # parallel, perpendicular
 
 
-def transmitances_reflectances_kx(kx: NDArrayComplex, wavelength: float, n1: float, n2: float,
-                                  outputs: tuple[bool, bool, bool, bool] = [True, True, True, True], has_draw: bool = True):
+def transmitances_reflectances_kx(
+    kx: NDArrayComplex,
+    wavelength: float,
+    n1: float,
+    n2: float,
+    outputs: tuple[bool, bool, bool, bool] = [True, True, True, True],
+    has_draw: bool = True,
+):
     """Transmitances and reflectances, where input are kx part of wavevector.
 
     Args:
@@ -1102,14 +1137,12 @@ def transmitances_reflectances_kx(kx: NDArrayComplex, wavelength: float, n1: flo
     kz_2[normal] = np.sqrt(alpha[normal])
     kz_2[reflexion_total] = 1.0j * np.sqrt(-alpha[reflexion_total])
 
-    t_TM, t_TE, r_TM, r_TE = fresnel_equations_kx(
-        kx, wavelength, n1, n2, outputs, has_draw=False
-    )
+    t_TM, t_TE, r_TM, r_TE = fresnel_equations_kx(kx, wavelength, n1, n2, outputs, has_draw=False)
 
     T_TM, T_TE, R_TM, R_TE = None, None, None, None
 
     if outputs[0]:
-        T_TM = np.real(kz_2 / kz_1 * np.abs(t_TM ** 2))
+        T_TM = np.real(kz_2 / kz_1 * np.abs(t_TM**2))
     if outputs[1]:
         T_TE = np.real(kz_2 / kz_1 * np.abs(t_TE) ** 2)
     if outputs[2]:
@@ -1137,9 +1170,15 @@ def transmitances_reflectances_kx(kx: NDArrayComplex, wavelength: float, n1: flo
     return T_TM, T_TE, R_TM, R_TE  # parallel, perpendicular
 
 
-def fresnel_equations(theta: NDArrayFloat, wavelength: float, n1: float, n2: float,
-                      outputs: tuple[bool, bool, bool, bool] = [True, True, True, True], has_draw: bool = True,
-                      kind="amplitude_phase"):
+def fresnel_equations(
+    theta: NDArrayFloat,
+    wavelength: float,
+    n1: float,
+    n2: float,
+    outputs: tuple[bool, bool, bool, bool] = [True, True, True, True],
+    has_draw: bool = True,
+    kind="amplitude_phase",
+):
     """Fresnel equations and reflectances, where input are angles of incidence.
 
     Args:
@@ -1167,53 +1206,53 @@ def fresnel_equations(theta: NDArrayFloat, wavelength: float, n1: float, n2: flo
         fig, axs = plt.subplots(1, 2, figsize=(12, 4))
         if kind == "amplitude_phase":
             if outputs[0]:
-                axs[0].plot(theta/degrees, np.abs(t_TM), "r", label=r"$t_{\parallel, TM}$")
+                axs[0].plot(theta / degrees, np.abs(t_TM), "r", label=r"$t_{\parallel, TM}$")
             if outputs[1]:
-                axs[0].plot(theta/degrees, np.abs(t_TE), "b", label=r"$t_{\perp, TE}$")
+                axs[0].plot(theta / degrees, np.abs(t_TE), "b", label=r"$t_{\perp, TE}$")
             if outputs[2]:
-                axs[0].plot(theta/degrees, np.abs(r_TM), "r-.", label=r"$r_{\parallel, TM}$")
+                axs[0].plot(theta / degrees, np.abs(r_TM), "r-.", label=r"$r_{\parallel, TM}$")
             if outputs[3]:
-                axs[0].plot(theta/degrees, np.abs(r_TE), "b-.", label=r"$r_{\perp, TE}$")
+                axs[0].plot(theta / degrees, np.abs(r_TE), "b-.", label=r"$r_{\perp, TE}$")
 
             axs[0].legend()
             axs[0].grid()
 
-            axs[0].set_xlim(theta[0]/degrees, theta[-1]/degrees)
+            axs[0].set_xlim(theta[0] / degrees, theta[-1] / degrees)
             axs[0].set_xlabel(r"$\theta \, (^{\circ})$")
             axs[0].set_title("amplitude")
 
             if outputs[0]:
                 axs[1].plot(
-                    theta/degrees,
-                    np.angle(t_TM)/degrees,
+                    theta / degrees,
+                    np.angle(t_TM) / degrees,
                     "r",
                     label=r"$t_{\parallel, TM}$",
                 )
             if outputs[1]:
                 axs[1].plot(
-                    theta/degrees,
-                    np.angle(t_TE)/degrees,
+                    theta / degrees,
+                    np.angle(t_TE) / degrees,
                     "b",
                     label=r"$t_{\perp, TE}$",
                 )
             if outputs[2]:
                 axs[1].plot(
-                    theta/degrees,
-                    np.angle(np.abs(r_TM))/degrees,
+                    theta / degrees,
+                    np.angle(np.abs(r_TM)) / degrees,
                     "r-.",
                     label=r"$r_{\parallel, TM}$",
                 )
             if outputs[3]:
                 axs[1].plot(
-                    theta/degrees,
-                    np.angle(np.abs(r_TE))/degrees,
+                    theta / degrees,
+                    np.angle(np.abs(r_TE)) / degrees,
                     "b-.",
                     label=r"$r_{\perp, TE}$",
                 )
 
             axs[1].legend()
             axs[1].grid()
-            axs[1].set_xlim(theta[0]/degrees, theta[-1]/degrees)
+            axs[1].set_xlim(theta[0] / degrees, theta[-1] / degrees)
             axs[1].set_xlabel(r"$\theta \, (^{\circ})$")
             axs[1].set_title(r"phase $\, (^{\circ})$")
             axs[1].set_ylim(-190, 190)
@@ -1221,61 +1260,63 @@ def fresnel_equations(theta: NDArrayFloat, wavelength: float, n1: float, n2: flo
 
         elif kind == "real_imag":
             if outputs[0]:
-                axs[0].plot(theta/degrees, np.real(t_TM), "r", label=r"$t_{\parallel, TM}$")
+                axs[0].plot(theta / degrees, np.real(t_TM), "r", label=r"$t_{\parallel, TM}$")
             if outputs[1]:
-                axs[0].plot(theta/degrees, np.real(t_TE), "b", label=r"$t_{\perp, TE}$")
+                axs[0].plot(theta / degrees, np.real(t_TE), "b", label=r"$t_{\perp, TE}$")
             if outputs[2]:
-                axs[0].plot(
-                    theta/degrees, np.real(r_TM), "r-.", label=r"$r_{\parallel, TM}$"
-                )
+                axs[0].plot(theta / degrees, np.real(r_TM), "r-.", label=r"$r_{\parallel, TM}$")
             if outputs[3]:
-                axs[0].plot(
-                    theta/degrees, np.real(r_TE), "b-.", label=r"$r_{\perp, TE}$"
-                )
+                axs[0].plot(theta / degrees, np.real(r_TE), "b-.", label=r"$r_{\perp, TE}$")
 
             axs[0].legend()
             axs[0].grid()
             axs[0].set_xlabel(r"$\theta \, (^{\circ})$")
-            axs[0].set_xlim(theta[0]/degrees, theta[-1]/degrees)
+            axs[0].set_xlim(theta[0] / degrees, theta[-1] / degrees)
             axs[0].set_title("real")
 
             if outputs[0]:
                 axs[1].plot(
-                    theta/degrees, np.imag(t_TM)/degrees, "r", label=r"$t_{\parallel, TM}$"
+                    theta / degrees, np.imag(t_TM) / degrees, "r", label=r"$t_{\parallel, TM}$"
                 )
             if outputs[1]:
                 axs[1].plot(
-                    theta/degrees,
-                    np.imag(t_TE)/degrees,
+                    theta / degrees,
+                    np.imag(t_TE) / degrees,
                     "b",
                     label=r"$t_{\perp, TE}$",
                 )
             if outputs[2]:
                 axs[1].plot(
-                    theta/degrees,
-                    np.imag(r_TM)/degrees,
+                    theta / degrees,
+                    np.imag(r_TM) / degrees,
                     "r-.",
                     label=r"$r_{\parallel, TM}$",
                 )
             if outputs[3]:
                 axs[1].plot(
-                    theta/degrees,
-                    np.imag(r_TE)/degrees,
+                    theta / degrees,
+                    np.imag(r_TE) / degrees,
                     "b-.",
                     label=r"$r_{\perp, TE}$",
                 )
 
             axs[1].legend()
             axs[1].grid()
-            axs[1].set_xlim(theta[0]/degrees, theta[-1]/degrees)
+            axs[1].set_xlim(theta[0] / degrees, theta[-1] / degrees)
             axs[1].set_xlabel(r"$\theta \, (^{\circ})$")
             axs[1].set_title(r"imag")
 
     return t_TM, t_TE, r_TM, r_TE  # parallel, perpendicular
 
 
-def transmitances_reflectances(theta: NDArrayFloat, wavelength: float, n1: float, n2: float,
-                               outputs: tuple[bool] = [True, True, True, True], has_draw: bool = False):
+def transmitances_reflectances(
+    theta: NDArrayFloat,
+    wavelength: float,
+    n1: float,
+    n2: float,
+    outputs: tuple[bool] = [True, True, True, True],
+    has_draw: bool = False,
+):
     """Transmitances and reflectances, where input are angles of incidence.
 
     Args:
@@ -1301,15 +1342,15 @@ def transmitances_reflectances(theta: NDArrayFloat, wavelength: float, n1: float
     if has_draw:
         plt.figure()
         if outputs[0]:
-            plt.plot(theta/degrees, T_TM, "r", label=r"$t_{\parallel, TM}$")
+            plt.plot(theta / degrees, T_TM, "r", label=r"$t_{\parallel, TM}$")
         if outputs[1]:
-            plt.plot(theta/degrees, T_TE, "b", label=r"$t_{\perp, TE}$")
+            plt.plot(theta / degrees, T_TE, "b", label=r"$t_{\perp, TE}$")
         if outputs[2]:
-            plt.plot(theta/degrees, R_TM, "r-.", label=r"$r_{\parallel, TM}$")
+            plt.plot(theta / degrees, R_TM, "r-.", label=r"$r_{\parallel, TM}$")
         if outputs[3]:
-            plt.plot(theta/degrees, R_TE, "b-.", label=r"$r_{\perp, TE}$")
+            plt.plot(theta / degrees, R_TE, "b-.", label=r"$r_{\perp, TE}$")
 
-        plt.xlim(theta[0]/degrees, theta[-1]/degrees)
+        plt.xlim(theta[0] / degrees, theta[-1] / degrees)
         plt.xlabel(r"$\theta \, (^{\circ})$")
         plt.legend()
         plt.grid()
@@ -1317,16 +1358,21 @@ def transmitances_reflectances(theta: NDArrayFloat, wavelength: float, n1: float
     return T_TM, T_TE, R_TM, R_TE  # parallel, perpendicular
 
 
-
-def determine_extrema(I_far: np.array, angles_x: np.array,  is_angles: bool = False, change_order_0: bool = True,  
-                      has_draw: bool = True, has_logarithm: bool = True,  verbose: bool = True,
-                      **kwargs):
-        
+def determine_extrema(
+    I_far: np.array,
+    angles_x: np.array,
+    is_angles: bool = False,
+    change_order_0: bool = True,
+    has_draw: bool = True,
+    has_logarithm: bool = True,
+    verbose: bool = True,
+    **kwargs,
+):
     """
-     Determine the extrema of a 1D far field diffraction pattern. 
-     
+     Determine the extrema of a 1D far field diffraction pattern.
+
      It can be in positions x or angles.
-    
+
     Args:
         I_far (np.array): Intensity distribution of the far field
         angles_x (np.array): angles of the far field.
@@ -1335,14 +1381,14 @@ def determine_extrema(I_far: np.array, angles_x: np.array,  is_angles: bool = Fa
         has_draw (bool): It draws the far field with the maxima and minima.
         has_logarithm (bool): It draws the far field with logarithm or not.
         verbose (bool): if True, it prints the maxima and minima.
-        
+
 
     Returns:
         (i_minima, i_maxima): List with indexes of minima and maxima
         (angles[i_minima], angles[i_maxima]): List with angles of minima and maxima
         (I_far[i_minima], I_far[i_maxima]): List with intensities of minima and maxima
     """
-        
+
     i_minima = argrelextrema(I_far, np.less)
     i_minima = np.array(i_minima).flatten()
 
@@ -1351,24 +1397,31 @@ def determine_extrema(I_far: np.array, angles_x: np.array,  is_angles: bool = Fa
     i_central_max = np.argmax(I_far)
 
     if change_order_0:
-        i_minima= np.append(i_minima, i_central_max)
+        i_minima = np.append(i_minima, i_central_max)
         i_minima = np.sort(i_minima)
-        
-    
+
     if verbose:
         if is_angles:
-            print("Central maxima: {:2.2f}, angle: {} degrees".format(I_far[i_central_max], angles_x[i_central_max]/degrees))
+            print(
+                "Central maxima: {:2.2f}, angle: {} degrees".format(
+                    I_far[i_central_max], angles_x[i_central_max] / degrees
+                )
+            )
             print("Angles minima:")
-            print(angles_x[i_minima]/degrees)
+            print(angles_x[i_minima] / degrees)
             print("Angles maxima:")
-            print(angles_x[i_maxima]/degrees)
+            print(angles_x[i_maxima] / degrees)
         else:
-            print("Central maxima: {:2.2f}, position: {} ".format(I_far[i_central_max], angles_x[i_central_max]))
+            print(
+                "Central maxima: {:2.2f}, position: {} ".format(
+                    I_far[i_central_max], angles_x[i_central_max]
+                )
+            )
             print("Positions minima:")
-            print(angles_x[i_minima]/um)
+            print(angles_x[i_minima] / um)
             print("Positions maxima:")
-            print(angles_x[i_maxima]/um)
-    
+            print(angles_x[i_maxima] / um)
+
     if has_draw:
         if has_logarithm:
             function = plt.semilogy
@@ -1376,32 +1429,40 @@ def determine_extrema(I_far: np.array, angles_x: np.array,  is_angles: bool = Fa
             function = plt.plot
 
         plt.figure(**kwargs)
-        
+
         if is_angles:
-            function(angles_x/degrees, I_far, 'k')
-            function(angles_x[i_maxima]/degrees, I_far[i_maxima], 'ro')
-            function(angles_x[i_minima]/degrees, I_far[i_minima], 'bo')
+            function(angles_x / degrees, I_far, "k")
+            function(angles_x[i_maxima] / degrees, I_far[i_maxima], "ro")
+            function(angles_x[i_minima] / degrees, I_far[i_minima], "bo")
 
-            plt.ylim(I_far.min(),I_far.max())
-            plt.xlim(angles_x[0]/degrees, angles_x[-1]/degrees)
-            plt.xlabel(r'angles $\,(^{\circ})$')
-            plt.grid('on')
+            plt.ylim(I_far.min(), I_far.max())
+            plt.xlim(angles_x[0] / degrees, angles_x[-1] / degrees)
+            plt.xlabel(r"angles $\,(^{\circ})$")
+            plt.grid("on")
         else:
-            function(angles_x, I_far, 'k')
-            function(angles_x[i_maxima], I_far[i_maxima], 'ro')
-            function(angles_x[i_minima], I_far[i_minima], 'bo')
+            function(angles_x, I_far, "k")
+            function(angles_x[i_maxima], I_far[i_maxima], "ro")
+            function(angles_x[i_minima], I_far[i_minima], "bo")
 
-            plt.ylim(I_far.min(),I_far.max())
-            plt.xlim(angles_x[0]/um, angles_x[-1]/um)
-            plt.xlabel(r'x($\mu$m)')
-            plt.grid('on')         
-        
-    return (i_minima, i_maxima), (angles_x[i_minima], angles_x[i_maxima]), (I_far[i_minima], I_far[i_maxima])
+            plt.ylim(I_far.min(), I_far.max())
+            plt.xlim(angles_x[0] / um, angles_x[-1] / um)
+            plt.xlabel(r"x($\mu$m)")
+            plt.grid("on")
+
+    return (
+        (i_minima, i_maxima),
+        (angles_x[i_minima], angles_x[i_maxima]),
+        (I_far[i_minima], I_far[i_maxima]),
+    )
 
 
-def size_from_diffraction_minima(angles_minima: np.array, wavelength, size_slit: float | None = None, 
-                                 has_draw: bool = False, verbose: bool = False):
-
+def size_from_diffraction_minima(
+    angles_minima: np.array,
+    wavelength,
+    size_slit: float | None = None,
+    has_draw: bool = False,
+    verbose: bool = False,
+):
     """We have the minima of a 1D diffraction pattern and determine the size.
 
     _extended_summary_
@@ -1415,8 +1476,8 @@ def size_from_diffraction_minima(angles_minima: np.array, wavelength, size_slit:
     """
     diff_angles = np.diff((angles_minima))
     diff_angles = np.diff(np.sin(angles_minima))
-    sizes_slit = wavelength/diff_angles
-    
+    sizes_slit = wavelength / diff_angles
+
     # i_bad = np.where(sizes_slit<0.6*size_slit)
     # sizes_slit[i_bad] = sizes_slit[i_bad]*2
 
@@ -1428,42 +1489,50 @@ def size_from_diffraction_minima(angles_minima: np.array, wavelength, size_slit:
     size_slit_measured_center = estimated_diameter_fitting
 
     if size_slit is not None:
-        percent_error_size_slit_center = 100*(size_slit_measured_center-size_slit)/size_slit
-        error_size_slit_center = (size_slit_measured_center-size_slit)
+        percent_error_size_slit_center = 100 * (size_slit_measured_center - size_slit) / size_slit
+        error_size_slit_center = size_slit_measured_center - size_slit
     else:
-        error_size_slit_center=None
+        error_size_slit_center = None
 
-    
     # quadratic fitting to the diffraction minima
     fitting = np.poly1d(diameter_fitting)
     diameter_squared = fitting(angles_minima)
 
     if has_draw:
+        plt.figure(figsize=(20, 5))
 
-        plt.figure(figsize=(20,5))
-
-        plt.plot(angles_minima[0:-1]/degrees, sizes_slit, 'kx', label='local size')
+        plt.plot(angles_minima[0:-1] / degrees, sizes_slit, "kx", label="local size")
         if size_slit is not None:
-            plt.plot(np.array([angles_minima[0], angles_minima[-1]])/degrees, (size_slit, size_slit), 'r--', label='real size')
-        plt.plot(np.array([angles_minima[0], angles_minima[-1]])/degrees, (size_slit_measured_center, size_slit_measured_center), 'g--', label='measured size center')
-        plt.plot(angles_minima/degrees, diameter_squared, 'k', label='fitting')
+            plt.plot(
+                np.array([angles_minima[0], angles_minima[-1]]) / degrees,
+                (size_slit, size_slit),
+                "r--",
+                label="real size",
+            )
+        plt.plot(
+            np.array([angles_minima[0], angles_minima[-1]]) / degrees,
+            (size_slit_measured_center, size_slit_measured_center),
+            "g--",
+            label="measured size center",
+        )
+        plt.plot(angles_minima / degrees, diameter_squared, "k", label="fitting")
 
         plt.legend()
-        
+
         if size_slit is not None:
-            plt.title(f" {size_slit/um:.2f}  Measured slit size:  {size_slit_measured_center/um:.2f}, error:  {error_size_slit_center*1000:.2f} nm = {percent_error_size_slit_center:.2f}%")
+            plt.title(
+                f" {size_slit / um:.2f}  Measured slit size:  {size_slit_measured_center / um:.2f}, error:  {error_size_slit_center * 1000:.2f} nm = {percent_error_size_slit_center:.2f}%"
+            )
 
-        plt.xlim(angles_minima[0]/degrees, angles_minima[-1]/degrees)
-        plt.xlabel(r'$\theta$ (degrees)')
+        plt.xlim(angles_minima[0] / degrees, angles_minima[-1] / degrees)
+        plt.xlabel(r"$\theta$ (degrees)")
         plt.ylabel("Diameter estimation")
-
 
     if verbose:
         print("sizes_slit")
         print(sizes_slit)
-        print(f"estimated diameter: {estimated_diameter_fitting/um:.2f} um")
+        print(f"estimated diameter: {estimated_diameter_fitting / um:.2f} um")
 
-        
     return sizes_slit, size_slit_measured_center, error_size_slit_center
 
 
@@ -1480,82 +1549,81 @@ def envelopes(angles: np.array, I_far: np.array, has_draw: bool = True, has_loga
         I_max_interpolated (np.array)
         I_min_interpolated (np.array))
         Contrast (np.array)
-    
-    TODO:  
+
+    TODO:
         Improve: The envolvente should be always above or below the diffraction pattern.
         1. Find local minima at difference
         2. Move points at envolvente to this local minima
         3. New interpolation
     """
-    
-    i_extrema, angles_extrema, I_extrema = determine_extrema(I_far = I_far, angles_x = angles, change_order_0 = False,
-                                                             has_draw = False, has_logarithm=has_logarithm, verbose = False)
+
+    i_extrema, angles_extrema, I_extrema = determine_extrema(
+        I_far=I_far,
+        angles_x=angles,
+        change_order_0=False,
+        has_draw=False,
+        has_logarithm=has_logarithm,
+        verbose=False,
+    )
 
     angles_minima = angles_extrema[0]
     angles_maxima = angles_extrema[1]
-    
+
     I_minima = I_extrema[0]
     I_maxima = I_extrema[1]
-    
-    
-    spl_max  = CubicSpline(angles_maxima, I_maxima)
-    spl_max  = PchipInterpolator(angles_maxima, I_maxima)
-    spl_max  = Akima1DInterpolator(angles_maxima, I_maxima)
-    I_max_interpolated = spl_max (angles)
 
+    spl_max = CubicSpline(angles_maxima, I_maxima)
+    spl_max = PchipInterpolator(angles_maxima, I_maxima)
+    spl_max = Akima1DInterpolator(angles_maxima, I_maxima)
+    I_max_interpolated = spl_max(angles)
 
-    spl_min  = CubicSpline(angles_minima, I_minima)
-    spl_min  = PchipInterpolator(angles_minima, I_minima)
-    spl_min  = Akima1DInterpolator(angles_minima, I_minima)
-    I_min_interpolated  = spl_min (angles)
+    spl_min = CubicSpline(angles_minima, I_minima)
+    spl_min = PchipInterpolator(angles_minima, I_minima)
+    spl_min = Akima1DInterpolator(angles_minima, I_minima)
+    I_min_interpolated = spl_min(angles)
 
+    differences = I_far - I_max_interpolated
+    i_to_solve = np.where(differences > 0)
 
-    differences  = I_far - I_max_interpolated
-    i_to_solve = np.where(differences>0)
-    
-    
     if has_draw:
-        plt.figure(figsize=(20,5))
-        plt.plot(angles/degrees, differences, 'k')
-        plt.plot(angles/degrees, np.zeros_like(angles), 'k-.')
-        plt.title('Differences')
-        plt.plot(angles[i_to_solve]/degrees, differences[i_to_solve], 'ro')
-        plt.plot(angles_maxima/degrees, np.zeros_like(angles_maxima), 'go')
-        plt.xlabel(r'$\theta$ (degrees)')
+        plt.figure(figsize=(20, 5))
+        plt.plot(angles / degrees, differences, "k")
+        plt.plot(angles / degrees, np.zeros_like(angles), "k-.")
+        plt.title("Differences")
+        plt.plot(angles[i_to_solve] / degrees, differences[i_to_solve], "ro")
+        plt.plot(angles_maxima / degrees, np.zeros_like(angles_maxima), "go")
+        plt.xlabel(r"$\theta$ (degrees)")
         plt.ylabel("Enolventes")
 
-        
     # angles_maxima_envolvente = angles_maxima
-    
-    # diff_maxima = np.diff(angles_maxima).max()/10    
-    
+
+    # diff_maxima = np.diff(angles_maxima).max()/10
+
     if has_logarithm:
         function = plt.semilogy
     else:
         function = plt.plot
 
-    Contrast = (I_max_interpolated - I_min_interpolated)/(I_max_interpolated + I_min_interpolated)
+    Contrast = (I_max_interpolated - I_min_interpolated) / (I_max_interpolated + I_min_interpolated)
 
     if has_draw:
-        plt.figure(figsize=(20,5))
-        plt.plot(angles/degrees, Contrast, 'k')
-        plt.ylim(0,1.05)
-        plt.xlim(angles[0]/degrees, angles[-1]/degrees)
-        plt.xlabel(r'$\theta$ (degrees)')
+        plt.figure(figsize=(20, 5))
+        plt.plot(angles / degrees, Contrast, "k")
+        plt.ylim(0, 1.05)
+        plt.xlim(angles[0] / degrees, angles[-1] / degrees)
+        plt.xlabel(r"$\theta$ (degrees)")
         plt.ylabel("contrast")
 
+        plt.figure(figsize=(20, 5))
+        function(angles / degrees, I_far, "k")
+        function(angles_maxima / degrees, I_maxima, "ro")
+        function(angles / degrees, I_max_interpolated, "r")  # nejor interpolacion por splines ?
 
-        plt.figure(figsize=(20,5))
-        function(angles/degrees, I_far, 'k')
-        function(angles_maxima/degrees, I_maxima, 'ro')
-        function(angles/degrees, I_max_interpolated, 'r')  # nejor interpolacion por splines ?
+        function(angles_minima / degrees, I_minima, "bo")
+        function(angles / degrees, I_min_interpolated, "b")  # nejor interpolacion por splines ?
 
-        function(angles_minima/degrees, I_minima, 'bo')
-        function(angles/degrees, I_min_interpolated , 'b')  # nejor interpolacion por splines ?
-
-        plt.xlim(angles[0]/degrees, angles[-1]/degrees)
-        plt.xlabel(r'$\theta$ (degrees)')
+        plt.xlim(angles[0] / degrees, angles[-1] / degrees)
+        plt.xlabel(r"$\theta$ (degrees)")
         plt.ylabel("envelopes")
-
 
     return I_max_interpolated, I_min_interpolated, Contrast

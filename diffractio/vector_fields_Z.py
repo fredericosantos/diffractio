@@ -12,7 +12,6 @@
 # ----------------------------------------------------------------------
 
 
-
 # flake8: noqa
 
 """
@@ -48,21 +47,27 @@ The magnitude is related to microns: `micron = 1.`
 import copy
 from matplotlib import rcParams
 
-from .utils_typing import npt, Any, NDArray,  NDArrayFloat, NDArrayComplex
+from .utils_typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
 
 from .__init__ import degrees, eps, mm, np, plt
 from .config import bool_raise_exception, CONF_DRAWING, Draw_Z_Options, get_vector_options
 from .scalar_fields_Z import Scalar_field_Z
-from .utils_common import get_date, load_data_common, save_data_common, get_vector_options, check_none
+from .utils_common import (
+    get_date,
+    load_data_common,
+    save_data_common,
+    get_vector_options,
+    check_none,
+)
 from .utils_common import get_instance_size_MB
 from .utils_drawing import normalize_draw
 from .utils_math import nearest
 from .utils_optics import normalize_field
 
-percentage_intensity = CONF_DRAWING['percentage_intensity']
+percentage_intensity = CONF_DRAWING["percentage_intensity"]
 
 
-class Vector_field_Z():
+class Vector_field_Z:
     """Class for vectorial fields.
 
     Args:
@@ -78,8 +83,13 @@ class Vector_field_Z():
         self.Ez (numpy.array): Electric_z field
     """
 
-    def __init__(self, z: NDArrayFloat | None = None, wavelength: float | None = None,
-                 n_background: float = 1., info: str = ""):
+    def __init__(
+        self,
+        z: NDArrayFloat | None = None,
+        wavelength: float | None = None,
+        n_background: float = 1.0,
+        info: str = "",
+    ):
         self.z = z
         self.wavelength = wavelength
 
@@ -87,8 +97,8 @@ class Vector_field_Z():
         self.Ey = np.zeros_like(self.z, dtype=complex)
         self.Ez = np.zeros_like(self.z, dtype=complex)
 
-        self.reduce_matrix = 'standard'  # 'None, 'standard', (5,5)
-        self.type = 'Vector_field_Z'
+        self.reduce_matrix = "standard"  # 'None, 'standard', (5,5)
+        self.type = "Vector_field_Z"
         self.info = info
         self.date = get_date()
         self.CONF_DRAWING = CONF_DRAWING
@@ -100,14 +110,14 @@ class Vector_field_Z():
         Imin = intensity.min()
         Imax = intensity.max()
 
-        print("{}\n - z:  {},     Ex:  {}".format(self.type, self.z.shape,
-                                                  self.Ex.shape))
+        print("{}\n - z:  {},     Ex:  {}".format(self.type, self.z.shape, self.Ex.shape))
         print(
-            " - xmin:       {:2.2f} um,  xmax:      {:2.2f} um,  Dx:   {:2.2f} um"
-            .format(self.z[0], self.z[-1], self.z[1] - self.z[0]))
+            " - xmin:       {:2.2f} um,  xmax:      {:2.2f} um,  Dx:   {:2.2f} um".format(
+                self.z[0], self.z[-1], self.z[1] - self.z[0]
+            )
+        )
 
-        print(" - Imin:       {:2.2f},     Imax:      {:2.2f}".format(
-            Imin, Imax))
+        print(" - Imin:       {:2.2f},     Imax:      {:2.2f}".format(Imin, Imax))
 
         print(" - wavelength: {:2.2f} um".format(self.wavelength))
         print(" - date:       {}".format(self.date))
@@ -134,8 +144,9 @@ class Vector_field_Z():
 
         return EM
 
-    def save_data(self, filename: str, add_name: str = "",
-                  description: str = "", verbose: bool = False):
+    def save_data(
+        self, filename: str, add_name: str = "", description: str = "", verbose: bool = False
+    ):
         """Common save data function to be used in all the modules.
         The methods included are: npz, matlab
 
@@ -150,8 +161,7 @@ class Vector_field_Z():
             (str): filename. If False, file could not be saved.
         """
         try:
-            final_filename = save_data_common(self, filename, add_name,
-                                              description, verbose)
+            final_filename = save_data_common(self, filename, add_name, description, verbose)
             return final_filename
         except:
             return False
@@ -170,7 +180,7 @@ class Vector_field_Z():
             if isinstance(dict0, dict):
                 self.__dict__ = dict0
             else:
-                raise Exception('no dictionary in load_data')
+                raise Exception("no dictionary in load_data")
 
         if verbose is True:
             print(dict0.keys())
@@ -189,7 +199,6 @@ class Vector_field_Z():
             new_field.clear_field()
         return new_field
 
-
     def size(self, verbose: bool = False):
         """returns the size of the instance in MB.
 
@@ -202,9 +211,8 @@ class Vector_field_Z():
 
         return get_instance_size_MB(self, verbose)
 
-
-    @check_none('Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
-    def get(self, kind: get_vector_options, mode: str = 'modulus', **kwargs):
+    @check_none("Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
+    def get(self, kind: get_vector_options, mode: str = "modulus", **kwargs):
         """Takes the vector field and divide in Scalar_field_X.
 
         Args:
@@ -218,15 +226,12 @@ class Vector_field_Z():
         return data
 
     def intensity(self):
-        """"Returns intensity.
-        """
-        intensity = np.abs(self.Ex)**2 + np.abs(self.Ey)**2 + np.abs(
-            self.Ez)**2
+        """ "Returns intensity."""
+        intensity = np.abs(self.Ex) ** 2 + np.abs(self.Ey) ** 2 + np.abs(self.Ez) ** 2
 
         return intensity
 
-
-    def normalize(self, kind='amplitude', new_field: bool = False):
+    def normalize(self, kind="amplitude", new_field: bool = False):
         """Normalizes the field so that intensity.max()=1.
 
         Args:
@@ -238,14 +243,16 @@ class Vector_field_Z():
         """
         return normalize_field(self, kind, new_field)
 
-    def draw(self,
-             kind: str = 'intensity',
-             logarithm: float = 0,
-             normalize: bool = False,
-             cut_value: float = None,
-             filename: str = '',
-             draw: bool = True,
-             **kwargs):
+    def draw(
+        self,
+        kind: str = "intensity",
+        logarithm: float = 0,
+        normalize: bool = False,
+        cut_value: float = None,
+        filename: str = "",
+        draw: bool = True,
+        **kwargs,
+    ):
         """Draws electromagnetic field
 
         Args:
@@ -258,37 +265,29 @@ class Vector_field_Z():
         """
 
         if draw is True:
-            if kind == 'intensity':
-                id_fig = self.__draw_intensity__(logarithm, normalize,
-                                                 cut_value, **kwargs)
-            elif kind == 'intensities':
-                id_fig = self.__draw_intensities__(logarithm, normalize,
-                                                   cut_value, **kwargs)
+            if kind == "intensity":
+                id_fig = self.__draw_intensity__(logarithm, normalize, cut_value, **kwargs)
+            elif kind == "intensities":
+                id_fig = self.__draw_intensities__(logarithm, normalize, cut_value, **kwargs)
 
-            elif kind == 'phases':
+            elif kind == "phases":
                 id_fig = self.__draw_phases__(**kwargs)
 
-            elif kind == 'fields':
-                id_fig = self.__draw_fields__(logarithm, normalize, cut_value,
-                                              **kwargs)
+            elif kind == "fields":
+                id_fig = self.__draw_fields__(logarithm, normalize, cut_value, **kwargs)
 
-            elif kind == 'stokes':
-                id_fig = self.__draw_stokes__(logarithm, normalize, cut_value,
-                                              **kwargs)
+            elif kind == "stokes":
+                id_fig = self.__draw_stokes__(logarithm, normalize, cut_value, **kwargs)
 
-            elif kind == 'param_ellipses':
-                id_fig = self.__draw_param_ellipse__(logarithm, normalize,
-                                                     cut_value, **kwargs)
+            elif kind == "param_ellipses":
+                id_fig = self.__draw_param_ellipse__(logarithm, normalize, cut_value, **kwargs)
 
             else:
                 print("not good kind parameter in vector_fields_X.draw()")
                 id_fig = None
 
-            if filename != '':
-                plt.savefig(filename,
-                            dpi=100,
-                            bbox_inches='tight',
-                            pad_inches=0.1)
+            if filename != "":
+                plt.savefig(filename, dpi=100, bbox_inches="tight", pad_inches=0.1)
 
             return id_fig
 
@@ -301,16 +300,16 @@ class Vector_field_Z():
             cut_value (float): If not None, cuts the maximum intensity to this value
         """
 
-        intensity = self.get('intensity')
+        intensity = self.get("intensity")
         intensity = normalize_draw(intensity, logarithm, normalize, cut_value)
 
         plt.figure()
         h1 = plt.subplot(1, 1, 1)
-        plt.plot(self.z, intensity, 'k', lw=2)
+        plt.plot(self.z, intensity, "k", lw=2)
         plt.xlim(self.z[0], self.z[-1])
         plt.ylim(ymin=0)
-        plt.xlabel(r'z($\mu$m)', fontsize=16)
-        plt.ylabel('I(z)', fontsize=16)
+        plt.xlabel(r"z($\mu$m)", fontsize=16)
+        plt.ylabel("I(z)", fontsize=16)
 
         return h1
 
@@ -323,22 +322,18 @@ class Vector_field_Z():
             cut_value (float): If not None, cuts the maximum intensity to this value
         """
 
-        tx, ty = rcParams['figure.figsize']
+        tx, ty = rcParams["figure.figsize"]
 
-        intensity1 = np.abs(self.Ex)**2
-        intensity1 = normalize_draw(intensity1, logarithm, normalize,
-                                    cut_value)
+        intensity1 = np.abs(self.Ex) ** 2
+        intensity1 = normalize_draw(intensity1, logarithm, normalize, cut_value)
 
-        intensity2 = np.abs(self.Ey)**2
-        intensity2 = normalize_draw(intensity2, logarithm, normalize,
-                                    cut_value)
+        intensity2 = np.abs(self.Ey) ** 2
+        intensity2 = normalize_draw(intensity2, logarithm, normalize, cut_value)
 
-        intensity3 = np.abs(self.Ez)**2
-        intensity3 = normalize_draw(intensity3, logarithm, normalize,
-                                    cut_value)
+        intensity3 = np.abs(self.Ez) ** 2
+        intensity3 = normalize_draw(intensity3, logarithm, normalize, cut_value)
 
-        intensity_max = np.max(
-            (intensity1.max(), intensity2.max(), intensity3.max()))
+        intensity_max = np.max((intensity1.max(), intensity2.max(), intensity3.max()))
 
         percentage_z = 0.01
 
@@ -346,44 +341,33 @@ class Vector_field_Z():
             plt.figure(figsize=(2 * tx, ty))
 
             h1 = plt.subplot(1, 2, 1)
-            self.__draw1__(intensity1, ylabel="r$I_x$", title='')
+            self.__draw1__(intensity1, ylabel="r$I_x$", title="")
             plt.ylim(0, intensity_max)
 
             h2 = plt.subplot(1, 2, 2)
-            self.__draw1__(intensity2, ylabel="r$I_y$", title='')
+            self.__draw1__(intensity2, ylabel="r$I_y$", title="")
             plt.ylim(0, intensity_max)
 
-            plt.subplots_adjust(left=0,
-                                bottom=0,
-                                right=1,
-                                top=1,
-                                wspace=0.05,
-                                hspace=0)
+            plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0.05, hspace=0)
             plt.tight_layout()
 
             return h1, h2
         else:
-
             plt.figure(figsize=(3 * tx, ty))
 
             h1 = plt.subplot(1, 3, 1)
-            self.__draw1__(intensity1, ylabel="r$I_x$", title='')
+            self.__draw1__(intensity1, ylabel="r$I_x$", title="")
             plt.ylim(0, intensity_max)
 
             h2 = plt.subplot(1, 3, 2)
-            self.__draw1__(intensity2, ylabel="r$I_y$", title='')
+            self.__draw1__(intensity2, ylabel="r$I_y$", title="")
             plt.ylim(0, intensity_max)
 
             h3 = plt.subplot(1, 3, 3)
-            self.__draw1__(intensity3, ylabel="r$I_z", title='')
+            self.__draw1__(intensity3, ylabel="r$I_z", title="")
             plt.ylim(0, intensity_max)
 
-            plt.subplots_adjust(left=0,
-                                bottom=0,
-                                right=1,
-                                top=1,
-                                wspace=0.05,
-                                hspace=0)
+            plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0.05, hspace=0)
             plt.tight_layout()
 
             return h1, h2, h3
@@ -397,102 +381,88 @@ class Vector_field_Z():
             cut_value (float): If not None, cuts the maximum intensity to this value
         """
 
-        tx, ty = rcParams['figure.figsize']
+        tx, ty = rcParams["figure.figsize"]
 
         logarithm = 0
         normalize = False
         cut_value = None
 
-        intensity1 = np.abs(self.Ex)**2
-        intensity1 = normalize_draw(intensity1, logarithm, normalize,
-                                    cut_value)
+        intensity1 = np.abs(self.Ex) ** 2
+        intensity1 = normalize_draw(intensity1, logarithm, normalize, cut_value)
 
-        intensity2 = np.abs(self.Ey)**2
-        intensity2 = normalize_draw(intensity2, logarithm, normalize,
-                                    cut_value)
+        intensity2 = np.abs(self.Ey) ** 2
+        intensity2 = normalize_draw(intensity2, logarithm, normalize, cut_value)
 
-        intensity3 = np.abs(self.Ez)**2
-        intensity3 = normalize_draw(intensity3, logarithm, normalize,
-                                    cut_value)
+        intensity3 = np.abs(self.Ez) ** 2
+        intensity3 = normalize_draw(intensity3, logarithm, normalize, cut_value)
 
-        intensity_max = np.max(
-            (intensity1.max(), intensity2.max(), intensity3.max()))
+        intensity_max = np.max((intensity1.max(), intensity2.max(), intensity3.max()))
 
         percentage_z = 0.01
 
         if intensity3.max() < percentage_z * intensity_max:
-
             plt.figure(figsize=(2 * tx, ty))
 
             h1 = plt.subplot(1, 2, 1)
             phase = np.angle(self.Ex)
-            intensity = np.abs(self.Ex)**2
+            intensity = np.abs(self.Ex) ** 2
             phase[intensity < percentage_intensity * (intensity.max())] = 0
 
-            self.__draw1__(phase/degrees, ylabel=r"$\phi_x$", title='')
+            self.__draw1__(phase / degrees, ylabel=r"$\phi_x$", title="")
             plt.ylim(-180, 180)
 
             h2 = plt.subplot(1, 2, 2)
             phase = np.angle(self.Ey)
-            intensity = np.abs(self.Ey)**2
+            intensity = np.abs(self.Ey) ** 2
             phase[intensity < percentage_intensity * (intensity.max())] = 0
 
-            self.__draw1__(phase/degrees, ylabel=r"$\phi_y$", title='')
+            self.__draw1__(phase / degrees, ylabel=r"$\phi_y$", title="")
             plt.ylim(-180, 180)
 
-            plt.subplots_adjust(left=0,
-                                bottom=0,
-                                right=1,
-                                top=1,
-                                wspace=0.05,
-                                hspace=0)
+            plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0.05, hspace=0)
             plt.tight_layout()
 
             return h1, h2
         else:
-
             plt.figure(figsize=(3 * tx, ty))
 
             h1 = plt.subplot(1, 3, 1)
             phase = np.angle(self.Ex)
-            intensity = np.abs(self.Ex)**2
+            intensity = np.abs(self.Ex) ** 2
             phase[intensity < percentage_intensity * (intensity.max())] = 0
 
-            self.__draw1__(phase/degrees, ylabel=r"$\phi_x$", title='')
+            self.__draw1__(phase / degrees, ylabel=r"$\phi_x$", title="")
             plt.ylim(-180, 180)
 
             h2 = plt.subplot(1, 3, 2)
             phase = np.angle(self.Ey)
-            intensity = np.abs(self.Ey)**2
+            intensity = np.abs(self.Ey) ** 2
             phase[intensity < percentage_intensity * (intensity.max())] = 0
 
-            self.__draw1__(phase/degrees, ylabel=r"$\phi_y$", title='')
+            self.__draw1__(phase / degrees, ylabel=r"$\phi_y$", title="")
             plt.ylim(-180, 180)
 
             h3 = plt.subplot(1, 3, 3)
             phase = np.angle(self.Ez)
-            intensity = np.abs(self.Ez)**2
+            intensity = np.abs(self.Ez) ** 2
             phase[intensity < percentage_intensity * (intensity.max())] = 0
 
-            self.__draw1__(phase/degrees, ylabel=r"$\phi_z$", title='')
+            self.__draw1__(phase / degrees, ylabel=r"$\phi_z$", title="")
             plt.ylim(-180, 180)
 
-            plt.subplots_adjust(left=0,
-                                bottom=0,
-                                right=1,
-                                top=1,
-                                wspace=0.05,
-                                hspace=0)
+            plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0.05, hspace=0)
             plt.tight_layout()
 
             return h1, h2, h3
 
-    def __draw_fields__(self,
-                        logarithm: float,
-                        normalize: bool,
-                        cut_value: float,
-                        color_intensity=CONF_DRAWING['color_intensity'],
-                        color_phase=CONF_DRAWING['color_phase']):
+    def __draw_fields__(
+        self,
+        logarithm: float,
+        normalize: bool,
+        cut_value: float,
+        color_intensity=CONF_DRAWING["color_intensity"],
+        color_phase=CONF_DRAWING["color_phase"],
+    ):
         """__internal__: draws amplitude and phase in 2x2 drawing
 
         Args:
@@ -503,16 +473,14 @@ class Vector_field_Z():
 
         """
 
-        intensity_x = np.abs(self.Ex)**2
-        intensity_x = normalize_draw(intensity_x, logarithm, normalize,
-                                     cut_value)
+        intensity_x = np.abs(self.Ex) ** 2
+        intensity_x = normalize_draw(intensity_x, logarithm, normalize, cut_value)
 
-        intensity_y = np.abs(self.Ey)**2
-        intensity_y = normalize_draw(intensity_y, logarithm, normalize,
-                                     cut_value)
+        intensity_y = np.abs(self.Ey) ** 2
+        intensity_y = normalize_draw(intensity_y, logarithm, normalize, cut_value)
 
         intensity_max = np.max((intensity_x.max(), intensity_y.max()))
-        tx, ty = rcParams['figure.figsize']
+        tx, ty = rcParams["figure.figsize"]
 
         plt.figure(figsize=(2 * tx, 2 * ty))
 
@@ -529,32 +497,26 @@ class Vector_field_Z():
         phase = np.angle(self.Ex)
         phase[intensity_x < percentage_intensity * (intensity_x.max())] = 0
 
-        self.__draw1__(phase/degrees, color_phase, r"$\phi_x$")
+        self.__draw1__(phase / degrees, color_phase, r"$\phi_x$")
         plt.clim(-180, 180)
 
         h4 = plt.subplot(2, 2, 4)
         phase = np.angle(self.Ey)
         phase[intensity_y < percentage_intensity * (intensity_y.max())] = 0
 
-        self.__draw1__(phase/degrees, color_phase, r"$\phi_y$")
+        self.__draw1__(phase / degrees, color_phase, r"$\phi_y$")
         plt.clim(-180, 180)
         h4 = plt.gca()
-        plt.subplots_adjust(left=0,
-                            bottom=0,
-                            right=1,
-                            top=1,
-                            wspace=0.05,
-                            hspace=0)
+        plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0.05, hspace=0)
         plt.tight_layout()
         return h1, h2, h3, h4
 
     def __draw_stokes__(self, logarithm: float, normalize: bool, cut_value: float):
-        """__internal__: computes and draws CI, CQ, CU, CV parameters
-        """
+        """__internal__: computes and draws CI, CQ, CU, CV parameters"""
 
-        tx, ty = rcParams['figure.figsize']
+        tx, ty = rcParams["figure.figsize"]
 
-        S0, S1, S2, S3 = self.get('stokes')
+        S0, S1, S2, S3 = self.get("stokes")
         S0 = normalize_draw(S0, logarithm, normalize, cut_value)
         S1 = normalize_draw(S1, logarithm, normalize, cut_value)
         S2 = normalize_draw(S2, logarithm, normalize, cut_value)
@@ -579,21 +541,15 @@ class Vector_field_Z():
         self.__draw1__(S3, r"$S_3$")
         plt.ylim(-intensity_max, intensity_max)
 
-        plt.subplots_adjust(left=0,
-                            bottom=0,
-                            right=1,
-                            top=1,
-                            wspace=0.05,
-                            hspace=0)
+        plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0.05, hspace=0)
         plt.tight_layout()
         return (h1, h2, h3, h4)
 
     def __draw_param_ellipse__(self, logarithm: float, normalize: bool, cut_value: float):
-        """__internal__: computes and draws polariations ellipses
-        """
+        """__internal__: computes and draws polariations ellipses"""
         A, B, theta, h = self.polarization_ellipse(pol_state=None, matrix=True)
 
-        tx, ty = rcParams['figure.figsize']
+        tx, ty = rcParams["figure.figsize"]
 
         plt.figure(figsize=(2 * tx, 2 * ty))
 
@@ -607,24 +563,19 @@ class Vector_field_Z():
         plt.ylim(0, max_intensity)
 
         h3 = plt.subplot(2, 2, 3)
-        self.__draw1__(theta/degrees, r"$\phi$")
+        self.__draw1__(theta / degrees, r"$\phi$")
         plt.ylim(-180, 180)
 
         h4 = plt.subplot(2, 2, 4)
         self.__draw1__(h, "$h$")
         plt.ylim(-180, 180)
 
-        plt.subplots_adjust(left=0,
-                            bottom=0,
-                            right=1,
-                            top=1,
-                            wspace=0.05,
-                            hspace=0)
+        plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0.05, hspace=0)
         plt.tight_layout()
 
         return (h1, h2, h3, h4)
 
-    def __draw1__(self, data: NDArrayFloat, ylabel: str = '', title: str = ''):
+    def __draw1__(self, data: NDArrayFloat, ylabel: str = "", title: str = ""):
         """Draws image
 
         Args:
@@ -632,9 +583,9 @@ class Vector_field_Z():
             title (str): title of drawing
         """
 
-        plt.plot(self.z, data, 'k', lw=2)
+        plt.plot(self.z, data, "k", lw=2)
         plt.xlim(self.z[0], self.z[-1])
         plt.ylim(ymin=0)
-        plt.xlabel(r'z($\mu$m)')
+        plt.xlabel(r"z($\mu$m)")
         plt.ylabel(ylabel)
         plt.title(title)

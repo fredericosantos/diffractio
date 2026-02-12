@@ -45,7 +45,7 @@ from matplotlib import rcParams
 
 
 from .__init__ import degrees, eps, mm, np, plt
-from .utils_typing import npt, Any, NDArray,  NDArrayFloat, NDArrayComplex
+from .utils_typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
 from .config import bool_raise_exception, CONF_DRAWING, Draw_Vector_X_Options, get_vector_options
 from .scalar_fields_X import Scalar_field_X
 from .utils_common import get_date, load_data_common, save_data_common, check_none, get_vector
@@ -53,10 +53,10 @@ from .utils_common import get_instance_size_MB
 
 from .utils_drawing import normalize_draw
 
-percentage_intensity = CONF_DRAWING['percentage_intensity']
+percentage_intensity = CONF_DRAWING["percentage_intensity"]
 
 
-class Vector_field_X():
+class Vector_field_X:
     """Class for vectorial fields.
 
     Args:
@@ -72,8 +72,13 @@ class Vector_field_X():
         self.Ez (numpy.array): Electric_z field.
     """
 
-    def __init__(self, x: NDArrayFloat | None = None, wavelength: float | None = None, n_background: float = 1.0,
-                 info: str = ""):
+    def __init__(
+        self,
+        x: NDArrayFloat | None = None,
+        wavelength: float | None = None,
+        n_background: float = 1.0,
+        info: str = "",
+    ):
         self.x = x
         self.wavelength = wavelength
         self.n_background = n_background
@@ -86,8 +91,8 @@ class Vector_field_X():
         self.Hy = np.zeros_like(self.x, dtype=complex)
         self.Hz = np.zeros_like(self.x, dtype=complex)
 
-        self.reduce_matrix = 'standard'  # 'None, 'standard', (5,5)
-        self.type = 'Vector_field_X'
+        self.reduce_matrix = "standard"  # 'None, 'standard', (5,5)
+        self.type = "Vector_field_X"
         self.info = info
         self.date = get_date()
         self.CONF_DRAWING = CONF_DRAWING
@@ -99,14 +104,14 @@ class Vector_field_X():
         Imin = intensity.min()
         Imax = intensity.max()
 
-        print("{}\n - x:  {},     Ex:  {}".format(self.type, self.x.shape,
-                                                  self.Ex.shape))
+        print("{}\n - x:  {},     Ex:  {}".format(self.type, self.x.shape, self.Ex.shape))
         print(
-            " - xmin:       {:2.2f} um,  xmax:      {:2.2f} um,  Dx:   {:2.2f} um"
-            .format(self.x[0], self.x[-1], self.x[1] - self.x[0]))
+            " - xmin:       {:2.2f} um,  xmax:      {:2.2f} um,  Dx:   {:2.2f} um".format(
+                self.x[0], self.x[-1], self.x[1] - self.x[0]
+            )
+        )
 
-        print(" - Imin:       {:2.2f},     Imax:      {:2.2f}".format(
-            Imin, Imax))
+        print(" - Imin:       {:2.2f},     Imax:      {:2.2f}".format(Imin, Imax))
 
         print(" - wavelength: {:2.2f} um".format(self.wavelength))
         print(" - date:       {}".format(self.date))
@@ -114,7 +119,7 @@ class Vector_field_X():
             print(" - info:       {}".format(self.info))
         return ""
 
-    @check_none('x', 'Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
+    @check_none("x", "Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
     def __add__(self, other):
         """adds two Vector_field_X. For example two light sources or two masks
 
@@ -134,8 +139,6 @@ class Vector_field_X():
 
         return EM
 
-
-
     def size(self, verbose: bool = False):
         """returns the size of the instance in MB.
 
@@ -148,9 +151,9 @@ class Vector_field_X():
 
         return get_instance_size_MB(self, verbose)
 
-
-    def save_data(self, filename: str, add_name: str = "",
-                  description: str = "", verbose: bool = False):
+    def save_data(
+        self, filename: str, add_name: str = "", description: str = "", verbose: bool = False
+    ):
         """Common save data function to be used in all the modules.
         The methods included are: npz, matlab
 
@@ -165,12 +168,10 @@ class Vector_field_X():
         """
 
         try:
-            final_filename = save_data_common(self, filename, add_name,
-                                              description, verbose)
+            final_filename = save_data_common(self, filename, add_name, description, verbose)
             return final_filename
         except:
             return False
-
 
     def load_data(self, filename: str, verbose: bool = False):
         """Load data from a file to a Vector_field_X.
@@ -186,19 +187,17 @@ class Vector_field_X():
             if isinstance(dict0, dict):
                 self.__dict__ = dict0
             else:
-                raise Exception('no dictionary in load_data')
+                raise Exception("no dictionary in load_data")
 
         if verbose is True:
             print(dict0.keys())
 
-
-    @check_none('Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
+    @check_none("Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
     def clear_field(self):
         """Removes the fields Ex, Ey, Ez"""
         self.Ex = np.zeros_like(self.Ex, dtype=complex)
         self.Ey = np.zeros_like(self.Ey, dtype=complex)
         self.Ez = np.zeros_like(self.Ez, dtype=complex)
-
 
     def duplicate(self, clear: bool = False):
         """Duplicates the instance"""
@@ -207,9 +206,8 @@ class Vector_field_X():
             new_field.clear_field()
         return new_field
 
-
-    @check_none('Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
-    def get(self, kind: get_vector_options, mode: str = 'modulus', **kwargs):
+    @check_none("Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
+    def get(self, kind: get_vector_options, mode: str = "modulus", **kwargs):
         """Takes the vector field and divide in Scalar_field_X.
 
         Args:
@@ -222,8 +220,7 @@ class Vector_field_X():
         data = get_vector(self, kind, mode, **kwargs)
         return data
 
-
-    @check_none('x', 'Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
+    @check_none("x", "Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
     def apply_mask(self, u, new_field: bool = False):
         """Multiply field by binary scalar mask: self.Ex = self.Ex * u.u
 
@@ -241,46 +238,42 @@ class Vector_field_X():
             E_new.Ez = self.Ez * u.u
             return E_new
 
-
-    @check_none('x', 'Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
+    @check_none("x", "Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
     def intensity(self):
         """Returns intensity.
 
-        Returns: 
+        Returns:
             intensity (ndarray). Intensity
         """
-        intensity = self.get('intensity')
+        intensity = self.get("intensity")
 
         return intensity
 
-
-
-    @check_none('Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
-    def normalize(self, kind:str = 'amplitude'):
+    @check_none("Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
+    def normalize(self, kind: str = "amplitude"):
         """Normalizes the field, to the maximum intensity.
-        
+
         Args:
             kind (str): 'amplitude' or 'intensity'.
         """
 
-        if kind =='amplitude':
-            maximum = np.sqrt(np.abs(self.Ex)**2 + np.abs(self.Ey)**2 +
-                np.abs(self.Ez)**2).max()
-        elif kind == 'intensity':
-            maximum = (np.abs(self.Ex)**2 + np.abs(self.Ey)**2 +
-                np.abs(self.Ez)**2).max()
+        if kind == "amplitude":
+            maximum = np.sqrt(
+                np.abs(self.Ex) ** 2 + np.abs(self.Ey) ** 2 + np.abs(self.Ez) ** 2
+            ).max()
+        elif kind == "intensity":
+            maximum = (np.abs(self.Ex) ** 2 + np.abs(self.Ey) ** 2 + np.abs(self.Ez) ** 2).max()
 
         self.Ex = self.Ex / maximum
         self.Ey = self.Ey / maximum
         self.Ez = self.Ez / maximum
 
-
     def VCZT(self, z, xout=None, yout=None, verbose: bool = False):
         """Vector Z Chirped Transform algorithm (VCZT)
 
-        The code for this algoritm is based on "Hu, Yanlei, et al. "Efficient full-path optical calculation of scalar and 
+        The code for this algoritm is based on "Hu, Yanlei, et al. "Efficient full-path optical calculation of scalar and
         vector diffraction using the Bluestein method." Light: Science & Applications 9.1 (2020): 119."
-        
+
         However, the convolution Kernel has been changed to Rayleigh-Sommerfeld.
 
         Args:
@@ -293,15 +286,13 @@ class Vector_field_X():
             E_out (variable): Output field. It depends on the size of xout, yout, and z.
 
         References:
-            - [Light: Science and Applications, 9(1), (2020)] 
+            - [Light: Science and Applications, 9(1), (2020)]
         """
         if xout is None:
             xout = self.x
 
         if yout is None:
             yout = 0
-
-
 
         k = 2 * np.pi / self.wavelength
 
@@ -336,7 +327,7 @@ class Vector_field_X():
             ystart = yout[0]
             yend = yout[-1]
 
-        e0xm, e0ym, _ = self.get('E')
+        e0xm, e0ym, _ = self.get("E")
         e0x = Scalar_field_X(self.x, self.wavelength)
         e0x.u = e0xm
         e0y = Scalar_field_X(self.x, self.wavelength)
@@ -345,8 +336,8 @@ class Vector_field_X():
         e0z.u = np.zeros_like(e0x.u)
 
         if num_z == 1:
-            r = np.sqrt(self.x**2 +  z**2)
-            e0z_u = e0x.u * self.x / r 
+            r = np.sqrt(self.x**2 + z**2)
+            e0z_u = e0x.u * self.x / r
             e0z_u = e0z_u * z / r
             e0z.u = e0z_u
 
@@ -359,6 +350,7 @@ class Vector_field_X():
 
             elif num_x > 1 and num_y == 1:
                 from diffractio.vector_fields_X import Vector_field_X
+
                 E_out = Vector_field_X(xout, self.wavelength)
                 E_out.Ex = e0x.u
                 E_out.Ey = e0y.u
@@ -366,6 +358,7 @@ class Vector_field_X():
                 return E_out
             elif num_x == 1 and num_y > 1:
                 from diffractio.vector_fields_X import Vector_field_X
+
                 E_out = Vector_field_X(xout, self.wavelength)
                 E_out.Ex = e0x.u
                 E_out.Ey = e0y.u
@@ -373,6 +366,7 @@ class Vector_field_X():
                 return E_out
             elif num_x > 1 and num_y > 1:
                 from diffractio.vector_fields_XY import Vector_field_XY
+
                 E_out = Vector_field_XY(xout, yout, self.wavelength)
                 E_out.Ex = e0x.u
                 E_out.Ey = e0y.u
@@ -381,23 +375,23 @@ class Vector_field_X():
 
         elif num_z > 1:
             if verbose is True:
-                print("1/3", end='\r')
+                print("1/3", end="\r")
             e0x_zs = e0x.CZT(z, xout, yout)
             if verbose is True:
-                print("2/3", end='\r')
+                print("2/3", end="\r")
             e0y_zs = e0y.CZT(z, xout, yout)
             if verbose is True:
-                print("3/3", end='\r')
+                print("3/3", end="\r")
             e0z_zs = e0x_zs.duplicate()
 
             u_zs = np.zeros_like(e0x_zs.u)
 
             for i, z_now in enumerate(z):
                 if verbose:
-                    print("{}/{}".format(i, num_z), end='\r')
+                    print("{}/{}".format(i, num_z), end="\r")
 
-                r = np.sqrt(self.x**2 +  z_now**2)
-                e0z_u = e0x.u * self.x / r 
+                r = np.sqrt(self.x**2 + z_now**2)
+                e0z_u = e0x.u * self.x / r
                 e0z_u = e0z_u * z_now / r
                 e0z.u = e0z_u
 
@@ -413,6 +407,7 @@ class Vector_field_X():
 
             if num_x == 1 and num_y == 1:
                 from diffractio.vector_fields_Z import Vector_field_Z
+
                 E_out = Vector_field_Z(z, self.wavelength)
                 E_out.Ex = e0x_zs.u
                 E_out.Ey = e0y_zs.u
@@ -421,6 +416,7 @@ class Vector_field_X():
 
             elif num_x > 1 and num_y == 1:
                 from diffractio.vector_fields_XZ import Vector_field_XZ
+
                 E_out = Vector_field_XZ(xout, z, self.wavelength)
                 E_out.Ex = e0x_zs.u
                 E_out.Ey = e0y_zs.u
@@ -429,6 +425,7 @@ class Vector_field_X():
 
             elif num_x == 1 and num_y > 1:
                 from diffractio.vector_fields_XZ import Vector_field_XZ
+
                 E_out = Vector_field_XZ(yout, z, self.wavelength)
                 E_out.Ex = e0x_zs.u
                 E_out.Ey = e0y_zs.u
@@ -437,24 +434,24 @@ class Vector_field_X():
 
             elif num_x > 1 and num_y > 1:
                 from diffractio.vector_fields_XYZ import Vector_field_XYZ
+
                 E_out = Vector_field_XYZ(xout, yout, z, self.wavelength)
                 E_out.Ex = e0x_zs.u
                 E_out.Ey = e0y_zs.u
                 E_out.Ez = e0z_zs.u
                 return E_out
-            
 
-
-
-    @check_none('x', 'Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
-    def draw(self,
-             kind: Draw_Vector_X_Options = 'intensity',
-             logarithm: float = 0,
-             normalize: bool = False,
-             cut_value: float | bool = None,
-             filename: str = '',
-             draw: bool = True,
-             **kwargs):
+    @check_none("x", "Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
+    def draw(
+        self,
+        kind: Draw_Vector_X_Options = "intensity",
+        logarithm: float = 0,
+        normalize: bool = False,
+        cut_value: float | bool = None,
+        filename: str = "",
+        draw: bool = True,
+        **kwargs,
+    ):
         """Draws electromagnetic field.
 
         Args:
@@ -463,40 +460,40 @@ class Vector_field_X():
             normalize (bool): If True, max(intensity)=1
             cut_value (float): If not None, cuts the maximum intensity to this value
             filename (str): if not '' stores drawing in file,
-        
+
         Returns:
             idfig ():
         """
 
         if draw is True:
-            if kind == 'intensity':
+            if kind == "intensity":
                 id_fig = self.__draw_intensity__(logarithm, normalize, cut_value, **kwargs)
 
-            elif kind == 'intensities':
+            elif kind == "intensities":
                 id_fig = self.__draw_intensities__(logarithm, normalize, cut_value, **kwargs)
 
-            elif kind == 'phases':
+            elif kind == "phases":
                 id_fig = self.__draw_phases__(**kwargs)
 
-            elif kind == 'fields':
+            elif kind == "fields":
                 id_fig = self.__draw_fields__(logarithm, normalize, cut_value, **kwargs)
 
-            elif kind == 'stokes':
+            elif kind == "stokes":
                 id_fig = self.__draw_stokes__(logarithm, normalize, cut_value, **kwargs)
 
-            elif kind == 'param_ellipses':
+            elif kind == "param_ellipses":
                 id_fig = self.__draw_param_ellipse__(logarithm, normalize, cut_value, **kwargs)
 
             else:
                 print("not good kind parameter in vector_fields_X.draw()")
                 id_fig = None
 
-            if filename != '':
-                plt.savefig(filename, dpi=100, bbox_inches='tight', pad_inches=0.1)
+            if filename != "":
+                plt.savefig(filename, dpi=100, bbox_inches="tight", pad_inches=0.1)
 
             return id_fig
 
-    @check_none('x', raise_exception=bool_raise_exception)
+    @check_none("x", raise_exception=bool_raise_exception)
     def __draw_intensity__(self, logarithm: float, normalize: bool, cut_value: float):
         """Draws the intensity.
 
@@ -506,21 +503,20 @@ class Vector_field_X():
             cut_value (float): If not None, cuts the maximum intensity to this value
         """
 
-        intensity = self.get('intensity')
+        intensity = self.get("intensity")
         intensity = normalize_draw(intensity, logarithm, normalize, cut_value)
 
         plt.figure()
         h1 = plt.subplot(1, 1, 1)
-        plt.plot(self.x, intensity, 'k', lw=2)
+        plt.plot(self.x, intensity, "k", lw=2)
         plt.xlim(self.x[0], self.x[-1])
         plt.ylim(ymin=0)
-        plt.xlabel(r'x($\mu$m)', fontsize=16)
-        plt.ylabel('I(x)', fontsize=16)
+        plt.xlabel(r"x($\mu$m)", fontsize=16)
+        plt.ylabel("I(x)", fontsize=16)
 
         return h1
 
-
-    @check_none('x', 'Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
+    @check_none("x", "Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
     def __draw_intensities__(self, logarithm: float, normalize: bool, cut_value: float):
         """internal funcion: draws phase
 
@@ -530,22 +526,18 @@ class Vector_field_X():
             cut_value (float): If not None, cuts the maximum intensity to this value
         """
 
-        tx, ty = rcParams['figure.figsize']
+        tx, ty = rcParams["figure.figsize"]
 
-        intensity1 = np.abs(self.Ex)**2
-        intensity1 = normalize_draw(intensity1, logarithm, normalize,
-                                    cut_value)
+        intensity1 = np.abs(self.Ex) ** 2
+        intensity1 = normalize_draw(intensity1, logarithm, normalize, cut_value)
 
-        intensity2 = np.abs(self.Ey)**2
-        intensity2 = normalize_draw(intensity2, logarithm, normalize,
-                                    cut_value)
+        intensity2 = np.abs(self.Ey) ** 2
+        intensity2 = normalize_draw(intensity2, logarithm, normalize, cut_value)
 
-        intensity3 = np.abs(self.Ez)**2
-        intensity3 = normalize_draw(intensity3, logarithm, normalize,
-                                    cut_value)
+        intensity3 = np.abs(self.Ez) ** 2
+        intensity3 = normalize_draw(intensity3, logarithm, normalize, cut_value)
 
-        intensity_max = np.max(
-            (intensity1.max(), intensity2.max(), intensity3.max()))
+        intensity_max = np.max((intensity1.max(), intensity2.max(), intensity3.max()))
 
         percentage_z = 0.01
 
@@ -553,50 +545,38 @@ class Vector_field_X():
             plt.figure(figsize=(2 * tx, ty))
 
             h1 = plt.subplot(1, 2, 1)
-            self.__draw1__(intensity1, ylabel="r$I_x$", title='')
+            self.__draw1__(intensity1, ylabel="r$I_x$", title="")
             plt.ylim(0, intensity_max)
 
             h2 = plt.subplot(1, 2, 2)
-            self.__draw1__(intensity2, ylabel="r$I_y$", title='')
+            self.__draw1__(intensity2, ylabel="r$I_y$", title="")
             plt.ylim(0, intensity_max)
 
-            plt.subplots_adjust(left=0,
-                                bottom=0,
-                                right=1,
-                                top=1,
-                                wspace=0.05,
-                                hspace=0)
+            plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0.05, hspace=0)
             plt.tight_layout()
 
             return h1, h2
         else:
-
             plt.figure(figsize=(3 * tx, ty))
 
             h1 = plt.subplot(1, 3, 1)
-            self.__draw1__(intensity1, ylabel="r$I_x$", title='')
+            self.__draw1__(intensity1, ylabel="r$I_x$", title="")
             plt.ylim(0, intensity_max)
 
             h2 = plt.subplot(1, 3, 2)
-            self.__draw1__(intensity2, ylabel="r$I_y$", title='')
+            self.__draw1__(intensity2, ylabel="r$I_y$", title="")
             plt.ylim(0, intensity_max)
 
             h3 = plt.subplot(1, 3, 3)
-            self.__draw1__(intensity3, ylabel="r$I_z", title='')
+            self.__draw1__(intensity3, ylabel="r$I_z", title="")
             plt.ylim(0, intensity_max)
 
-            plt.subplots_adjust(left=0,
-                                bottom=0,
-                                right=1,
-                                top=1,
-                                wspace=0.05,
-                                hspace=0)
+            plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0.05, hspace=0)
             plt.tight_layout()
 
             return h1, h2, h3
 
-
-    @check_none('x', 'Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
+    @check_none("x", "Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
     def __draw_phases__(self):
         """internal funcion: draws phase
 
@@ -606,52 +586,45 @@ class Vector_field_X():
             cut_value (float): If not None, cuts the maximum intensity to this value
         """
 
-        tx, ty = rcParams['figure.figsize']
+        tx, ty = rcParams["figure.figsize"]
 
         logarithm = 0
         normalize = False
         cut_value = None
 
-        intensity1 = np.abs(self.Ex)**2
-        intensity1 = normalize_draw(intensity1, logarithm, normalize,cut_value)
+        intensity1 = np.abs(self.Ex) ** 2
+        intensity1 = normalize_draw(intensity1, logarithm, normalize, cut_value)
 
-        intensity2 = np.abs(self.Ey)**2
-        intensity2 = normalize_draw(intensity2, logarithm, normalize,cut_value)
+        intensity2 = np.abs(self.Ey) ** 2
+        intensity2 = normalize_draw(intensity2, logarithm, normalize, cut_value)
 
-        intensity3 = np.abs(self.Ez)**2
-        intensity3 = normalize_draw(intensity3, logarithm, normalize,cut_value)
+        intensity3 = np.abs(self.Ez) ** 2
+        intensity3 = normalize_draw(intensity3, logarithm, normalize, cut_value)
 
-        intensity_max = np.max(
-            (intensity1.max(), intensity2.max(), intensity3.max()))
+        intensity_max = np.max((intensity1.max(), intensity2.max(), intensity3.max()))
 
         percentage_z = 0.01
 
         if intensity3.max() < percentage_z * intensity_max:
-
             plt.figure(figsize=(2 * tx, ty))
 
             h1 = plt.subplot(1, 2, 1)
             phase = np.angle(self.Ex)
-            intensity = np.abs(self.Ex)**2
+            intensity = np.abs(self.Ex) ** 2
             phase[intensity < percentage_intensity * (intensity.max())] = 0
 
-            self.__draw1__(phase/degrees, ylabel=r"$\phi_x$", title='')
+            self.__draw1__(phase / degrees, ylabel=r"$\phi_x$", title="")
             plt.ylim(-180, 180)
 
             h2 = plt.subplot(1, 2, 2)
             phase = np.angle(self.Ey)
-            intensity = np.abs(self.Ey)**2
+            intensity = np.abs(self.Ey) ** 2
             phase[intensity < percentage_intensity * (intensity.max())] = 0
 
-            self.__draw1__(phase/degrees, ylabel=r"$\phi_y$", title='')
+            self.__draw1__(phase / degrees, ylabel=r"$\phi_y$", title="")
             plt.ylim(-180, 180)
 
-            plt.subplots_adjust(left=0,
-                                bottom=0,
-                                right=1,
-                                top=1,
-                                wspace=0.05,
-                                hspace=0)
+            plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0.05, hspace=0)
             plt.tight_layout()
 
             return h1, h2
@@ -661,46 +634,42 @@ class Vector_field_X():
 
             h1 = plt.subplot(1, 3, 1)
             phase = np.angle(self.Ex)
-            intensity = np.abs(self.Ex)**2
+            intensity = np.abs(self.Ex) ** 2
             phase[intensity < percentage_intensity * (intensity.max())] = 0
 
-            self.__draw1__(phase/degrees, ylabel=r"$\phi_x$", title='')
+            self.__draw1__(phase / degrees, ylabel=r"$\phi_x$", title="")
             plt.ylim(-180, 180)
 
             h2 = plt.subplot(1, 3, 2)
             phase = np.angle(self.Ey)
-            intensity = np.abs(self.Ey)**2
+            intensity = np.abs(self.Ey) ** 2
             phase[intensity < percentage_intensity * (intensity.max())] = 0
 
-            self.__draw1__(phase/degrees, ylabel=r"$\phi_y$", title='')
+            self.__draw1__(phase / degrees, ylabel=r"$\phi_y$", title="")
             plt.ylim(-180, 180)
 
             h3 = plt.subplot(1, 3, 3)
             phase = np.angle(self.Ez)
-            intensity = np.abs(self.Ez)**2
+            intensity = np.abs(self.Ez) ** 2
             phase[intensity < percentage_intensity * (intensity.max())] = 0
 
-            self.__draw1__(phase/degrees, ylabel=r"$\phi_z$", title='')
+            self.__draw1__(phase / degrees, ylabel=r"$\phi_z$", title="")
             plt.ylim(-180, 180)
 
-            plt.subplots_adjust(left=0,
-                                bottom=0,
-                                right=1,
-                                top=1,
-                                wspace=0.05,
-                                hspace=0)
+            plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0.05, hspace=0)
             plt.tight_layout()
 
             return h1, h2, h3
 
-
-    @check_none('x', 'Ex', 'Ey', 'Ez', raise_exception=bool_raise_exception)
-    def __draw_fields__(self,
-                        logarithm: float,
-                        normalize: bool,
-                        cut_value: float,
-                        color_intensity: str = CONF_DRAWING['color_intensity'],
-                        color_phase: str = CONF_DRAWING['color_phase']):
+    @check_none("x", "Ex", "Ey", "Ez", raise_exception=bool_raise_exception)
+    def __draw_fields__(
+        self,
+        logarithm: float,
+        normalize: bool,
+        cut_value: float,
+        color_intensity: str = CONF_DRAWING["color_intensity"],
+        color_phase: str = CONF_DRAWING["color_phase"],
+    ):
         """__internal__: draws amplitude and phase in 2x2 drawing
 
         Args:
@@ -711,14 +680,14 @@ class Vector_field_X():
 
         """
 
-        intensity_x = np.abs(self.Ex)**2
+        intensity_x = np.abs(self.Ex) ** 2
         intensity_x = normalize_draw(intensity_x, logarithm, normalize, cut_value)
 
-        intensity_y = np.abs(self.Ey)**2
+        intensity_y = np.abs(self.Ey) ** 2
         intensity_y = normalize_draw(intensity_y, logarithm, normalize, cut_value)
 
         intensity_max = np.max((intensity_x.max(), intensity_y.max()))
-        tx, ty = rcParams['figure.figsize']
+        tx, ty = rcParams["figure.figsize"]
 
         plt.figure(figsize=(2 * tx, 2 * ty))
 
@@ -735,28 +704,22 @@ class Vector_field_X():
         phase = np.angle(self.Ex)
         phase[intensity_x < percentage_intensity * (intensity_x.max())] = 0
 
-        self.__draw1__(phase/degrees, color_phase, r"$\phi_x$")
+        self.__draw1__(phase / degrees, color_phase, r"$\phi_x$")
         plt.clim(-180, 180)
 
         h4 = plt.subplot(2, 2, 4)
         phase = np.angle(self.Ey)
         phase[intensity_y < percentage_intensity * (intensity_y.max())] = 0
 
-        self.__draw1__(phase/degrees, color_phase, r"$\phi_y$")
+        self.__draw1__(phase / degrees, color_phase, r"$\phi_y$")
         plt.clim(-180, 180)
         h4 = plt.gca()
-        plt.subplots_adjust(left=0,
-                            bottom=0,
-                            right=1,
-                            top=1,
-                            wspace=0.05,
-                            hspace=0)
+        plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0.05, hspace=0)
         plt.tight_layout()
         return h1, h2, h3, h4
 
-
     def __draw_stokes__(self, logarithm: float | bool, normalize: bool, cut_value: float):
-        """ __internal__: computes and draws CI, CQ, CU, CV parameters
+        """__internal__: computes and draws CI, CQ, CU, CV parameters
 
         Args:
             logarithm (float | bool): _description_
@@ -767,9 +730,9 @@ class Vector_field_X():
             _type_: _description_
         """
 
-        tx, ty = rcParams['figure.figsize']
+        tx, ty = rcParams["figure.figsize"]
 
-        S0, S1, S2, S3 = self.get('stokes')
+        S0, S1, S2, S3 = self.get("stokes")
         S0 = normalize_draw(S0, logarithm, normalize, cut_value)
         S1 = normalize_draw(S1, logarithm, normalize, cut_value)
         S2 = normalize_draw(S2, logarithm, normalize, cut_value)
@@ -794,15 +757,9 @@ class Vector_field_X():
         self.__draw1__(S3, r"$S_3$")
         plt.ylim(-intensity_max, intensity_max)
 
-        plt.subplots_adjust(left=0,
-                            bottom=0,
-                            right=1,
-                            top=1,
-                            wspace=0.05,
-                            hspace=0)
+        plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0.05, hspace=0)
         plt.tight_layout()
         return (h1, h2, h3, h4)
-
 
     def __draw_param_ellipse__(self, logarithm: float, normalize: bool, cut_value: float):
         """_internal__: computes and draws polariations ellipses
@@ -815,9 +772,9 @@ class Vector_field_X():
         Returns:
             _type_: _description_
         """
-        A, B, theta, h = self.get('params_ellipse') 
+        A, B, theta, h = self.get("params_ellipse")
 
-        tx, ty = rcParams['figure.figsize']
+        tx, ty = rcParams["figure.figsize"]
 
         plt.figure(figsize=(2 * tx, 2 * ty))
 
@@ -831,7 +788,7 @@ class Vector_field_X():
         plt.ylim(0, max_intensity)
 
         h3 = plt.subplot(2, 2, 3)
-        self.__draw1__(theta/degrees, r"$\phi$")
+        self.__draw1__(theta / degrees, r"$\phi$")
         plt.ylim(-180, 180)
 
         h4 = plt.subplot(2, 2, 4)
@@ -843,8 +800,8 @@ class Vector_field_X():
 
         return (h1, h2, h3, h4)
 
-    @check_none('x', raise_exception=bool_raise_exception)
-    def __draw1__(self, data: NDArrayFloat, ylabel: str = '', title: str = ''):
+    @check_none("x", raise_exception=bool_raise_exception)
+    def __draw1__(self, data: NDArrayFloat, ylabel: str = "", title: str = ""):
         """Draws image.
 
         Args:
@@ -853,9 +810,9 @@ class Vector_field_X():
             title (str): title of drawing
         """
 
-        plt.plot(self.x, data, 'k', lw=2)
+        plt.plot(self.x, data, "k", lw=2)
         plt.xlim(self.x[0], self.x[-1])
         plt.ylim(ymin=0)
-        plt.xlabel(r'x($\mu$m)')
+        plt.xlabel(r"x($\mu$m)")
         plt.ylabel(ylabel)
         plt.title(title)

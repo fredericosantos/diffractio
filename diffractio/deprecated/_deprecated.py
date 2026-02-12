@@ -1,6 +1,6 @@
 # !/usr/bin/env python3
 
-""" Deprecated functions """
+"""Deprecated functions"""
 
 # utils_math
 
@@ -85,12 +85,11 @@ def ndgrid_deprecated(*args, **kwargs):
         result.append(zero + v.reshape(thisshape))
     if same_dtype:
         return np.array(result)  # converts to a common dtype
-    else:
-        return result  # keeps separate dtype for each output
+    return result  # keeps separate dtype for each output
 
 
 # Utils_math
-def get_k_deprecated(x, flavour='-'):
+def get_k_deprecated(x, flavour="-"):
     """provides k vector from x vector. Two flavours are provided (ordered + or disordered - )
 
     Args:
@@ -105,17 +104,16 @@ def get_k_deprecated(x, flavour='-'):
     """
 
     num_x = x.size
-    if flavour == '-':
+    if flavour == "-":
         size_x = x[-1] - x[0]
 
-        kx1 = np.linspace(0, num_x/2 + 1, int(num_x/2))
-        kx2 = np.linspace(-num_x/2, -1, int(num_x/2))
+        kx1 = np.linspace(0, num_x / 2 + 1, int(num_x / 2))
+        kx2 = np.linspace(-num_x / 2, -1, int(num_x / 2))
         kx = (2 * np.pi / size_x) * np.concatenate((kx1, kx2))
 
-    elif flavour == '+':
+    elif flavour == "+":
         dx = x[1] - x[0]
-        kx = 2 * np.pi / (num_x * dx) * (range(-int(num_x/2), int(
-            num_x/2)))
+        kx = 2 * np.pi / (num_x * dx) * (range(-int(num_x / 2), int(num_x / 2)))
 
     return kx
 
@@ -156,39 +154,39 @@ def get_k_deprecated(x, flavour='-'):
 
 # vector_fields_Xy
 
-    # def mask_circle(self, r0=(0., 0.), radius=0.):
-    #     """Mask vector field using a circular mask.
+# def mask_circle(self, r0=(0., 0.), radius=0.):
+#     """Mask vector field using a circular mask.
 
-    #     Args:
-    #         r0 (float, float): center of mask.
-    #         radius (float, float): radius of mask
-    #     """
+#     Args:
+#         r0 (float, float): center of mask.
+#         radius (float, float): radius of mask
+#     """
 
-    #     if isinstance(radius, (float, int, complex)):
-    #         radiusx, radiusy = (radius, radius)
-    #     else:
-    #         radiusx, radiusy = radius
-    #     radius = (radiusx, radiusy)
+#     if isinstance(radius, (float, int, complex)):
+#         radiusx, radiusy = (radius, radius)
+#     else:
+#         radiusx, radiusy = radius
+#     radius = (radiusx, radiusy)
 
-    #     if radiusx * radiusy > 0:
-    #         radius_x = (self.x[-1] - self.x[0])/2
-    #         radius_y = (self.y[-1] - self.y[0])/2
-    #         radius = (radius_x, radius_y)
+#     if radiusx * radiusy > 0:
+#         radius_x = (self.x[-1] - self.x[0])/2
+#         radius_y = (self.y[-1] - self.y[0])/2
+#         radius = (radius_x, radius_y)
 
-    #     elif radius in (None, '', []):
-    #         return
+#     elif radius in (None, '', []):
+#         return
 
-    #     elif isinstance(radius, (float, int, complex)):
-    #         radius = (radius, radius)
+#     elif isinstance(radius, (float, int, complex)):
+#         radius = (radius, radius)
 
-    #     if r0 in (0, None, '', []):
-    #         r0_x = (self.x[-1] + self.x[0])/2
-    #         r0_y = (self.y[-1] + self.y[0])/2
-    #         r0 = (r0_x, r0_y)
+#     if r0 in (0, None, '', []):
+#         r0_x = (self.x[-1] + self.x[0])/2
+#         r0_y = (self.y[-1] + self.y[0])/2
+#         r0 = (r0_x, r0_y)
 
-    #     if radiusx * radiusy > 0:
-    #         t1 = Scalar_mask_XY(x=self.x, y=self.y, wavelength=self.wavelength)
-    #         t1.circle(r0=r0, radius=radius, angle=0*degrees)
-    #         self.Ex = t1.u * self.Ex
-    #         self.Ey = t1.u * self.Ey
-    #         self.Ez = t1.u * self.Ez
+#     if radiusx * radiusy > 0:
+#         t1 = Scalar_mask_XY(x=self.x, y=self.y, wavelength=self.wavelength)
+#         t1.circle(r0=r0, radius=radius, angle=0*degrees)
+#         self.Ex = t1.u * self.Ex
+#         self.Ey = t1.u * self.Ey
+#         self.Ez = t1.u * self.Ez

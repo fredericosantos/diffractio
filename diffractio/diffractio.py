@@ -12,12 +12,11 @@
 
 
 """
-Init module to control the rest of the modules. 
-    
+Init module to control the rest of the modules.
+
 
 """
 # flake8: noqa
-
 
 from .config import Options_Diffractio_kind, Options_Diffractio_frame
 
@@ -46,7 +45,8 @@ from diffractio.vector_sources_XY import Vector_source_XY
 
 from diffractio.utils_typing import NDArrayFloat
 
-class Diffractio():
+
+class Diffractio:
     """Class for unidimensional scalar fields.
 
     Args:
@@ -67,85 +67,87 @@ class Diffractio():
         self.date (str): Date when performed.
     """
 
-    def __init__(self, 
-                 kind: Options_Diffractio_kind,
-                 frame: Options_Diffractio_frame,
-                 x: NDArrayFloat | None = None, 
-                 y: NDArrayFloat | None = None, 
-                 z: NDArrayFloat | None = None, 
-                 wavelength: float  = 0,
-                 n_background: float = 1., 
-                 info: str = ""):
-        
-        if kind == 'scalar':
+    def __init__(
+        self,
+        kind: Options_Diffractio_kind,
+        frame: Options_Diffractio_frame,
+        x: NDArrayFloat | None = None,
+        y: NDArrayFloat | None = None,
+        z: NDArrayFloat | None = None,
+        wavelength: float = 0,
+        n_background: float = 1.0,
+        info: str = "",
+    ):
+
+        if kind == "scalar":
             if x is not None and y is None and z is None:
-                if frame == 'source':
-                    self.__class__ =  Scalar_source_X
+                if frame == "source":
+                    self.__class__ = Scalar_source_X
                     self.__init__(x, wavelength, n_background, info)
-                elif frame == 'mask':
-                    self.__class__ =  Scalar_mask_X
+                elif frame == "mask":
+                    self.__class__ = Scalar_mask_X
                     self.__init__(x, wavelength, n_background, info)
-                elif frame == 'field':
+                elif frame == "field":
                     self.__class__ = Scalar_field_X
                     self.__init__(x, wavelength, n_background, info)
             elif x is not None and y is not None and z is None:
-                if frame == 'source':
+                if frame == "source":
                     self.__class__ = Scalar_source_XY
                     self.__init__(x, y, wavelength, n_background, info)
-                elif frame == 'mask':
+                elif frame == "mask":
                     self.__class__ = Scalar_mask_XY
                     self.__init__(x, y, wavelength, n_background, info)
-                elif frame == 'field':
+                elif frame == "field":
                     self.__class__ = Scalar_field_XY
                     self.__init__(x, y, wavelength, n_background, info)
             elif x is not None and y is None and z is not None:
-                if frame == 'mask':
+                if frame == "mask":
                     self.__class__ = Scalar_mask_XZ
                     self.__init__(x, z, wavelength, n_background, info)
-                elif frame == 'field':
+                elif frame == "field":
                     self.__class__ = Scalar_field_XZ
                     self.__init__(x, z, wavelength, n_background, info)
             elif x is not None and y is not None and z is not None:
-                if frame == 'mask':
+                if frame == "mask":
                     self.__class__ = Scalar_mask_XYZ
                     self.__init__(x, y, z, wavelength, n_background, info)
-                elif frame == 'field':
+                elif frame == "field":
                     self.__class__ = Scalar_field_XYZ
                     self.__init__(x, y, z, wavelength, n_background, info)
             elif x is None and y is None and z is not None:
-                if frame == 'field':
+                if frame == "field":
                     self.__class__ = Scalar_field_Z
                     self.__init__(z, wavelength, n_background, info)
             else:
-                raise ValueError('frame must be source, mask or field')
-        elif kind == 'vector':
+                raise ValueError("frame must be source, mask or field")
+        elif kind == "vector":
             if x is not None and y is None and z is None:
-                if frame == 'field':
-                    self.__class__ =  Vector_field_X    
-                    self.__init__(x, wavelength, n_background, info)  
+                if frame == "field":
+                    self.__class__ = Vector_field_X
+                    self.__init__(x, wavelength, n_background, info)
             elif x is not None and y is not None and z is None:
-                if frame == 'field':
-                    self.__class__ = Vector_field_XY  
+                if frame == "field":
+                    self.__class__ = Vector_field_XY
                     self.__init__(x, y, wavelength, n_background, info)
-                elif frame == 'mask':
+                elif frame == "mask":
                     self.__class__ = Vector_mask_XY
-                    self.__init__(x, y, wavelength, n_background, info)  
-                elif frame == 'source':
+                    self.__init__(x, y, wavelength, n_background, info)
+                elif frame == "source":
                     self.__class__ = Vector_source_XY
-                    self.__init__(x, y, wavelength, n_background, info) 
+                    self.__init__(x, y, wavelength, n_background, info)
             elif x is not None and y is None and z is not None:
-                if frame == 'field':
+                if frame == "field":
                     self.__class__ = Vector_field_XZ
                     self.__init__(x, z, wavelength, n_background, info)
             elif x is not None and y is not None and z is not None:
-                if frame == 'field':
+                if frame == "field":
                     self.__class__ = Vector_field_XYZ
                     self.__init__(x, y, z, wavelength, n_background, info)
             elif x is None and y is None and z is not None:
-                if frame == 'field':
+                if frame == "field":
                     self.__class__ = Vector_field_Z
                     self.__init__(z, wavelength, n_background, info)
             else:
-                raise ValueError('frame must be fields, source or mask')
+                raise ValueError("frame must be fields, source or mask")
         else:
-            raise ValueError('kind must be scalar or vector')
+            raise ValueError("kind must be scalar or vector")

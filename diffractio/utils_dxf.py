@@ -19,18 +19,13 @@ from __future__ import annotations
 import os
 import sys
 
+import ezdxf
+from ezdxf import bbox, recover
+from ezdxf.addons.drawing import Frontend, RenderContext
+from ezdxf.addons.drawing.matplotlib import MatplotlibBackend
 from PIL import Image
 
-import ezdxf
-from ezdxf import recover
-from ezdxf import bbox
-from ezdxf.addons.drawing import RenderContext, Frontend
-from ezdxf.addons.drawing.matplotlib import MatplotlibBackend
-from ezdxf.layouts import Modelspace
-
-
-from .utils_typing import npt, Any, NDArray,  NDArrayFloat, NDArrayComplex
-from .import np, plt
+from . import np, plt
 
 
 def set_pixel_density(fig: plt.Figure, ax: plt.Axes, ppu: int):
@@ -104,19 +99,19 @@ def load_dxf(filename_dxf: str, num_pixels: tuple[int, int], verbose: bool = Fal
     #     extent_dxf = [-500*um, +500*um, -250*um, +250*um]
 
     # temporal, for debugging
-    filename_png = ''
+    filename_png = ""
     has_draw = False
 
     try:
         doc, auditor = recover.readfile(filename_dxf)
-    except IOError:
-        print(f'Not a DXF file or a generic I/O error.')
+    except OSError:
+        print("Not a DXF file or a generic I/O error.")
         sys.exit(1)
     except ezdxf.DXFStructureError:
-        print(f'{"Invalid or corrupted DXF file."}')
+        print(f"{'Invalid or corrupted DXF file.'}")
         sys.exit(2)
 
-    if filename_png == '':
+    if filename_png == "":
         filename_png2 = "temp.png"
     else:
         filename_png2 = filename_png
@@ -129,7 +124,7 @@ def load_dxf(filename_dxf: str, num_pixels: tuple[int, int], verbose: bool = Fal
         fig: plt.Figure = plt.figure()
         ax: plt.Axes = fig.add_axes([0, 0, 1, 1])
         ctx = RenderContext(doc)
-        ctx.current_layout_properties.set_colors(bg='#000000')
+        ctx.current_layout_properties.set_colors(bg="#000000")
 
         out = MatplotlibBackend(ax)
         Frontend(ctx, out).draw_layout(msp, finalize=True)
@@ -138,7 +133,7 @@ def load_dxf(filename_dxf: str, num_pixels: tuple[int, int], verbose: bool = Fal
         ax.margins(0)
         # export image with a size of 1000x600 pixels
         fig = set_pixel_size(fig, num_pixels)
-        fig.savefig(filename_png2, facecolor='#000000', edgecolor='#FFFFFF')
+        fig.savefig(filename_png2, facecolor="#000000", edgecolor="#FFFFFF")
         fig.clear()
 
     cache = bbox.Cache()
@@ -175,12 +170,12 @@ def load_dxf(filename_dxf: str, num_pixels: tuple[int, int], verbose: bool = Fal
         # print(im_frame.mode)
         # print(image_new.min(), image_new.max())
 
-    if filename_png == '':
+    if filename_png == "":
         os.remove(filename_png2)
 
     if has_draw:
         plt.figure()
-        plt.imshow(image_new, cmap='gray')
+        plt.imshow(image_new, cmap="gray")
         plt.colorbar()
         plt.clim(0, 1)
 

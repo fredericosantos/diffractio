@@ -39,10 +39,9 @@ The magnitude is related to microns: `mifcron = 1.`
 """
 # flake8: noqa
 
-
 from .__init__ import degrees, np, um
 from .__init__ import np, plt
-from .utils_typing import npt, Any, NDArray,  NDArrayFloat, NDArrayComplex
+from .utils_typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
 from .utils_common import check_none
 from .utils_optics import roughness_1D
 from .config import bool_raise_exception
@@ -68,14 +67,19 @@ class Scalar_source_X(Scalar_field_X):
         self.date (str): date when performed
     """
 
-    def __init__(self, x: NDArrayFloat | None = None, wavelength: float = 0,
-                 n_background: float = 1., info: str = ""):
+    def __init__(
+        self,
+        x: NDArrayFloat | None = None,
+        wavelength: float = 0,
+        n_background: float = 1.0,
+        info: str = "",
+    ):
         super().__init__(x, wavelength, n_background, info)
-        self.type = 'Scalar_source_X'
+        self.type = "Scalar_source_X"
 
-    @check_none('x', raise_exception=bool_raise_exception)
-    def plane_wave(self, A: float = 1., theta: float = 0., z0: float = 0.):
-        """Plane wave. 
+    @check_none("x", raise_exception=bool_raise_exception)
+    def plane_wave(self, A: float = 1.0, theta: float = 0.0, z0: float = 0.0):
+        """Plane wave.
 
         Args:
             A (float): maximum amplitude
@@ -84,11 +88,10 @@ class Scalar_source_X(Scalar_field_X):
         """
         # Definicion del vector de onda
         k = 2 * np.pi / self.wavelength
-        self.u = A * np.exp(1.j * k * (self.x * np.sin(theta) + z0 * np.cos(theta)))
+        self.u = A * np.exp(1.0j * k * (self.x * np.sin(theta) + z0 * np.cos(theta)))
 
-
-    @check_none('x', raise_exception=bool_raise_exception)
-    def gauss_beam(self, x0: float, w0: float, z0: float, A: float = 1, theta: float = 0.):
+    @check_none("x", raise_exception=bool_raise_exception)
+    def gauss_beam(self, x0: float, w0: float, z0: float, A: float = 1, theta: float = 0.0):
         """Gauss Beam.
 
         Args:
@@ -100,25 +103,25 @@ class Scalar_source_X(Scalar_field_X):
         """
         k = 2 * np.pi / self.wavelength
         # distance de Rayleigh solo para una direccion.
-        z_rayleigh = k * w0**2/2
+        z_rayleigh = k * w0**2 / 2
 
         phaseGouy = np.arctan2(z0, z_rayleigh)
 
-        w = w0 * np.sqrt(1 + (z0 / z_rayleigh)**2)
+        w = w0 * np.sqrt(1 + (z0 / z_rayleigh) ** 2)
         if z0 == 0:
             R = 1e10
         else:
-            R = -z0 * (1 + (z_rayleigh / z0)**2)
-        amplitude = A * w0 / w * np.exp(-(self.x - x0)**2 / (w**2))
+            R = -z0 * (1 + (z_rayleigh / z0) ** 2)
+        amplitude = A * w0 / w * np.exp(-((self.x - x0) ** 2) / (w**2))
         phase1 = np.exp(1j * k * ((self.x - x0) * np.sin(theta)))  # rotation
-        phase2 = np.exp(1j * (-k * z0 - phaseGouy + k * (self.x - x0)**2 /
-                              (2 * R)))
+        phase2 = np.exp(1j * (-k * z0 - phaseGouy + k * (self.x - x0) ** 2 / (2 * R)))
 
         self.u = amplitude * phase1 * phase2
 
-
-    @check_none('x', raise_exception=bool_raise_exception)
-    def super_gauss_beam(self, x0: float, w0: float, z0: float,  power: float = 2.,A: float = 1, theta: float = 0.):
+    @check_none("x", raise_exception=bool_raise_exception)
+    def super_gauss_beam(
+        self, x0: float, w0: float, z0: float, power: float = 2.0, A: float = 1, theta: float = 0.0
+    ):
         """Supergaus beam. exp(-(|x-x0|/w0)**power).
 
         Args:
@@ -131,27 +134,24 @@ class Scalar_source_X(Scalar_field_X):
         """
         k = 2 * np.pi / self.wavelength
         # distance de Rayleigh solo para una direccion.
-        z_rayleigh = k * w0**2/2
+        z_rayleigh = k * w0**2 / 2
 
         phaseGouy = np.arctan2(z0, z_rayleigh)
 
-        w = w0 * np.sqrt(1 + (z0 / z_rayleigh)**2)
+        w = w0 * np.sqrt(1 + (z0 / z_rayleigh) ** 2)
         if z0 == 0:
             R = 1e10
         else:
-            R = -z0 * (1 + (z_rayleigh / z0)**2)
-        amplitude = A * w0 / w * np.exp(-np.abs((self.x - x0))**power / (np.abs(w)**power))
+            R = -z0 * (1 + (z_rayleigh / z0) ** 2)
+        amplitude = A * w0 / w * np.exp(-(np.abs((self.x - x0)) ** power) / (np.abs(w) ** power))
         phase1 = np.exp(1j * k * ((self.x - x0) * np.sin(theta)))  # rotation
-        phase2 = np.exp(1j * (-k * z0 - phaseGouy + k * (self.x - x0)**2 /
-                                (2 * R)))
+        phase2 = np.exp(1j * (-k * z0 - phaseGouy + k * (self.x - x0) ** 2 / (2 * R)))
 
         self.u = amplitude * phase1 * phase2
 
         return self
 
-
-
-    @check_none('x', raise_exception=bool_raise_exception)
+    @check_none("x", raise_exception=bool_raise_exception)
     def spherical_wave(self, A: float, x0: float, z0: float, normalize: bool = False):
         """Spherical wave. self.u = amplitude * A * np.exp(-1.j * np.sign(z0) * k * Rz) / Rz
 
@@ -164,19 +164,26 @@ class Scalar_source_X(Scalar_field_X):
         """
         k = 2 * np.pi / self.wavelength
 
-        Rz = np.sqrt((self.x - x0)**2 + z0**2)
+        Rz = np.sqrt((self.x - x0) ** 2 + z0**2)
 
         # Onda esferica
-        self.u = A * np.exp(-1.j * np.sign(z0) * k * Rz) / Rz
+        self.u = A * np.exp(-1.0j * np.sign(z0) * k * Rz) / Rz
 
         if normalize is True:
             self.u = self.u / np.abs(self.u.max() + 1.012034e-12)
 
-
-    @check_none('x', raise_exception=bool_raise_exception)
-    def wavelets(self, kind: str, x0s: NDArray, z0s: NDArray, As: NDArray, phases: NDArray = 0, w0: float = 0.): 
+    @check_none("x", raise_exception=bool_raise_exception)
+    def wavelets(
+        self,
+        kind: str,
+        x0s: NDArray,
+        z0s: NDArray,
+        As: NDArray,
+        phases: NDArray = 0,
+        w0: float = 0.0,
+    ):
         """Generates a beam profile z(x) with wavelets: spherical waves or gaussian beams. Each wavelet is defined by its position (x0, z0), amplitude A, and phase.
-        The resulting field is the sum of all wavelets, each contributing a spherical or gaussian wave at its respective position. 
+        The resulting field is the sum of all wavelets, each contributing a spherical or gaussian wave at its respective position.
         The phase is useful for generating beams with partially coherence, where each wavelet can have a different phase.
         If the phase is constant, then the resulting field is a coherent superposition of wavelets.
 
@@ -191,16 +198,14 @@ class Scalar_source_X(Scalar_field_X):
 
         Raises:
             ValueError: If kind is not 'spherical' or 'gaussian'.
-            ValueError: If x0s, y0s, z0s, and As do not have the same length.  
+            ValueError: If x0s, y0s, z0s, and As do not have the same length.
 
         Returns:
             Scalar_source_X: Amplitude distribution at the origin for the given light profile.
         """
-        if kind not in ['spherical', 'gaussian']:
+        if kind not in ["spherical", "gaussian"]:
             raise ValueError("kind must be 'spherical' or 'gaussian'")
-        
 
-        
         if isinstance(x0s, (list, tuple)):
             x0s = np.array(x0s)
         if isinstance(z0s, (list, tuple)):
@@ -215,7 +220,7 @@ class Scalar_source_X(Scalar_field_X):
 
         if isinstance(As, (int, float)):
             As = As * np.ones_like(x0s)
-        
+
         if isinstance(z0s, (int, float)):
             z0s = z0s * np.ones_like(x0s)
 
@@ -234,18 +239,20 @@ class Scalar_source_X(Scalar_field_X):
         u0 = self.duplicate(clear=True)
 
         for i, x0, z0, A in zip(range(len(x0s)), x0s, z0s, As):
-            if kind == 'spherical':
+            if kind == "spherical":
                 u0.spherical_wave(A=A, x0=x0, z0=z0)
-            elif kind == 'gaussian':
+            elif kind == "gaussian":
                 u0.gauss_beam(A=A, x0=x0, z0=z0, w0=w0)
 
             # Add the contribution of this source to the total field
             self.u = self.u + u0.u * np.exp(1j * phases[i])
 
-    @check_none('x', 'u', raise_exception=bool_raise_exception)
-    def partial_coherence(self, lc: float, s: float, has_draw: bool = True, verbose: bool = True) -> None:
-        """partial_coherence. 
-        
+    @check_none("x", "u", raise_exception=bool_raise_exception)
+    def partial_coherence(
+        self, lc: float, s: float, has_draw: bool = True, verbose: bool = True
+    ) -> None:
+        """partial_coherence.
+
         Apply partial coherence to the optical field. It generates a random phase to the field based on Gaussian distribution with a given correlation length and standard deviation.
 
         This method modifies the `u` attribute of the instance by multiplying it with a roughness field generated by`roughness_2D`.
@@ -264,25 +271,24 @@ class Scalar_source_X(Scalar_field_X):
 
         k = 2 * np.pi / self.wavelength
 
-        t_rough=roughness_1D(x=self.x, t=lc, s=s)
+        t_rough = roughness_1D(x=self.x, t=lc, s=s)
 
         self.u *= np.exp(1j * k * t_rough)  # Apply roughness to the source.
 
         if has_draw:
             plt.figure()
-            plt.plot(self.x, t_rough/(2*np.pi))
-            plt.xlabel('x (um)')
-            plt.ylabel(r'Roughness (radians/2$\pi$)')
+            plt.plot(self.x, t_rough / (2 * np.pi))
+            plt.xlabel("x (um)")
+            plt.ylabel(r"Roughness (radians/2$\pi$)")
 
             plt.figure()
-            plt.hist((t_rough/(2*np.pi)).flatten(), bins=100)
+            plt.hist((t_rough / (2 * np.pi)).flatten(), bins=100)
 
         if verbose:
-            print(r'Mean roughness    : {:.3f} loops'.format(np.mean(t_rough/(2*np.pi))))
-            print(r'Standard deviation: {:.3f} loops'.format( np.std(t_rough/(2*np.pi))))
+            print(r"Mean roughness    : {:.3f} loops".format(np.mean(t_rough / (2 * np.pi))))
+            print(r"Standard deviation: {:.3f} loops".format(np.std(t_rough / (2 * np.pi))))
 
-
-    @check_none('x', raise_exception=bool_raise_exception)
+    @check_none("x", raise_exception=bool_raise_exception)
     def plane_waves_dict(self, params: dict):
         """Several plane waves with parameters defined in dictionary
 
@@ -297,12 +303,11 @@ class Scalar_source_X(Scalar_field_X):
 
         self.u = np.zeros_like(self.x, dtype=complex)
         for p in params:
-            self.u = self.u + p['A'] * np.exp(
-                1.j * k *
-                (self.x * np.sin(p['theta']) + p['z0'] * np.cos(p['theta'])))
+            self.u = self.u + p["A"] * np.exp(
+                1.0j * k * (self.x * np.sin(p["theta"]) + p["z0"] * np.cos(p["theta"]))
+            )
 
-
-    @check_none('x', raise_exception=bool_raise_exception)
+    @check_none("x", raise_exception=bool_raise_exception)
     def plane_waves_several_inclined(self, A: float, num_beams: int, max_angle: float):
         """Several paralel plane waves.
 
@@ -315,14 +320,22 @@ class Scalar_source_X(Scalar_field_X):
         t = np.zeros_like(self.x, dtype=complex)
         angle = max_angle / num_beams
         for i in range(num_beams):
-            theta = -max_angle/2 + angle * (i + 0.5)
+            theta = -max_angle / 2 + angle * (i + 0.5)
             self.plane_wave(theta=theta, z0=0)
             t = t + self.u
         self.u = t
 
-
-    @check_none('x', raise_exception=bool_raise_exception)
-    def gauss_beams_several_parallel(self, A: float, num_beams: int, w0: float, z0: float, x_central: float, x_range: float, theta: float = 0.):
+    @check_none("x", raise_exception=bool_raise_exception)
+    def gauss_beams_several_parallel(
+        self,
+        A: float,
+        num_beams: int,
+        w0: float,
+        z0: float,
+        x_central: float,
+        x_range: float,
+        theta: float = 0.0,
+    ):
         """Several parallel gauss beams
 
         Args:
@@ -338,13 +351,15 @@ class Scalar_source_X(Scalar_field_X):
         t = np.zeros_like(self.x, dtype=complex)
         distancia = x_range / num_beams
         for i in range(num_beams):
-            xi = x_central - x_range/2 + distancia * (i + 0.5)
+            xi = x_central - x_range / 2 + distancia * (i + 0.5)
             self.gauss_beam(x0=xi, w0=w0, z0=z0, A=A, theta=theta)
             t = t + self.u
         self.u = t
 
-    @check_none('x', raise_exception=bool_raise_exception)
-    def gauss_beams_several_inclined(self, A: float, num_beams: int, w0: float, x0: float, z0: float, max_angle: float):
+    @check_none("x", raise_exception=bool_raise_exception)
+    def gauss_beams_several_inclined(
+        self, A: float, num_beams: int, w0: float, x0: float, z0: float, max_angle: float
+    ):
         """Several inclined gauss beams
 
         Args:
@@ -361,7 +376,7 @@ class Scalar_source_X(Scalar_field_X):
         t = np.zeros_like(self.x, dtype=complex)
         angle = max_angle / num_beams
         for i in range(num_beams):
-            thetai = -max_angle/2 + angle * (i + 0.5)
+            thetai = -max_angle / 2 + angle * (i + 0.5)
             self.gauss_beam(x0=x0, w0=w0, z0=z0, A=A, theta=thetai)
             t = t + self.u
         self.u = t
