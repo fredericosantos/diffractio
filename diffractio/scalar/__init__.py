@@ -16,14 +16,16 @@ scalar/
 └── z_field.py         # 1D scalar fields (Z).
 """
 
-from . import x_field
-from . import x_mask
-from . import x_source
-from . import xy_field
-from . import xy_mask
-from . import xy_source
-from . import xz_field
-from . import xz_mask
-from . import xyz_field
-from . import xyz_mask
-from . import z_field
+from . import (
+    x_field,
+    x_mask,
+    x_source,
+    xy_field,
+    xy_mask,
+    xy_source,
+    xyz_field,
+    xyz_mask,
+    xz_field,
+    xz_mask,
+    z_field,
+)

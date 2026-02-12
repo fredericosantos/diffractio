@@ -5,18 +5,18 @@ import datetime
 import os
 import sys
 import time
+
 import pytest
 
-from diffractio import (degrees, eps, mm, no_date, np, num_max_processors, plt,
-                        um)
-from diffractio.scalar.xz_field import Scalar_field_XZ
+from diffractio import degrees, eps, mm, no_date, np, plt, um
 from diffractio.scalar.x_mask import Scalar_mask_X
-from diffractio.scalar.xz_mask import Scalar_mask_XZ
 from diffractio.scalar.x_source import Scalar_source_X
+from diffractio.scalar.xz_field import Scalar_field_XZ
+from diffractio.scalar.xz_mask import Scalar_mask_XZ
 from diffractio.utils.tests import comparison, save_figure_test
 
 if no_date is True:
-    date = '0'
+    date = "0"
 else:
     now = datetime.datetime.now()
     date = now.strftime("%Y-%m-%d_%H")
@@ -24,7 +24,7 @@ else:
 path_base = "test_results"
 path_class = "scalar_fields_XZ"
 
-newpath = "{}/{}/{}/".format(path_base, date, path_class)
+newpath = f"{path_base}/{date}/{path_class}/"
 
 if not os.path.exists(newpath):
     os.makedirs(newpath)
@@ -88,7 +88,7 @@ def generate_BPM_gauss():
     z0 = np.linspace(0*um, 500*um, 256)
 
     x_ini = -250*um * np.tan(30*degrees)
-    print("x_ini={}".format(x_ini))
+    print(f"x_ini={x_ini}")
     # source
     f1 = Scalar_source_X(x0, wavelength)
     f1.gauss_beam(A=1, x0=0, z0=250*um, w0=10*um, theta=0*degrees)
@@ -104,7 +104,7 @@ u_focus = generate_BPM_field()
 u_gauss = generate_BPM_gauss()
 
 
-class Test_Scalar_fields_XZ():
+class Test_Scalar_fields_XZ:
 
     def test_rotate_field(self):
         func_name = sys._getframe().f_code.co_name
@@ -134,28 +134,28 @@ class Test_Scalar_fields_XZ():
         u1.BPM(verbose=False)
 
         u1.draw(logarithm=True,
-                normalize='maximum',
-                scale='equal',
+                normalize="maximum",
+                scale="equal",
                 draw_borders=True)
-        save_figure_test(newpath, func_name, add_name='_wo')
+        save_figure_test(newpath, func_name, add_name="_wo")
 
         u1.draw_refractive_index(draw_borders=True)
 
-        save_figure_test(newpath, func_name, add_name='_no')
+        save_figure_test(newpath, func_name, add_name="_no")
 
         u1.rotate_field(angle=22.5*degrees,
                         center_rotation=(0, 100),
-                        kind='jones_ap')
+                        kind="jones_ap")
         u1.draw_refractive_index(draw_borders=True)
-        save_figure_test(newpath, func_name, add_name='_n')
+        save_figure_test(newpath, func_name, add_name="_n")
         u1.draw(logarithm=True, draw_borders=True)
-        save_figure_test(newpath, func_name, add_name='_wi')
+        save_figure_test(newpath, func_name, add_name="_wi")
 
         u1.clear_field()
         u1.BPM(verbose=False)
         u1.draw(logarithm=True, draw_borders=True)
 
-        save_figure_test(newpath, func_name, add_name='_recomputed')
+        save_figure_test(newpath, func_name, add_name="_recomputed")
 
         assert True
 
@@ -169,15 +169,15 @@ class Test_Scalar_fields_XZ():
         u0.clear_field()
         solution = u0.u
 
-        u0.draw(kind='intensity', colorbar_kind='horizontal')
+        u0.draw(kind="intensity", colorbar_kind="horizontal")
         plt.clim(0, 1)
 
-        save_figure_test(newpath, func_name, add_name='')
+        save_figure_test(newpath, func_name, add_name="")
         assert comparison(proposal, solution, eps)
 
     def test_save_load(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x0 = np.linspace(-25*um, 25*um, 512)
         z0 = np.linspace(0*um, 75*um, 256)
@@ -196,18 +196,18 @@ class Test_Scalar_fields_XZ():
             date: 170731
             purpose: check testing
             """
-        u1.save_data(filename=filename + '.npz', add_name='')
+        u1.save_data(filename=filename + ".npz", add_name="")
         time.sleep(0.5)
 
         u2 = Scalar_field_XZ(x0, z0, wavelength)
-        u2.load_data(filename=filename + '.npz')
-        u2.draw(logarithm=True, normalize='maximum', draw_borders=True)
-        save_figure_test(newpath, func_name, add_name='_loaded')
+        u2.load_data(filename=filename + ".npz")
+        u2.draw(logarithm=True, normalize="maximum", draw_borders=True)
+        save_figure_test(newpath, func_name, add_name="_loaded")
         assert True
 
     def test_surface_detection(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x0 = np.linspace(-100*um, 100*um, 512)
         z0 = np.linspace(-5*um, 200*um, 512)
@@ -222,21 +222,21 @@ class Test_Scalar_fields_XZ():
                    refractive_index=1.5,
                    angle=0)
 
-        u1.draw_refractive_index(draw_borders=True, scale='equal')
+        u1.draw_refractive_index(draw_borders=True, scale="equal")
         u1.BPM()
         u1.draw(logarithm=True,
-                normalize='maximum',
+                normalize="maximum",
                 draw_borders=True,
-                scale='equal')
-        u1.draw(kind='phase', draw_borders=True, scale='equal')
+                scale="equal")
+        u1.draw(kind="phase", draw_borders=True, scale="equal")
 
-        u1.save_data(filename=filename + '.npz', add_name='')
-        save_figure_test(newpath, func_name, add_name='')
+        u1.save_data(filename=filename + ".npz", add_name="")
+        save_figure_test(newpath, func_name, add_name="")
         assert True
 
     def test_cut_resample(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         """
         generates a field and I cut_resample it
         """
@@ -252,38 +252,38 @@ class Test_Scalar_fields_XZ():
                 aperture=40*um,
                 depth=10*um,
                 refractive_index=1,
-                refractive_index_center='',
+                refractive_index_center="",
                 angle=0*degrees)
 
         u1.BPM(verbose=False)
-        u1.draw(kind='intensity', draw_borders=True)
+        u1.draw(kind="intensity", draw_borders=True)
 
-        u1.save_data(filename=filename + '.npz', add_name='_before')
-        save_figure_test(newpath, func_name, add_name='_before')
+        u1.save_data(filename=filename + ".npz", add_name="_before")
+        save_figure_test(newpath, func_name, add_name="_before")
 
         u1.draw_refractive_index(draw_borders=True)
-        u1.save_data(filename=filename + '.npz', add_name='_after')
-        save_figure_test(newpath, func_name, add_name='_n_before')
+        u1.save_data(filename=filename + ".npz", add_name="_after")
+        save_figure_test(newpath, func_name, add_name="_n_before")
 
         u1.cut_resample(x_limits=(-75, 75),
                         z_limits=(0, 30),
                         num_points=(512, 512),
                         new_field=False)
-        u1.draw(kind='intensity', draw_borders=True)
+        u1.draw(kind="intensity", draw_borders=True)
 
-        u1.save_data(filename=filename + '.npz', add_name='_after')
-        save_figure_test(newpath, func_name, add_name='_after')
+        u1.save_data(filename=filename + ".npz", add_name="_after")
+        save_figure_test(newpath, func_name, add_name="_after")
 
         u1.draw_refractive_index(draw_borders=True)
 
-        u1.save_data(filename=filename + '.npz', add_name='_after')
-        save_figure_test(newpath, func_name, add_name='_n_after')
+        u1.save_data(filename=filename + ".npz", add_name="_after")
+        save_figure_test(newpath, func_name, add_name="_n_after")
 
         assert True
 
     def test_incident_field_1(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x0 = np.linspace(-60*um, 60*um, 512)
         z0 = np.linspace(0*um, 100*um, 512)
@@ -312,15 +312,15 @@ class Test_Scalar_fields_XZ():
         u1 = Scalar_mask_XZ(x=x0, z=z0, wavelength=wavelength)
         u1.incident_field(u0)
         u1.BPM()
-        u1.draw(kind='intensity', logarithm=True)
+        u1.draw(kind="intensity", logarithm=True)
 
-        u1.save_data(filename=filename + '.npz', add_name='')
-        save_figure_test(newpath, func_name, add_name='')
+        u1.save_data(filename=filename + ".npz", add_name="")
+        save_figure_test(newpath, func_name, add_name="")
         assert True
 
     def test_incident_field_n(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x0 = np.linspace(-60*um, 60*um, 512)
         z0 = np.linspace(0*um, 100*um, 512)
@@ -350,21 +350,21 @@ class Test_Scalar_fields_XZ():
         u1.incident_field(u0, z0=10*um)
         u1.incident_field(t0, z0=25*um)
         u1.incident_field(t1, z0=25*um)
-        u1.draw(kind='intensity', logarithm=True)
+        u1.draw(kind="intensity", logarithm=True)
 
-        u1.save_data(filename=filename + '.npz', add_name='_0')
-        save_figure_test(newpath, func_name, add_name='_0')
+        u1.save_data(filename=filename + ".npz", add_name="_0")
+        save_figure_test(newpath, func_name, add_name="_0")
 
         u1.BPM()
-        u1.draw(kind='intensity', logarithm=True)
+        u1.draw(kind="intensity", logarithm=True)
 
-        u1.save_data(filename=filename + '.npz', add_name='_prop')
-        save_figure_test(newpath, func_name, add_name='_prop')
+        u1.save_data(filename=filename + ".npz", add_name="_prop")
+        save_figure_test(newpath, func_name, add_name="_prop")
         assert True
 
     def test_final_field(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x0 = np.linspace(-150*um, 150*um, 512)
         z0 = np.linspace(0*um, 500*um, 512)
@@ -378,7 +378,7 @@ class Test_Scalar_fields_XZ():
                 aperture=200*um,
                 depth=15*um,
                 refractive_index=1 + 5j,
-                refractive_index_center='',
+                refractive_index_center="",
                 angle=0*degrees)
         u1.biprism(r0=(10*um, 0*um),
                    length=200*um,
@@ -386,20 +386,20 @@ class Test_Scalar_fields_XZ():
                    refractive_index=1.5,
                    angle=0*degrees)
         u1.BPM()
-        u1.draw(kind='intensity', draw_borders=True)
-        u1.save_data(filename=filename + '.npz', add_name='_field')
-        save_figure_test(newpath, func_name, add_name='_field')
+        u1.draw(kind="intensity", draw_borders=True)
+        u1.save_data(filename=filename + ".npz", add_name="_field")
+        save_figure_test(newpath, func_name, add_name="_field")
 
         u_final = u1.final_field()
         u_final.draw()
 
-        u_final.save_data(filename=filename + '.npz', add_name='_final')
-        save_figure_test(newpath, func_name, add_name='_final')
+        u_final.save_data(filename=filename + ".npz", add_name="_final")
+        save_figure_test(newpath, func_name, add_name="_final")
         assert True
 
     def test_RS(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         wavelength = .5*um
         x0 = np.linspace(-200*um, 200*um, 512)
@@ -416,19 +416,18 @@ class Test_Scalar_fields_XZ():
         u1 = Scalar_field_XZ(x=x0, z=z0, wavelength=wavelength)
         u1.incident_field(f1 * t1)
         u1.RS()
-        u1.draw(logarithm=1, normalize='intensity', draw_borders=False)
+        u1.draw(logarithm=1, normalize="intensity", draw_borders=False)
         x_f, z_f = u1.search_focus()
-        text = "positions focus: x={:2.2f} um, z={:2.2f} mm".format(
-            x_f, z_f / mm)
+        text = f"positions focus: x={x_f:2.2f} um, z={z_f / mm:2.2f} mm"
         plt.title(text)
 
-        u1.save_data(filename=filename + '.npz', add_name='')
-        save_figure_test(newpath, func_name, add_name='')
+        u1.save_data(filename=filename + ".npz", add_name="")
+        save_figure_test(newpath, func_name, add_name="")
         assert True
 
     def test_BPM(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x0 = np.linspace(-100*um, 100*um, 512)
         z0 = np.linspace(0*um, 200*um, 512)
@@ -449,15 +448,15 @@ class Test_Scalar_fields_XZ():
 
         u1.draw_refractive_index()
         u1.BPM(verbose=False)
-        u1.draw(logarithm=True, normalize='maximum', draw_borders=True)
+        u1.draw(logarithm=True, normalize="maximum", draw_borders=True)
 
-        u1.save_data(filename=filename + '.npz', add_name='')
-        save_figure_test(newpath, func_name, add_name='')
+        u1.save_data(filename=filename + ".npz", add_name="")
+        save_figure_test(newpath, func_name, add_name="")
         assert True
 
     def test_WPM(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x0 = np.linspace(-100*um, 100*um, 512)
         z0 = np.linspace(0*um, 200*um, 512)
@@ -478,15 +477,15 @@ class Test_Scalar_fields_XZ():
 
         u1.draw_refractive_index()
         u1.WPM(verbose=False)
-        u1.draw(logarithm=True, normalize='maximum', draw_borders=True)
+        u1.draw(logarithm=True, normalize="maximum", draw_borders=True)
 
-        u1.save_data(filename=filename + '.npz', add_name='')
-        save_figure_test(newpath, func_name, add_name='')
+        u1.save_data(filename=filename + ".npz", add_name="")
+        save_figure_test(newpath, func_name, add_name="")
         assert True
 
     def test_compare_methods(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         length = 200*um
         wavelength = 5*um
@@ -496,46 +495,46 @@ class Test_Scalar_fields_XZ():
         # source
         f1 = Scalar_source_X(x0, wavelength)
         f1.gauss_beam(A=1, x0=0*um, z0=0*um, w0=10*um, theta=0*degrees)
-        f1.draw(kind='intensity')
+        f1.draw(kind="intensity")
 
         # RS
         u1 = Scalar_field_XZ(x=x0, z=z0, wavelength=wavelength)
         u1.incident_field(f1)
         u1.RS()
-        u1.draw(kind='intensity',
+        u1.draw(kind="intensity",
                 logarithm=1,
-                normalize='intensity',
+                normalize="intensity",
                 draw_borders=False)
-        save_figure_test(newpath, func_name, add_name='_RS')
+        save_figure_test(newpath, func_name, add_name="_RS")
 
-        u1.save_data(filename=filename + '.npz', add_name='_RS')
+        u1.save_data(filename=filename + ".npz", add_name="_RS")
         u_RS = u1.u
 
         u1.clear_field()
         u1.incident_field(f1)
         u1.BPM(verbose=False)
-        u1.draw(kind='intensity',
+        u1.draw(kind="intensity",
                 logarithm=1,
-                normalize='intensity',
+                normalize="intensity",
                 draw_borders=False)
-        save_figure_test(newpath, func_name, add_name='_BPM')
+        save_figure_test(newpath, func_name, add_name="_BPM")
 
-        u1.save_data(filename=filename + '.npz', add_name='_BPM')
+        u1.save_data(filename=filename + ".npz", add_name="_BPM")
 
         u_BPM = u1.u
 
         diferencias = np.abs(u_RS)**2 - np.abs(u_BPM)**2
         u1.u = diferencias
-        u1.draw(kind='intensity', logarithm=0., normalize=False)
-        u1.save_data(filename=filename + '.npz', add_name='_diff')
-        save_figure_test(newpath, func_name, add_name='_diff')
+        u1.draw(kind="intensity", logarithm=0., normalize=False)
+        u1.save_data(filename=filename + ".npz", add_name="_diff")
+        save_figure_test(newpath, func_name, add_name="_diff")
         assert True
 
-    
+
     @pytest.mark.skip(reason="test_draw_profiles: mp4 generation not working at github")
     def test_draw_profiles(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         length = 200*um
         wavelength = 5*um
@@ -558,17 +557,17 @@ class Test_Scalar_fields_XZ():
         u1.incident_field(t1 * u0)
         u1.RS()
 
-        u1.draw(kind='intensity',
+        u1.draw(kind="intensity",
                 logarithm=0.,
-                normalize='maximum',
+                normalize="maximum",
                 draw_borders=True,
-                filename='')
-        save_figure_test(newpath, func_name, add_name='_int')
+                filename="")
+        save_figure_test(newpath, func_name, add_name="_int")
 
-        filename = '{}{}{}.{}'.format(newpath, func_name, '_video', 'mp4')
+        filename = "{}{}{}.{}".format(newpath, func_name, "_video", "mp4")
 
         seconds = 1
-        u1.video(kind='intensity',
+        u1.video(kind="intensity",
                  logarithm=True,
                  normalize=False,
                  time_video=10 * seconds,
@@ -580,7 +579,7 @@ class Test_Scalar_fields_XZ():
 
     def test_BPM_profile_automatico(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x0 = np.linspace(-25*um, 25*um, 512)
         z0 = np.linspace(0*um, 75*um, 128)
@@ -594,12 +593,12 @@ class Test_Scalar_fields_XZ():
                   radius=(20*um, 20*um),
                   refractive_index=1.5)
         u1.BPM(verbose=False)
-        u1.draw_profiles_interactive(kind='intensity',
+        u1.draw_profiles_interactive(kind="intensity",
                                      logarithm=True,
-                                     normalize='maximum')
+                                     normalize="maximum")
 
-        u1.save_data(filename=filename + '.npz', add_name='')
-        save_figure_test(newpath, func_name, add_name='')
+        u1.save_data(filename=filename + ".npz", add_name="")
+        save_figure_test(newpath, func_name, add_name="")
         assert True
 
     def test_BPM_profile_longitudinal(self):
@@ -618,11 +617,11 @@ class Test_Scalar_fields_XZ():
                   radius=(25*um, 25*um),
                   refractive_index=2)
         u1.BPM(verbose=False)
-        u1.draw(logarithm=True, normalize='maximum', draw_borders=True)
-        save_figure_test(newpath, func_name, add_name='')
+        u1.draw(logarithm=True, normalize="maximum", draw_borders=True)
+        save_figure_test(newpath, func_name, add_name="")
 
         u1.profile_longitudinal(x0=0*um)
-        save_figure_test(newpath, func_name, add_name='_prof')
+        save_figure_test(newpath, func_name, add_name="_prof")
         assert True
 
     def test_BPM_profile_transversal(self):
@@ -641,11 +640,11 @@ class Test_Scalar_fields_XZ():
                   radius=(25*um, 25*um),
                   refractive_index=2)
         u1.BPM(verbose=False)
-        u1.draw(logarithm=True, normalize='maximum', draw_borders=True)
-        save_figure_test(newpath, func_name, add_name='')
+        u1.draw(logarithm=True, normalize="maximum", draw_borders=True)
+        save_figure_test(newpath, func_name, add_name="")
 
         u1.profile_transversal(z0=46*um)
-        save_figure_test(newpath, func_name, add_name='_prof')
+        save_figure_test(newpath, func_name, add_name="_prof")
         assert True
 
     def test_find_focus(self):
@@ -676,14 +675,14 @@ class Test_Scalar_fields_XZ():
         # u1.BPM(verbose=False)
         u1 = u_focus
         u1.draw(logarithm=0., normalize=False, draw_borders=True)
-        save_figure_test(newpath, func_name, add_name='')
+        save_figure_test(newpath, func_name, add_name="")
 
         x_max, z_max = u1.search_focus()
 
         u1.profile_transversal(z0=z_max)
-        save_figure_test(newpath, func_name, add_name='_trans')
+        save_figure_test(newpath, func_name, add_name="_trans")
         u1.profile_longitudinal(x0=x_max)
-        save_figure_test(newpath, func_name, add_name='_long')
+        save_figure_test(newpath, func_name, add_name="_long")
         assert True
 
     def test_BPM_inverse(self):
@@ -707,32 +706,32 @@ class Test_Scalar_fields_XZ():
         u1.draw_refractive_index(draw_borders=True, min_incr=0.001)
         u1.BPM(verbose=False)
         u1.draw(logarithm=True,
-                normalize='maximum',
+                normalize="maximum",
                 draw_borders=True,
                 min_incr=0.001)
 
-        save_figure_test(newpath, func_name, add_name='_direct')
+        save_figure_test(newpath, func_name, add_name="_direct")
 
         u2 = u1.BPM_inverse()
         u2.draw(logarithm=True,
-                normalize='maximum',
+                normalize="maximum",
                 draw_borders=True,
                 min_incr=0.001)
-        save_figure_test(newpath, func_name, add_name='_inverse')
+        save_figure_test(newpath, func_name, add_name="_inverse")
 
         differences = u1 - u2
         differences.u = np.abs(u1.u) - np.abs(u2.u)
         differences.draw(logarithm=True,
-                         normalize='maximum',
+                         normalize="maximum",
                          draw_borders=True,
                          min_incr=0.001)
-        save_figure_test(newpath, func_name, add_name='_diff')
+        save_figure_test(newpath, func_name, add_name="_diff")
 
         assert True
 
     def test_BPM_backpropagation(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         """
         here we do two experiments
         1. propagate and after backpropagate the last field
@@ -760,27 +759,27 @@ class Test_Scalar_fields_XZ():
         u1.draw_refractive_index(draw_borders=True, min_incr=0.001)
         u1.BPM(verbose=False)
         u1.draw(logarithm=True,
-                normalize='maximum',
+                normalize="maximum",
                 draw_borders=True,
                 min_incr=0.001)
-        save_figure_test(newpath, func_name, add_name='_for')
+        save_figure_test(newpath, func_name, add_name="_for")
 
         # Hago la inverse y drawing los resultados
         u1.u[:, -1] = 1
         u2 = u1.BPM_back_propagation()
         # u2.draw_refractive_index(draw_borders=True, min_incr=0.001)
         u2.draw(logarithm=True,
-                normalize='maximum',
+                normalize="maximum",
                 draw_borders=True,
                 min_incr=0.001)
 
-        u2.save_data(filename=filename + '.npz', add_name='')
-        save_figure_test(newpath, func_name, add_name='_back')
+        u2.save_data(filename=filename + ".npz", add_name="")
+        save_figure_test(newpath, func_name, add_name="_back")
         assert True
 
     def test_BPM_backpropagation_2(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         """
         we place a field at a certain position and after we backpropagate
         """
@@ -811,17 +810,17 @@ class Test_Scalar_fields_XZ():
         #     kind='intensity', logarithm=0., normalize=False, filename: str = '')
         u2.draw_refractive_index(draw_borders=True, min_incr=0.001)
         u2.draw(logarithm=True,
-                normalize='maximum',
+                normalize="maximum",
                 draw_borders=True,
                 min_incr=0.001)
 
-        u2.save_data(filename=filename + '.npz', add_name='')
-        save_figure_test(newpath, func_name, add_name='')
+        u2.save_data(filename=filename + ".npz", add_name="")
+        save_figure_test(newpath, func_name, add_name="")
         assert True
 
     def test_BPM_n_background(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x0 = np.linspace(-60*um, 60*um, 512)
         z0 = np.linspace(0*um, 120*um, 512)
@@ -848,25 +847,25 @@ class Test_Scalar_fields_XZ():
                                    pixels_filtering=2,
                                    max_diff_filter=0.01,
                                    draw_check=False)
-        save_figure_test(newpath, func_name, add_name='_n_diff')
+        save_figure_test(newpath, func_name, add_name="_n_diff")
 
         u1.BPM(verbose=False)
-        u1.draw_refractive_index(scale='scaled')
-        save_figure_test(newpath, func_name, add_name='_n')
+        u1.draw_refractive_index(scale="scaled")
+        save_figure_test(newpath, func_name, add_name="_n")
 
-        u1.draw(kind='intensity',
+        u1.draw(kind="intensity",
                 logarithm=True,
-                normalize='maximum',
+                normalize="maximum",
                 draw_borders=True,
-                scale='scaled')
+                scale="scaled")
 
-        u1.save_data(filename=filename + '.npz', add_name='')
-        save_figure_test(newpath, func_name, add_name='')
+        u1.save_data(filename=filename + ".npz", add_name="")
+        save_figure_test(newpath, func_name, add_name="")
         assert True
 
     def test_RS_polychromatic(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         wavelengths = np.linspace(0.4, 0.8, 5)
         w_central = 0.6
@@ -881,7 +880,7 @@ class Test_Scalar_fields_XZ():
         initial_field = _func_polychromatic_RS_(wavelengths[0])
         u1.incident_field(initial_field)
         u1.RS()
-        u1.draw(logarithm=True, normalize='intensity')
+        u1.draw(logarithm=True, normalize="intensity")
 
         u1 = Scalar_mask_XZ(x0, z0, wavelengths[0], n_background=1)
         u_poly = u1.RS_polychromatic(_func_polychromatic_RS_,
@@ -890,19 +889,19 @@ class Test_Scalar_fields_XZ():
                                      verbose=False,
                                      num_processors=1)
 
-        u_poly.draw(logarithm=True, normalize='intensity', draw_borders=True)
+        u_poly.draw(logarithm=True, normalize="intensity", draw_borders=True)
 
-        save_figure_test(newpath, func_name, add_name='_int')
+        save_figure_test(newpath, func_name, add_name="_int")
 
-        u_poly.save_data(filename=filename + '.npz', add_name='')
+        u_poly.save_data(filename=filename + ".npz", add_name="")
         assert True
 
     def test_BPM_polychromatic(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         wavelengths = np.linspace(0.4, 0.8, 11)
-        spectrum = ''
+        spectrum = ""
         initial_field = _func_polychromatic_BPM_(wavelengths[0])
         z0 = initial_field.z
         x0 = initial_field.x
@@ -913,8 +912,8 @@ class Test_Scalar_fields_XZ():
                                       spectrum,
                                       verbose=True,
                                       num_processors=1)
-        u_poly.draw(logarithm=True, normalize='intensity', draw_borders=True)
-        save_figure_test(newpath, func_name, add_name='_int')
+        u_poly.draw(logarithm=True, normalize="intensity", draw_borders=True)
+        save_figure_test(newpath, func_name, add_name="_int")
 
-        u_poly.save_data(filename=filename + '.npz', add_name='')
+        u_poly.save_data(filename=filename + ".npz", add_name="")
         assert True

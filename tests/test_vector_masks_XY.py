@@ -5,22 +5,23 @@ import datetime
 import os
 import sys
 
+from py_pol.jones_matrix import Jones_matrix
+
 from diffractio import degrees, mm, no_date, np, um
 from diffractio.scalar.xy_mask import Scalar_mask_XY
 from diffractio.utils.tests import save_figure_test
 from diffractio.vector.xy_mask import Vector_mask_XY
-from py_pol.jones_matrix import Jones_matrix
 
 path_base = "test_results"
 path_class = "vector_masks_XY"
 
 if no_date is True:
-    date = '0'
+    date = "0"
 else:
     now = datetime.datetime.now()
     date = now.strftime("%Y-%m-%d_%H")
 
-newpath = "{}/{}/{}/".format(path_base, date, path_class)
+newpath = f"{path_base}/{date}/{path_class}/"
 
 if not os.path.exists(newpath):
     os.makedirs(newpath)
@@ -33,7 +34,7 @@ polarization_45 = [1, 1] / np.sqrt(2)
 polarization_m45 = [1, -1] / np.sqrt(2)
 
 
-class Test_vector_masks_XY():
+class Test_vector_masks_XY:
 
     def test_equal_mask(self):
         func_name = sys._getframe().f_code.co_name
@@ -58,8 +59,8 @@ class Test_vector_masks_XY():
         EM = Vector_mask_XY(x0, y0, wavelength)
         EM.scalar_to_vector_mask(mask=mask, pol_state=pol_state)
 
-        EM.draw(kind='jones_ap')
-        save_figure_test(newpath, func_name, add_name='')
+        EM.draw(kind="jones_ap")
+        save_figure_test(newpath, func_name, add_name="")
         assert True
 
     def test_complementary_mask(self):
@@ -78,17 +79,17 @@ class Test_vector_masks_XY():
                           radius=(125*um, 125*um),
                           focal=(2*mm, 2*mm),
                           angle=0*degrees,
-                          kind='amplitudes')
+                          kind="amplitudes")
 
         EM = Vector_mask_XY(x0, y0, wavelength)
         EM.complementary_masks(mask=mask,
                                pol_state_0=np.array([[1, 0], [0, 0]]),
                                pol_state_1=np.array([[0, 0], [0, 1]]))
 
-        EM.draw(kind='amplitudes')
-        save_figure_test(newpath, func_name, add_name='_amplitude')
-        EM.draw(kind='phase')
-        save_figure_test(newpath, func_name, add_name='_phase')
+        EM.draw(kind="amplitudes")
+        save_figure_test(newpath, func_name, add_name="_amplitude")
+        EM.draw(kind="phase")
+        save_figure_test(newpath, func_name, add_name="_phase")
         assert True
 
     def test_from_py_pol(self):
@@ -102,16 +103,16 @@ class Test_vector_masks_XY():
         x0 = np.linspace(-length/2, length/2, num_data)
         y0 = np.linspace(-length/2, length/2, num_data)
 
-        PL = Jones_matrix('m0')
+        PL = Jones_matrix("m0")
         PL.from_components(components=(0.9, 0, 0, 0.2 * np.exp(1j)))
 
         EM = Vector_mask_XY(x0, y0, wavelength)
         EM.from_py_pol(PL)
 
-        EM.draw(kind='amplitudes')
-        save_figure_test(newpath, func_name, add_name='_amplitude')
-        EM.draw(kind='phase')
-        save_figure_test(newpath, func_name, add_name='_phase')
+        EM.draw(kind="amplitudes")
+        save_figure_test(newpath, func_name, add_name="_amplitude")
+        EM.draw(kind="phase")
+        save_figure_test(newpath, func_name, add_name="_phase")
         assert True
 
     def test_polarizer_linear(self):
@@ -128,10 +129,10 @@ class Test_vector_masks_XY():
         EM = Vector_mask_XY(x0, y0, wavelength)
         EM.polarizer_linear(azimuth=0*degrees)
 
-        EM.draw(kind='amplitudes')
-        save_figure_test(newpath, func_name, add_name='_amplitude')
-        EM.draw(kind='phase')
-        save_figure_test(newpath, func_name, add_name='_phase')
+        EM.draw(kind="amplitudes")
+        save_figure_test(newpath, func_name, add_name="_amplitude")
+        EM.draw(kind="phase")
+        save_figure_test(newpath, func_name, add_name="_phase")
         assert True
 
     def test_quarter_wave(self):
@@ -148,10 +149,10 @@ class Test_vector_masks_XY():
         EM = Vector_mask_XY(x0, y0, wavelength)
         EM.quarter_waveplate(azimuth=0*degrees)
 
-        EM.draw(kind='amplitudes')
-        save_figure_test(newpath, func_name, add_name='_amplitude')
-        EM.draw(kind='phase')
-        save_figure_test(newpath, func_name, add_name='_phase')
+        EM.draw(kind="amplitudes")
+        save_figure_test(newpath, func_name, add_name="_amplitude")
+        EM.draw(kind="phase")
+        save_figure_test(newpath, func_name, add_name="_phase")
         assert True
 
     def test_half_wave(self):
@@ -168,10 +169,10 @@ class Test_vector_masks_XY():
         EM = Vector_mask_XY(x0, y0, wavelength)
         EM.half_waveplate(azimuth=0*degrees)
 
-        EM.draw(kind='amplitudes')
-        save_figure_test(newpath, func_name, add_name='_amplitude')
-        EM.draw(kind='phase')
-        save_figure_test(newpath, func_name, add_name='_phase')
+        EM.draw(kind="amplitudes")
+        save_figure_test(newpath, func_name, add_name="_amplitude")
+        EM.draw(kind="phase")
+        save_figure_test(newpath, func_name, add_name="_phase")
         assert True
 
     def test_polarizer_retarder(self):
@@ -191,8 +192,8 @@ class Test_vector_masks_XY():
                               p2=0.1,
                               azimuth=0*degrees)
 
-        EM.draw(kind='amplitudes')
-        save_figure_test(newpath, func_name, add_name='_amplitude')
-        EM.draw(kind='phase')
-        save_figure_test(newpath, func_name, add_name='_phase')
+        EM.draw(kind="amplitudes")
+        save_figure_test(newpath, func_name, add_name="_amplitude")
+        EM.draw(kind="phase")
+        save_figure_test(newpath, func_name, add_name="_phase")
         assert True

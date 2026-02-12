@@ -88,15 +88,8 @@ from diffractio.config import (
     bool_raise_exception,
     get_scalar_options,
 )
-from diffractio.scalar.x_field import (
-    PWD_kernel,
-    Scalar_field_X,
-    WPM_schmidt_kernel,
-    kernelRS,
-    kernelRSinverse,
-)
-from diffractio.scalar.x_mask import Scalar_mask_X
-from diffractio.scalar.x_source import Scalar_source_X
+from diffractio.core.drawing import normalize_draw, prepare_drawing
+from diffractio.core.math import get_k, nearest, reduce_to_1, rotate_image
 from diffractio.core.operations import (
     add,
     check_none,
@@ -108,13 +101,17 @@ from diffractio.core.operations import (
     rmul,
     save_data_common,
 )
-from diffractio.core.drawing import normalize_draw, prepare_drawing
-from diffractio.core.math import get_k, nearest, reduce_to_1, rotate_image
-from diffractio.utils.multiprocessing import _pickle_method, _unpickle_method
 from diffractio.core.optics import FWHM1D, beam_width_1D, field_parameters, normalize_field
+from diffractio.scalar.x_field import (
+    PWD_kernel,
+    Scalar_field_X,
+    WPM_schmidt_kernel,
+    kernelRS,
+    kernelRSinverse,
+)
+from diffractio.scalar.x_mask import Scalar_mask_X
+from diffractio.scalar.x_source import Scalar_source_X
 from diffractio.typing import NDArrayFloat
-
-copyreg.pickle(types.MethodType, _pickle_method, _unpickle_method)
 
 percentage_intensity_config = CONF_DRAWING["percentage_intensity"]
 
@@ -150,6 +147,10 @@ class Scalar_field_XZ:
         n_background: float = 1.0,
         info: str = "",
     ):
+        from diffractio.utils.multiprocessing import _pickle_method, _unpickle_method
+
+        copyreg.pickle(types.MethodType, _pickle_method, _unpickle_method)
+
         self.x = x
         self.z = z
         self.wavelength = wavelength
@@ -190,9 +191,7 @@ class Scalar_field_XZ:
         n_max = np.abs(self.n).max()
         kappa_min = np.imag(self.n).min()
         kappa_max = np.imag(self.n).max()
-        print(
-            f"{self.type}\n - x:  {self.x.shape},   z:  {self.z.shape},   u:  {self.u.shape}"
-        )
+        print(f"{self.type}\n - x:  {self.x.shape},   z:  {self.z.shape},   u:  {self.u.shape}")
         print(
             f" - xmin:       {self.x[0]:2.2f} um,  xmax:      {self.x[-1]:2.2f} um,  Dx:   {self.x[1] - self.x[0]:2.2f} um"
         )
@@ -200,9 +199,7 @@ class Scalar_field_XZ:
             f" - zmin:       {self.z[0]:2.2f} um,  zmax:      {self.z[-1]:2.2f} um,  Dz:   {self.z[1] - self.z[0]:2.2f} um"
         )
         print(f" - nmin:       {n_min:2.2f},     nmax:      {n_max:2.2f}")
-        print(
-            rf" - kappa_min:       {kappa_min:2.2f},     kappa_max:      {kappa_max:2.2f}"
-        )
+        print(rf" - kappa_min:       {kappa_min:2.2f},     kappa_max:      {kappa_max:2.2f}")
         print(f" - Imin:       {Imin:2.2f},     Imax:      {Imax:2.2f}")
         print(f" - phase_min:  {phase_min:2.2f} deg, phase_max: {phase_max:2.2f} deg")
 
@@ -353,6 +350,13 @@ class Scalar_field_XZ:
         if clear is True:
             new_field.clear_field()
 
+        return new_field
+
+    def empty_copy(self):
+        """Creates a copy with same parameters but empty u array"""
+        new_field = type(self)(self.x, self.z, self.wavelength)
+        new_field.n = self.n.copy() if hasattr(self, "n") and self.n is not None else None
+        new_field.n_background = self.n_background if hasattr(self, "n_background") else 1.0
         return new_field
 
     def refractive_index_from_scalar_mask_XY(self, mask_XY, refractive_index_max: float):
@@ -882,9 +886,7 @@ class Scalar_field_XZ:
                 return self.u
         if verbose is True:
             t2 = time.time()
-            print(
-                f"Time = {t2 - t1:2.2f} s, time/loop = {(t2 - t1) / len(self.z) * 1000:2.4} ms"
-            )
+            print(f"Time = {t2 - t1:2.2f} s, time/loop = {(t2 - t1) / len(self.z) * 1000:2.4} ms")
 
     @check_none("x", "z", "n")
     def BPM_inverse(self, verbose: bool = False):
@@ -1177,9 +1179,7 @@ class Scalar_field_XZ:
 
         t2 = time.time()
         if verbose is True:
-            print(
-                f"Time = {t2 - t1:2.2f} s, time/loop = {(t2 - t1) / len(self.z) * 1000:2.4} ms"
-            )
+            print(f"Time = {t2 - t1:2.2f} s, time/loop = {(t2 - t1) / len(self.z) * 1000:2.4} ms")
             get_instance_size_MB(self, verbose)
 
         if matrix is True:
@@ -2085,7 +2085,6 @@ class Scalar_field_XZ:
             return hdl_line
 
         def animate(i):
-
             hdl_line.set_data(self.x, I_drawing[i, :])
             ax.set_title(rf"$z = {self.z[i]:2.0f} \mu m$")
             return i

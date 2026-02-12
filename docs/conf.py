@@ -21,7 +21,7 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath(".."))
 
 # -- General configuration ---------------------------------------------------------
 
@@ -37,26 +37,26 @@ sys.path.insert(0, os.path.abspath('..'))
 # ]
 
 extensions = [
-    'sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.mathjax',
-    'sphinx.ext.napoleon', 'nbsphinx', 'sphinx.ext.todo'
+    "sphinx.ext.autodoc", "sphinx.ext.viewcode", "sphinx.ext.mathjax",
+    "sphinx.ext.napoleon", "nbsphinx", "sphinx.ext.todo"
 ]
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-source_suffix = ['.rst', '.md']
+source_suffix = [".rst", ".md"]
 # source_suffix = ['.rst', '.md', '.ipynb']
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 # General information about the project.
-project = u'Python diffraction and interference'
-copyright = u"2019, Luis Miguel Sanchez Brea"
-author = u"Luis Miguel Sanchez Brea"
+project = "Python diffraction and interference"
+copyright = "2019, Luis Miguel Sanchez Brea"
+author = "Luis Miguel Sanchez Brea"
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
@@ -64,7 +64,7 @@ author = u"Luis Miguel Sanchez Brea"
 #
 # The short X.Y version.
 # version = diffractio.__version__
-version = '1.0.0'
+version = "1.0.0"
 # The full version, including alpha/beta/rc tags.
 # release = diffractio.__version__
 release = version
@@ -74,17 +74,17 @@ release = version
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = 'en'
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
 exclude_patterns = [
-    '_build', 'Thumbs.db', '.DS_Store', '_build', '**.ipynb_checkpoints'
+    "_build", "Thumbs.db", ".DS_Store", "_build", "**.ipynb_checkpoints"
 ]
 # LM: exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = "sphinx"
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
@@ -105,12 +105,12 @@ html_theme = "sphinx_rtd_theme"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ["_static"]
 
 # -- Options for HTMLHelp output ---------------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'diffractiodoc'
+htmlhelp_basename = "diffractiodoc"
 
 # -- Options for LaTeX output ------------------------------------------------------
 
@@ -136,17 +136,17 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass
 # [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'diffractio.tex',
-     u'Python diffraction and interference Documentation',
-     u'Luis Miguel Sanchez Brea', 'manual'),
+    (master_doc, "diffractio.tex",
+     "Python diffraction and interference Documentation",
+     "Luis Miguel Sanchez Brea", "manual"),
 ]
 
 # -- Options for manual page output ------------------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, 'diffractio',
-              u'Python diffraction and interference Documentation', [author
+man_pages = [(master_doc, "diffractio",
+              "Python diffraction and interference Documentation", [author
                                                                      ], 1)]
 
 # -- Options for Texinfo output ----------------------------------------------------
@@ -155,10 +155,10 @@ man_pages = [(master_doc, 'diffractio',
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'diffractio',
-     u'Python diffraction and interference Documentation', author,
-     'diffractio'),
+    (master_doc, "diffractio",
+     "Python diffraction and interference Documentation", author,
+     "diffractio"),
 ]
 
 # Module items sort order
-autodoc_member_order = 'bysource'
+autodoc_member_order = "bysource"

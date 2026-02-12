@@ -16,13 +16,13 @@ import os
 import sys
 
 import numpy as np
+
 from diffractio import eps, no_date
-from diffractio.core.math import (amplitude2phase, binarize, distance,
-                                   nearest, nearest2, normalize)
+from diffractio.core.math import amplitude2phase, binarize, distance, nearest, nearest2, normalize
 from diffractio.utils.tests import comparison
 
 if no_date is True:
-    date = '0'
+    date = "0"
 else:
     now = datetime.datetime.now()
     date = now.strftime("%Y-%m-%d_%H")
@@ -30,13 +30,13 @@ else:
 path_base = "test_results"
 path_class = "utils_math"
 
-newpath = "{}/{}/{}/".format(path_base, date, path_class)
+newpath = f"{path_base}/{date}/{path_class}/"
 
 if not os.path.exists(newpath):
     os.makedirs(newpath)
 
 
-class Test_utils_math():
+class Test_utils_math:
     def test_distance(self):
         func_name = sys._getframe().f_code.co_name
 

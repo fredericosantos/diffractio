@@ -13,10 +13,4 @@ vector/
 └── z_field.py         # 1D vector fields (Z).
 """
 
-from . import x_field
-from . import xy_field
-from . import xy_mask
-from . import xy_source
-from . import xz_field
-from . import xyz_field
-from . import z_field
+from . import x_field, xy_field, xy_mask, xy_source, xyz_field, xz_field, z_field

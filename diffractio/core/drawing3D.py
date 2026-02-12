@@ -18,7 +18,12 @@ import pyvista
 import pyvista as pv
 from pyvista.core.utilities.helpers import wrap
 
-from diffractio.config import CONF_DRAWING, Draw_pyvista_Options, Draw_XYZ_Options, video_isovalue_Options
+from diffractio.config import (
+    CONF_DRAWING,
+    Draw_pyvista_Options,
+    Draw_XYZ_Options,
+    video_isovalue_Options,
+)
 from diffractio.core.drawing import normalize_draw
 
 
@@ -223,7 +228,7 @@ def draw(
             zscale=1 / scale[1],
             reset_camera=True,
             render=True,
-        )
+        )  # type: ignore
         pl.set_position((1, 1, 1))
         pl.reset_camera(self)
 
@@ -240,7 +245,7 @@ def draw(
             zscale=1 / scale[1],
             reset_camera=True,
             render=True,
-        )
+        )  # type: ignore
         pl.camera_position = camera_position
 
     elif drawing == "slices":
@@ -255,8 +260,8 @@ def draw(
             zscale=1 / scale[1],
             reset_camera=True,
             render=True,
-        )
-        pl.add_mesh(slice, **dargs)
+        )  # type: ignore
+        pl.add_mesh(slice, **dargs)  # type: ignore
         # pl.camera_position = camera_position
 
     elif drawing == "projections":
@@ -274,14 +279,14 @@ def draw(
 
         # XYZ - show 3D scene first
         pl.subplot(1, 1)
-        pl.add_mesh(slice4, **dargs)
+        pl.add_mesh(slice4, **dargs)  # type: ignore
         pl.set_scale(
             xscale=1 / scale[2],
             yscale=1 / scale[0],
             zscale=1 / scale[1],
             reset_camera=True,
             render=True,
-        )
+        )  # type: ignore
         # XY
         pl.subplot(0, 0)
         pl.add_mesh(slice1, **dargs)

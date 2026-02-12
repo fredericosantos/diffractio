@@ -23,7 +23,6 @@ import time
 from diffractio.typing import NDArrayFloat
 
 from diffractio import mm, no_date, np, plt, um
-from diffractio.scalar.xy_mask import Scalar_mask_XY
 
 max_num_cores = multiprocessing.cpu_count()
 min_num_pixels = 8
@@ -55,6 +54,8 @@ def _test_slit_RS_XY(num_pixels: int):
     Returns:
         u: field
     """
+    from diffractio.scalar.xy_mask import Scalar_mask_XY
+
     length = 512 * um
     x = np.linspace(-length / 2, length / 2, num_pixels)
     y = np.linspace(-length / 2, length / 2, num_pixels)

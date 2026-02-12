@@ -6,11 +6,10 @@ import datetime
 import os
 import sys
 
-from diffractio import degrees, mm, no_date, np, um
+from diffractio import degrees, no_date, np, um
 from diffractio.scalar.x_mask import Scalar_mask_X
 from diffractio.scalar.xz_mask import Scalar_mask_XZ
-from diffractio.utils.tests import comparison, save_figure_test
-from numpy import loadtxt
+from diffractio.utils.tests import save_figure_test
 
 if no_date is True:
     date = "0"
@@ -21,7 +20,7 @@ else:
 path_base = "test_results"
 path_class = "scalar_masks_XZ"
 
-newpath = "{}/{}/{}/".format(path_base, date, path_class)
+newpath = f"{path_base}/{date}/{path_class}/"
 
 if not os.path.exists(newpath):
     os.makedirs(newpath)
@@ -33,7 +32,7 @@ class Test_Scalar_masks_XZ:
         Here the refractive index is a function of positions z
         """
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x0 = np.linspace(-100 * um, 100 * um, 256)
         z0 = np.linspace(0 * um, 400 * um, 256)
@@ -60,7 +59,7 @@ class Test_Scalar_masks_XZ:
 
     def test_extrude_mask_z_n_cte(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x0 = np.linspace(-100 * um, 100 * um, 256)
         z0 = np.linspace(0 * um, 400 * um, 256)
@@ -85,7 +84,7 @@ class Test_Scalar_masks_XZ:
 
     def test_mask_from_function(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x0 = np.linspace(-100 * um, 100 * um, 256)
         z0 = np.linspace(0 * um, 500 * um, 256)
@@ -115,7 +114,7 @@ class Test_Scalar_masks_XZ:
 
     def test_object_by_surfaces(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x0 = np.linspace(-20 * um, 20 * um, 256)
         z0 = np.linspace(0 * um, 2000 * um, 256)
@@ -142,10 +141,10 @@ class Test_Scalar_masks_XZ:
         Here the refractive index is a function of positions x,z
         """
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x0 = np.linspace(-100 * um, 100 * um, 256)
-        print("Dx={}".format(x0[1] - x0[0]))
+        print(f"Dx={x0[1] - x0[0]}")
         z0 = np.linspace(0 * um, 400 * um, 256)
         wavelength = 50 * um
 
@@ -156,9 +155,7 @@ class Test_Scalar_masks_XZ:
         center = (pn["cx"], pn["cz"])
         radius = pn["radius"]
         # ref_index = '2*(((X-0)**2+(Z-300)**2)/75**2-0)'
-        ref_index = "{p[n_out]}+({p[n_center]}-{p[n_out]})*(1-((X-{p[cx]})**2+(Z-{p[cz]})**2)/{p[radius]}**2)".format(
-            p=pn
-        )
+        ref_index = f"{pn['n_out']}+({pn['n_center']}-{pn['n_out']})*(1-((X-{pn['cx']})**2+(Z-{pn['cz']})**2)/{pn['radius']}**2)"
 
         t0.cylinder(r0=center, radius=(radius, radius), refractive_index=ref_index, angle=0)
 
@@ -171,7 +168,7 @@ class Test_Scalar_masks_XZ:
     def test_variable_refractive_index_2(self):
         """Here the refractive index is a function of positions z"""
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x0 = np.linspace(-100 * um, 100 * um, 256)
         z0 = np.linspace(0 * um, 400 * um, 256)
@@ -200,10 +197,10 @@ class Test_Scalar_masks_XZ:
 
     def test_discretize_refractive_index(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x0 = np.linspace(-100 * um, 100 * um, 256)
-        print("Dx={}".format(x0[1] - x0[0]))
+        print(f"Dx={x0[1] - x0[0]}")
         z0 = np.linspace(0 * um, 400 * um, 256)
         wavelength = 50 * um
 
@@ -214,9 +211,7 @@ class Test_Scalar_masks_XZ:
         center = (pn["cx"], pn["cz"])
         radius = pn["radius"]
         # ref_index = '2*(((X-0)**2+(Z-300)**2)/75**2-0)'
-        ref_index = "{p[n_out]}+({p[n_center]}-{p[n_out]})*(1-((X-{p[cx]})**2+(Z-{p[cz]})**2)/{p[radius]}**2)".format(
-            p=pn
-        )
+        ref_index = f"{pn['n_out']}+({pn['n_center']}-{pn['n_out']})*(1-((X-{pn['cx']})**2+(Z-{pn['cz']})**2)/{pn['radius']}**2)"
 
         t0.cylinder(r0=center, radius=(radius, radius), refractive_index=ref_index, angle=0)
 
@@ -234,7 +229,7 @@ class Test_Scalar_masks_XZ:
         """
 
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x0 = np.linspace(-100 * um, 100 * um, 256)
         z0 = np.linspace(0 * um, 400 * um, 256)
@@ -268,7 +263,7 @@ class Test_Scalar_masks_XZ:
         depth
         """
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x0 = np.linspace(-100 * um, 100 * um, 256)
         z0 = np.linspace(0 * um, 400 * um, 256)
@@ -287,7 +282,7 @@ class Test_Scalar_masks_XZ:
 
     def test_semi_plane(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         x0 = np.linspace(-400 * um, 400 * um, 256)
         z0 = np.linspace(-100 * um, 100 * um, 256)
         wavelength = 0.5 * um
@@ -304,7 +299,7 @@ class Test_Scalar_masks_XZ:
 
     def test_layer(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         x0 = np.linspace(-200 * um, 200 * um, 256)
         z0 = np.linspace(-100 * um, 100 * um, 256)
         wavelength = 0.5 * um
@@ -325,7 +320,7 @@ class Test_Scalar_masks_XZ:
 
     def test_rectangle(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         x0 = np.linspace(-100 * um, 100 * um, 256)
         z0 = np.linspace(0 * um, 200 * um, 256)
         wavelength = 0.6238 * um
@@ -342,7 +337,7 @@ class Test_Scalar_masks_XZ:
 
     def test_slit(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         x0 = np.linspace(-100 * um, 100 * um, 256 * 4)
         z0 = np.linspace(0 * um, 250 * um, 256 * 4)
         wavelength = 0.6238 * um
@@ -366,7 +361,7 @@ class Test_Scalar_masks_XZ:
 
     def test_sphere(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         x0 = np.linspace(-100 * um, 100 * um, 256)
         z0 = np.linspace(0 * um, 200 * um, 256)
         wavelength = 0.6238 * um
@@ -385,7 +380,7 @@ class Test_Scalar_masks_XZ:
 
     def test_semi_cylinder(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         x0 = np.linspace(-200 * um, 200 * um, 256)
         z0 = np.linspace(-120 * um, 120 * um, 256)
         wavelength = 0.5 * um
@@ -409,7 +404,7 @@ class Test_Scalar_masks_XZ:
 
     def test_wedge(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         x0 = np.linspace(-100 * um, 100 * um, 256)
         z0 = np.linspace(0 * um, 200 * um, 256)
         wavelength = 0.6238 * um
@@ -432,7 +427,7 @@ class Test_Scalar_masks_XZ:
 
     def test_prism(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         x0 = np.linspace(-150 * um, 150 * um, 256)
         z0 = np.linspace(0 * um, 500 * um, 4096)
         wavelength = 2 * um
@@ -453,7 +448,7 @@ class Test_Scalar_masks_XZ:
 
     def test_biprism(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         x0 = np.linspace(-100 * um, 100 * um, 256)
         z0 = np.linspace(-5 * um, 395 * um, 4096)
         wavelength = 4 * um
@@ -470,7 +465,7 @@ class Test_Scalar_masks_XZ:
 
     def test_ronchi_grating(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         x0 = np.linspace(-500 * um, 500 * um, 256)
         z0 = np.linspace(0 * um, 1400 * um, 256)
         wavelength = 0.5 * um
@@ -499,7 +494,7 @@ class Test_Scalar_masks_XZ:
         generate a diffraction grating with substrate
         """
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x0 = np.linspace(-500 * um, 500 * um, 256)
         z0 = np.linspace(0 * um, 400 * um, 256)
@@ -525,7 +520,7 @@ class Test_Scalar_masks_XZ:
 
     def test_sine_grating(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         x0 = np.linspace(-250 * um, 250 * um, 256)
         z0 = np.linspace(0 * um, 1000 * um, 256)
         wavelength = 0.6238 * um
@@ -551,7 +546,7 @@ class Test_Scalar_masks_XZ:
 
     def test_probe(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         x0 = np.linspace(-12 * um, 12 * um, 256)
         z0 = np.linspace(0 * um, 500 * um, 256)
         wavelength = 0.6 * um
@@ -569,7 +564,7 @@ class Test_Scalar_masks_XZ:
 
     def test_rough_sheet(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         x0 = np.linspace(-150 * um, 150 * um, 256)
         z0 = np.linspace(-150 * um, 150 * um, 256)
         wavelength = 0.6238 * um

@@ -10,8 +10,4 @@ core/
 └── optics.py          # Optical utility functions.
 """
 
-from . import drawing
-from . import drawing3D
-from . import math
-from . import operations
-from . import optics
+from . import drawing, drawing3D, math, operations, optics

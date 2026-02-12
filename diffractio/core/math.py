@@ -222,9 +222,9 @@ def distance(p1: NDArray | float, p2: NDArray | float, verbose: bool = False):
     else:
         diff = p2 - p1
         if diff.ndim == 1:
-            d = np.sqrt(np.sum(diff**2))
+            d = np.sqrt(np.sum(np.abs(diff) ** 2))
         else:
-            d = np.sqrt(np.sum(diff**2, axis=1))
+            d = np.sqrt(np.sum(np.abs(diff) ** 2, axis=1))
 
     if verbose:
         print(f"distance between p1 and p2: {d}")
@@ -448,7 +448,7 @@ def amplitude2phase(u: NDArrayComplex):
     """
 
     amplitude = np.abs(u)
-    u_phase = np.exp(1.0j * 2 * np.pi * amplitude)
+    u_phase = np.exp(1.0j * amplitude)
 
     return u_phase
 

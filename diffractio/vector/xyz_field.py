@@ -66,7 +66,13 @@ from diffractio.config import (
     get_vector_options,
 )
 from diffractio.typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
-from diffractio.core.operations import get_date, load_data_common, save_data_common, check_none, get_vector
+from diffractio.core.operations import (
+    get_date,
+    load_data_common,
+    save_data_common,
+    check_none,
+    get_vector,
+)
 from diffractio.core.operations import get_instance_size_MB
 
 from diffractio.core.drawing import normalize_draw, reduce_matrix_size
@@ -76,13 +82,10 @@ from diffractio.core.optics import normalize_field, fresnel_equations_kx
 from diffractio.scalar.x_field import Scalar_field_X
 from diffractio.scalar.xy_field import Scalar_field_XY
 from diffractio.scalar.xz_field import Scalar_field_XZ
-from diffractio.scalar.xyz_field import Scalar_field_XYZ
+
 from diffractio.scalar.xy_mask import Scalar_mask_XY
 from diffractio.scalar.xyz_mask import Scalar_mask_XYZ
 from diffractio.vector.xy_field import Vector_field_XY
-from diffractio.vector.xy_mask import Vector_mask_XY
-
-from py_pol.jones_vector import Jones_vector
 
 from py_pol.jones_vector import Jones_vector
 
@@ -499,7 +502,8 @@ class Vector_field_XYZ:
             class (bool): If True it returns a class
             matrix (bool): If True it returns a matrix
         """
-        field_output = Vector_field_XY(x=self.x, y=self.y, wavelength=self.wavelength)
+        from diffractio.vector.xy_field import Vector_field_XY
+
         if iz0 is None:
             iz, _, _ = nearest(self.z, z0)
         else:

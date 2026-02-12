@@ -10,10 +10,9 @@ import sys
 from diffractio import degrees, no_date, np, um
 from diffractio.scalar.xy_mask import Scalar_mask_XY
 from diffractio.scalar.xyz_mask import Scalar_mask_XYZ
-from diffractio.utils.tests import comparison, save_figure_test
 
 if no_date is True:
-    date = '0'
+    date = "0"
 else:
     now = datetime.datetime.now()
     date = now.strftime("%Y-%m-%d_%H")
@@ -21,13 +20,13 @@ else:
 path_base = "test_results"
 path_class = "scalar_masks_XYZ"
 
-newpath = "{}/{}/{}/".format(path_base, date, path_class)
+newpath = f"{path_base}/{date}/{path_class}/"
 
 if not os.path.exists(newpath):
     os.makedirs(newpath)
 
 
-class Test_Scalar_masks_XYZ():
+class Test_Scalar_masks_XYZ:
 
     def test_sphere(self):
         func_name = sys._getframe().f_code.co_name
@@ -54,7 +53,7 @@ class Test_Scalar_masks_XYZ():
                                z=z0,
                                wavelength=wavelength,
                                n_background=1.,
-                               info='')
+                               info="")
         uxyz.sphere(r0=(0*um, 0*um, 0*um),
                     radius=(10*um, 30*um, 50*um),
                     refractive_index=2,

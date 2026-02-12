@@ -28,12 +28,12 @@ integer = np.integer
 
 __all__ = [
     "Any",
-    "npt",
     "NDArray",
-    "NDArrayInt",
-    "NDArrayFloat",
     "NDArrayComplex",
+    "NDArrayFloat",
+    "NDArrayInt",
     "integer",
+    "npt",
 ]
 
 

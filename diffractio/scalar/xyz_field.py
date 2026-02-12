@@ -97,9 +97,7 @@ from diffractio.core.optics import FWHM2D, beam_width_2D, field_parameters, norm
 from diffractio.core.drawing3D import draw, video_isovalue
 from diffractio.typing import NDArrayFloat
 from diffractio.scalar.xy_field import PWD_kernel, Scalar_field_XY, WPM_schmidt_kernel
-from diffractio.scalar.xz_field import Scalar_field_XZ
-from diffractio.vector.xz_field import Vector_field_XZ
-from diffractio.vector.xy_field import Vector_field_XY
+
 
 copyreg.pickle(types.MethodType, _pickle_method, _unpickle_method)
 
@@ -501,6 +499,13 @@ class Scalar_field_XYZ:
         new_field = copy.deepcopy(self)
         if clear is True:
             new_field.clear_field()
+        return new_field
+
+    def empty_copy(self):
+        """Creates a copy with same parameters but empty u array"""
+        new_field = type(self)(self.x, self.y, self.z, self.wavelength)
+        new_field.n = self.n.copy() if hasattr(self, "n") and self.n is not None else None
+        new_field.n_background = self.n_background if hasattr(self, "n_background") else 1.0
         return new_field
 
     def reduce_to_1(self):

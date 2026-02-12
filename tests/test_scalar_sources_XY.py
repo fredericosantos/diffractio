@@ -8,13 +8,13 @@ import os
 import sys
 
 from diffractio import degrees, mm, no_date, np, plt, um
+from diffractio.core.math import nearest2
 from diffractio.scalar.xy_mask import Scalar_mask_XY
 from diffractio.scalar.xy_source import Scalar_source_XY
-from diffractio.core.math import nearest2
-from diffractio.utils.tests import comparison, save_figure_test
+from diffractio.utils.tests import save_figure_test
 
 if no_date is True:
-    date = '0'
+    date = "0"
 else:
     now = datetime.datetime.now()
     date = now.strftime("%Y-%m-%d_%H")
@@ -22,17 +22,17 @@ else:
 path_base = "test_results"
 path_class = "scalar_sources_XY"
 
-newpath = "{}/{}/{}/".format(path_base, date, path_class)
+newpath = f"{path_base}/{date}/{path_class}/"
 
 if not os.path.exists(newpath):
     os.makedirs(newpath)
 
 
-class Test_Scalar_sources_XY():
+class Test_Scalar_sources_XY:
 
     def test_plane_wave(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         # definición de parámetros iniciales
         length = 250*um
@@ -47,15 +47,15 @@ class Test_Scalar_sources_XY():
         u.plane_wave(phi=2*degrees, theta=5*degrees)
 
         # draw y guardar
-        u.draw(kind='phase')
+        u.draw(kind="phase")
 
-        u.save_data(filename=filename + '.npz')
+        u.save_data(filename=filename + ".npz")
         save_figure_test(newpath, func_name)
         assert True
 
     def test_gauss_beam(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         """
         Generación de un haz gaussiano
         """
@@ -78,15 +78,15 @@ class Test_Scalar_sources_XY():
                      theta=5*degrees)
 
         # draw y guardar
-        u.draw(kind='field')
+        u.draw(kind="field")
 
-        u.save_data(filename=filename + '.npz')
+        u.save_data(filename=filename + ".npz")
         save_figure_test(newpath, func_name)
         assert True
 
     def test_spherical_wave(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         """
         Generación de una onda esférica
         """
@@ -104,15 +104,15 @@ class Test_Scalar_sources_XY():
         u.spherical_wave(A=1, r0=(0*um, 0*um), z0=-5*mm, radius=300*um)
 
         # draw la onda esferica
-        u.draw(kind='field', normalize='maximum')
+        u.draw(kind="field", normalize="maximum")
 
-        u.save_data(filename=filename + '.npz')
+        u.save_data(filename=filename + ".npz")
         save_figure_test(newpath, func_name)
         assert True
 
     def test_spherical_wave_colimated(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         """
         Generación de una onda esférica
         """
@@ -138,19 +138,19 @@ class Test_Scalar_sources_XY():
                focal=(25*mm, 25*mm),
                angle=0)
         u_salida = u * t
-        u.draw(kind='field')
-        t.draw(kind='field')
+        u.draw(kind="field")
+        t.draw(kind="field")
 
         # draw la onda esferica
-        u_salida.draw(kind='field', normalize='maximum')
+        u_salida.draw(kind="field", normalize="maximum")
 
-        u.save_data(filename=filename + '.npz')
+        u.save_data(filename=filename + ".npz")
         save_figure_test(newpath, func_name)
         assert True
 
     def test_vortex_beam(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         """
         Generación de un vórtice
         """
@@ -171,16 +171,16 @@ class Test_Scalar_sources_XY():
         u.vortex_beam(A=1, r0=(0*um, 0*um), w0=250*um, m=m)
 
         # draw el vortex_beam
-        title = '$m_{vortice}= %d$' % (m)
-        u.draw(kind='field', title=title)
+        title = "$m_{vortice}= %d$" % (m)
+        u.draw(kind="field", title=title)
 
-        u.save_data(filename=filename + '.npz')
+        u.save_data(filename=filename + ".npz")
         save_figure_test(newpath, func_name)
         assert True
 
     def test_vortices(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         # matrix size
         M = 5
@@ -202,23 +202,23 @@ class Test_Scalar_sources_XY():
             # carga de los drawings
             title = "(%d)" % (m)
             plt.subplot(2, M, m + 1)
-            plt.axis('off')
+            plt.axis("off")
             plt.title(title)
             h1 = plt.imshow(np.abs(u.u)**2)
             h1.set_cmap("gist_heat")
 
             plt.subplot(2, M, m + M + 1)
-            plt.axis('off')
+            plt.axis("off")
             h2 = plt.imshow(np.angle(u.u))
             h2.set_cmap("seismic")
 
-        u.save_data(filename=filename + '.npz')
+        u.save_data(filename=filename + ".npz")
         save_figure_test(newpath, func_name)
         assert True
 
     def test_1laguerre(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         """
         Generación de haz de laguerre_beam
         """
@@ -246,16 +246,16 @@ class Test_Scalar_sources_XY():
                         z0=0)
 
         # drawing
-        title = r'$n=%d, k=%d$' % (N, K)
-        u.draw(kind='field', title=title)
+        title = r"$n=%d, k=%d$" % (N, K)
+        u.draw(kind="field", title=title)
 
-        u.save_data(filename=filename + '.npz')
+        u.save_data(filename=filename + ".npz")
         save_figure_test(newpath, func_name)
         assert True
 
     def test_num_data(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         """
         Generación de varios haces de num_data = 256
         """
@@ -292,14 +292,14 @@ class Test_Scalar_sources_XY():
                 title = "(%d,%d)" % (n, k)
                 plt.figure(ID1.number)
                 plt.subplot(N + 1, K + 1, (N + 1) * (k) + n + 1)
-                plt.axis('off')
+                plt.axis("off")
                 plt.title(title, fontsize=14)
                 h1 = plt.imshow(np.abs(u.u)**2)
                 h1.set_cmap("gist_heat")
 
                 plt.figure(ID2.number)
                 plt.subplot(N + 1, K + 1, (N + 1) * (k) + n + 1)
-                plt.axis('off')
+                plt.axis("off")
                 plt.title(title, fontsize=14)
                 h2 = plt.imshow(np.angle(u.u))
                 h2.set_cmap("seismic")
@@ -307,13 +307,13 @@ class Test_Scalar_sources_XY():
         plt.figure(ID1.number)
         plt.figure(ID2.number)
 
-        u.save_data(filename=filename + '.npz')
+        u.save_data(filename=filename + ".npz")
         save_figure_test(newpath, func_name)
         assert True
 
     def test_Hermite_Gauss(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         # definción del tamaño y parámetros iniciales
         length = 250*um
@@ -331,15 +331,15 @@ class Test_Scalar_sources_XY():
                              m=1,
                              z=0,
                              z0=(0, 0))
-        u.draw(kind='intensity')
+        u.draw(kind="intensity")
 
-        u.save_data(filename=filename + '.npz')
+        u.save_data(filename=filename + ".npz")
         save_figure_test(newpath, func_name)
         assert True
 
     def test_1zernike(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         # parámetros del polinomio de Zernike
         N = np.array([1, 1, 2, 2, 2])
@@ -359,15 +359,15 @@ class Test_Scalar_sources_XY():
 
         u.zernike_beam(A=1, r0=(0*um, 0*um), radius=length/2, n=N, m=M, c_nm=c_nm)
         u.pupil()
-        u.draw(kind='field')
+        u.draw(kind="field")
 
-        u.save_data(filename=filename + '.npz')
+        u.save_data(filename=filename + ".npz")
         save_figure_test(newpath, func_name)
         assert True
 
     def test_zernikes(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         """
         Generación de varios haces de Zernike
         """
@@ -383,12 +383,12 @@ class Test_Scalar_sources_XY():
 
         # Dibujo
         plt.figure(figsize=(6, 7))
-        plt.suptitle(u"polinomios de Zernike (n,m)", fontsize=20)
+        plt.suptitle("polinomios de Zernike (n,m)", fontsize=20)
 
         # Generación de la clase
         u = Scalar_source_XY(x=x0, y=y0, wavelength=wavelength0)
 
-        for n in range(0, N + 1):
+        for n in range(N + 1):
             pos = 0
             for m in range(-n, n + 1, 2):
                 pos = pos + 1
@@ -404,19 +404,19 @@ class Test_Scalar_sources_XY():
                 # carga de los drawings
                 title = "(%d,%d)" % (n, m)
                 plt.subplot(N + 1, N + 1, n * (N + 1) + pos)
-                plt.axis('off')
+                plt.axis("off")
                 plt.title(title, fontsize=14)
                 h2 = plt.imshow(np.angle(u.u))
                 plt.clim(vmin=-np.pi, vmax=np.pi)
                 h2.set_cmap("seismic")
 
-        u.save_data(filename=filename + '.npz')
+        u.save_data(filename=filename + ".npz")
         save_figure_test(newpath, func_name)
         assert True
 
     def test_plane_waves_several_inclined(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x0 = np.linspace(-500*um, 500*um, 256)
         y0 = np.linspace(-500*um, 500*um, 256)
@@ -426,9 +426,9 @@ class Test_Scalar_sources_XY():
         u0.plane_waves_several_inclined(A=1,
                                         num_beams=(5, 5),
                                         max_angle=(5*degrees, 180*degrees))
-        u0.draw(kind='field')
+        u0.draw(kind="field")
 
-        u0.save_data(filename=filename + '.npz')
+        u0.save_data(filename=filename + ".npz")
         save_figure_test(newpath, func_name)
         assert True
 
@@ -437,7 +437,7 @@ class Test_Scalar_sources_XY():
 
     def test_gauss_beams_several_parallel(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x0 = np.linspace(-500*um, 500*um, 256)
         y0 = np.linspace(-500*um, 500*um, 256)
@@ -452,15 +452,15 @@ class Test_Scalar_sources_XY():
                                         r_range=(750*um, 750*um),
                                         theta=0*degrees,
                                         phi=0*degrees)
-        u0.draw(kind='field')
+        u0.draw(kind="field")
 
-        u0.save_data(filename=filename + '.npz')
+        u0.save_data(filename=filename + ".npz")
         save_figure_test(newpath, func_name)
         assert True
 
     def test_gauss_beams_several_inclined(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x0 = np.linspace(-500*um, 500*um, 256)
         y0 = np.linspace(-500*um, 500*um, 256)
@@ -474,15 +474,15 @@ class Test_Scalar_sources_XY():
                                         z0=0*um,
                                         max_angle=(10*degrees,
                                                    180*degrees))
-        u0.draw(kind='field')
+        u0.draw(kind="field")
 
-        u0.save_data(filename=filename + '.npz')
+        u0.save_data(filename=filename + ".npz")
         save_figure_test(newpath, func_name)
         assert True
 
     def test_interferences(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         length = 2*mm
         x0 = np.linspace(-length/2, length/2, 256)
@@ -506,15 +506,15 @@ class Test_Scalar_sources_XY():
                       theta=-10*degrees)
 
         u3 = u1 + u2
-        u3.draw(kind='intensity', title="$interferencias$")
+        u3.draw(kind="intensity", title="$interferencias$")
 
-        u3.save_data(filename=filename + '.npz')
+        u3.save_data(filename=filename + ".npz")
         save_figure_test(newpath, func_name)
         assert True
 
     def test_extent_source(self):
         func_name = sys._getframe().f_code.co_name
-        filename = '{}{}'.format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
         """in this test I get a previous mask and then I fill the mask with sperical-waves
         """
 
@@ -558,8 +558,8 @@ class Test_Scalar_sources_XY():
             u_temp.spherical_wave(A=1, r0=(x_i, y_i), z0=z0, radius=0*um)
             u_final = u_final + u_temp
 
-        u_final.draw(kind='field')
+        u_final.draw(kind="field")
 
-        u_final.save_data(filename=filename + '.npz')
+        u_final.save_data(filename=filename + ".npz")
         save_figure_test(newpath, func_name)
         assert True

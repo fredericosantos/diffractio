@@ -51,6 +51,8 @@ from scipy.interpolate import interp1d
 
 from diffractio import degrees, mm, np, plt
 from diffractio.config import Draw_Z_Options, bool_raise_exception, get_scalar_options
+from diffractio.core.drawing import normalize_draw
+from diffractio.core.math import nearest
 from diffractio.core.operations import (
     add,
     check_none,
@@ -61,8 +63,6 @@ from diffractio.core.operations import (
     rmul,
     save_data_common,
 )
-from diffractio.core.drawing import normalize_draw
-from diffractio.core.math import nearest
 from diffractio.core.optics import FWHM1D, field_parameters, normalize_field
 from diffractio.typing import NDArrayFloat
 

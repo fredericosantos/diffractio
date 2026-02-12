@@ -24,15 +24,15 @@ bool_raise_exception = True
 
 # Configuration params for drawings
 CONF_DRAWING = dict()
-CONF_DRAWING["color_intensity"] = cm.gist_heat  # cm.gist_heat  #cm.hot
-CONF_DRAWING["color_amplitude"] = cm.jet
-CONF_DRAWING["color_amplitude_sign"] = cm.seismic
-CONF_DRAWING["color_phase"] = cm.twilight  # twilight .twilight_shifted hsv
-CONF_DRAWING["color_real"] = cm.seismic
-CONF_DRAWING["color_stokes"] = cm.seismic
-CONF_DRAWING["color_n"] = cm.Blues
-CONF_DRAWING["color_directions"] = cm.twilight_shifted
-CONF_DRAWING["color_arrows"] = cm.hsv
+CONF_DRAWING["color_intensity"] = cm.hot  # type: ignore[attr-defined]
+CONF_DRAWING["color_amplitude"] = cm.viridis  # type: ignore[attr-defined]
+CONF_DRAWING["color_amplitude_sign"] = cm.seismic  # type: ignore[attr-defined]
+CONF_DRAWING["color_phase"] = cm.twilight  # type: ignore[attr-defined]
+CONF_DRAWING["color_real"] = cm.seismic  # type: ignore[attr-defined]
+CONF_DRAWING["color_stokes"] = cm.seismic  # type: ignore[attr-defined]
+CONF_DRAWING["color_n"] = cm.Blues  # type: ignore[attr-defined]
+CONF_DRAWING["color_directions"] = cm.twilight_shifted  # type: ignore[attr-defined]
+CONF_DRAWING["color_arrows"] = cm.hsv  # type: ignore[attr-defined]
 CONF_DRAWING["percentage_intensity"] = 1e-6  # percentage of intensity not shown in phase
 CONF_DRAWING["percentage_Ez"] = 1e-6  # percentage of intensity to show Ez
 

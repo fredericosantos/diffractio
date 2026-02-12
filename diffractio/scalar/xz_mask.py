@@ -673,7 +673,7 @@ class Scalar_mask_XZ(Scalar_field_XZ):
             """
             n_new = np.zeros_like(refractive_index, dtype=float)
 
-            i_n, _, _ = nearest2(n_layers, refractive_index)
+            i_n, _, _ = nearest2(n_layers, refractive_index.flatten())
             i_n = i_n.reshape(refractive_index.shape)
 
             for i, n in enumerate(n_layers):

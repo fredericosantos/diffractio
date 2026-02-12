@@ -45,7 +45,6 @@ The magnitude is related to microns: `micron = 1.`
     * roughness, circle_rough, ring_rough, fresnel_lens_rough,
 """
 
-
 import matplotlib.path as mpath
 from PIL import Image
 from scipy.signal import fftconvolve
@@ -53,10 +52,6 @@ from scipy.special import eval_hermite
 
 from diffractio import degrees, mm, np, plt, sp, um
 from diffractio.config import Options_squares_nxm, bool_raise_exception
-from diffractio.scalar.xy_field import Scalar_field_XY
-from diffractio.scalar.xy_source import Scalar_source_XY
-from diffractio.core.operations import check_none
-from diffractio.utils.dxf import load_dxf
 from diffractio.core.math import (
     fft_convolution2d,
     laguerre_polynomial_nk,
@@ -64,8 +59,12 @@ from diffractio.core.math import (
     nearest,
     nearest2,
 )
+from diffractio.core.operations import check_none
 from diffractio.core.optics import roughness_1D, roughness_2D
+from diffractio.scalar.xy_field import Scalar_field_XY
+from diffractio.scalar.xy_source import Scalar_source_XY
 from diffractio.typing import NDArrayFloat
+from diffractio.utils.dxf import load_dxf
 
 
 class Scalar_mask_XY(Scalar_field_XY):
@@ -1484,6 +1483,16 @@ class Scalar_mask_XY(Scalar_field_XY):
 
         self.u = amplitude
         return self
+
+    def super_gauss(
+        self,
+        r0: tuple[float, float],
+        radius: tuple[float] | float,
+        angle: float = 0 * degrees,
+        power: float = 2.0,
+    ):
+        """Alias for super_gauss_circular."""
+        self.super_gauss_circular(r0, radius, power, angle)
 
     @check_none("x", "y", raise_exception=bool_raise_exception)
     def square_circle(self, r0: float, R1: float, R2: float, s: float, angle: float = 0 * degrees):

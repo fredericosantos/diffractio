@@ -9,7 +9,6 @@ import sys
 from diffractio import degrees, mm, no_date, np, um
 from diffractio.scalar.x_mask import Scalar_mask_X
 from diffractio.utils.tests import save_figure_test
-from numpy import loadtxt
 
 if no_date is True:
     date = "0"
@@ -20,7 +19,7 @@ else:
 path_base = "test_results"
 path_class = "scalar_masks_X"
 
-newpath = "{}/{}/{}/".format(path_base, date, path_class)
+newpath = f"{path_base}/{date}/{path_class}/"
 
 if not os.path.exists(newpath):
     os.makedirs(newpath)
@@ -29,7 +28,7 @@ if not os.path.exists(newpath):
 class Test_Scalar_masks_X:
     def test_slit(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         num_data = 128
         length = 250 * um
@@ -46,7 +45,7 @@ class Test_Scalar_masks_X:
 
     def test_double_slit(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         num_data = 128
         length = 25 * um
@@ -63,7 +62,7 @@ class Test_Scalar_masks_X:
 
     def test_two_levels(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         num_data = 128
         length = 250 * um
@@ -80,7 +79,7 @@ class Test_Scalar_masks_X:
 
     def test_gray_scale(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x = np.linspace(0, 250 * um, 1024)
         wavelength = 0.6328 * um
@@ -95,7 +94,7 @@ class Test_Scalar_masks_X:
 
     def test_prism(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         num_data = 1024
         length = 250 * um
@@ -112,7 +111,7 @@ class Test_Scalar_masks_X:
 
     def test_biprism_fresnel(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         num_data = 1024
         length = 500 * um
@@ -129,7 +128,7 @@ class Test_Scalar_masks_X:
 
     def test_biprism_fresnel_nh(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         num_data = 1024
         length = 250 * um
@@ -141,11 +140,10 @@ class Test_Scalar_masks_X:
 
         t1.draw(kind="phase")
         t1.save_data(filename=filename + ".npz")
-        pass
 
     def test_lens(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         num_data = 128
         length = 250 * um
@@ -162,7 +160,7 @@ class Test_Scalar_masks_X:
 
     def test_fresnel_lens(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         num_data = 1024
         length = 250 * um
@@ -183,7 +181,7 @@ class Test_Scalar_masks_X:
 
     def test_roughness(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         num_data = 128
         length = 250 * um
@@ -202,7 +200,7 @@ class Test_Scalar_masks_X:
         # TODO: does not work properly
 
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         wavelength = 0.6328 * um
         x = np.linspace(-500 * um, 500 * um, 2048)
@@ -217,7 +215,7 @@ class Test_Scalar_masks_X:
 
     def test_dust(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         wavelength = 0.6328 * um
         x = np.linspace(-500 * um, 500 * um, 2048 * 8)
@@ -232,7 +230,7 @@ class Test_Scalar_masks_X:
 
     def test_sine_grating(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x = np.linspace(-250 * um, 250 * um, 512)
         wavelength = 0.6238 * um
@@ -247,7 +245,7 @@ class Test_Scalar_masks_X:
 
     def test_redRonchi(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x = np.linspace(-250 * um, 250 * um, 512)
         wavelength = 0.6238 * um
@@ -261,7 +259,7 @@ class Test_Scalar_masks_X:
 
     def test_redBinaria_amplitude(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x = np.linspace(-250 * um, 250 * um, 512)
         wavelength = 0.6238 * um
@@ -277,7 +275,7 @@ class Test_Scalar_masks_X:
 
     def test_redBinaria_phase(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x = np.linspace(-250 * um, 250 * um, 512)
         wavelength = 0.6238 * um
@@ -292,7 +290,7 @@ class Test_Scalar_masks_X:
 
     def test_redBlazed(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x = np.linspace(-250 * um, 250 * um, 512)
         wavelength = 0.6238 * um
@@ -307,7 +305,7 @@ class Test_Scalar_masks_X:
 
     def test_mask_from_function(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         num_data = 1024
         length = 250 * um
@@ -339,7 +337,7 @@ class Test_Scalar_masks_X:
 
     def test_chirped_grating_p(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x = np.linspace(0 * um, 100 * um, 4096 * 4)
         wavelength = 0.6238 * um
@@ -367,7 +365,7 @@ class Test_Scalar_masks_X:
         """
 
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x = np.linspace(-100 * um, 100 * um, 4096 * 4)
         wavelength = 0.6238 * um
@@ -391,7 +389,7 @@ class Test_Scalar_masks_X:
 
     def test_chirped_grating(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         x = np.linspace(-250 * um, 250 * um, 512)
         wavelength = 0.6238 * um
@@ -417,7 +415,7 @@ class Test_Scalar_masks_X:
 
     def test_code(self):
         func_name = sys._getframe().f_code.co_name
-        filename = "{}{}".format(newpath, func_name)
+        filename = f"{newpath}{func_name}"
 
         num_data = 2048 * 8
 

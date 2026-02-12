@@ -25,7 +25,7 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy as np
 
-from diffractio import degrees, eps, mm
+from diffractio import degrees, eps, mm  # type: ignore[attr-defined]
 from diffractio.config import bool_raise_exception, CONF_DRAWING
 from diffractio.core.optics import field_parameters
 
@@ -163,10 +163,10 @@ def draw2D(
 
 def draw_several_fields(
     fields: list,
-    titles: tuple[str] = "",
+    titles: tuple[str] = "",  # type: ignore
     title: str = "",
     figsize: tuple[float, float] | None = None,
-    kinds: tuple[str] = "",
+    kinds: tuple[str] = "",  # type: ignore
     logarithm: tuple[float] | float = False,
     normalize: bool = False,
 ):
@@ -197,7 +197,7 @@ def draw_several_fields(
     percentage_intensity = CONF_DRAWING["percentage_intensity"]
 
     if type(logarithm) in (int, float, bool):
-        logarithm = logarithm * np.ones_like(fields)
+        logarithm = logarithm * np.ones_like(fields)  # type: ignore
 
     for i in sorted(range(num_dibujos)):
         c = fields[i]
@@ -231,7 +231,7 @@ def draw_several_fields(
             image = np.real(c.u)
             colormap = CONF_DRAWING["color_real"]
 
-        if logarithm[i] != 0 and kind in ("intensity", "amplitude", "real"):
+        if logarithm[i] != 0 and kind in ("intensity", "amplitude", "real"):  # type: ignore
             image = np.log(logarithm[i] * image + 1)
 
         if normalize == "maximum" and kind in ("intensity", "amplitude", "real"):

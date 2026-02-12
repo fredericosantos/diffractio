@@ -10,22 +10,28 @@ import time
 import types
 
 import numpy as np
-from diffractio import degrees, mm, no_date, num_max_processors, plt, um
-from diffractio.scalar.x_field import (Scalar_field_X,
-                                        extended_polychromatic_source,
-                                        extended_source_multiprocessing,
-                                        polychromatic_multiprocessing)
+
+from diffractio import degrees, mm, no_date, plt, um
+from diffractio.core.optics import gauss_spectrum
+from diffractio.scalar.x_field import (
+    Scalar_field_X,
+    extended_polychromatic_source,
+    extended_source_multiprocessing,
+    polychromatic_multiprocessing,
+)
 from diffractio.scalar.x_mask import Scalar_mask_X
 from diffractio.scalar.x_source import Scalar_source_X
-from diffractio.utils.multiprocessing import (_pickle_method, _unpickle_method,
-                                              execute_multiprocessing)
-from diffractio.core.optics import gauss_spectrum
+from diffractio.utils.multiprocessing import (
+    _pickle_method,
+    _unpickle_method,
+    execute_multiprocessing,
+)
 from diffractio.utils.tests import save_figure_test
 
 copyreg.pickle(types.MethodType, _pickle_method, _unpickle_method)
 
 if no_date is True:
-    date = '0'
+    date = "0"
 else:
     now = datetime.datetime.now()
     date = now.strftime("%Y-%m-%d_%H")
@@ -33,7 +39,7 @@ else:
 path_base = "test_results"
 path_class = "scalar_fields_X"
 
-newpath = "{}/{}/{}/".format(path_base, date, path_class)
+newpath = f"{path_base}/{date}/{path_class}/"
 
 if not os.path.exists(newpath):
     os.makedirs(newpath)
@@ -78,16 +84,16 @@ def __function_polychromatic__(wavelength):
 
 
 def __experiment_grating_movement__(dict_params):
-    delta_x = dict_params['delta_x']
-    period = dict_params['period']
-    t1 = dict_params['t1']
-    t2 = dict_params['t2']
+    delta_x = dict_params["delta_x"]
+    period = dict_params["period"]
+    t1 = dict_params["t1"]
+    t2 = dict_params["t2"]
     t2.ronchi_grating(period=period, x0=delta_x, fill_factor=0.5)
     u2 = t1 * t2
     return u2
 
 
-class Test_Scalar_fields_X():
+class Test_Scalar_fields_X:
 
     def test_extended_source_simple(self):
         """
@@ -128,8 +134,8 @@ class Test_Scalar_fields_X():
 
         intensities.u = intensities.u / intensities.u.max()
         time_proc = time.time() - time1
-        print("num_proc: {}, time={}".format(1, time_proc))
-        intensities.draw(kind='amplitude')
+        print(f"num_proc: {1}, time={time_proc}")
+        intensities.draw(kind="amplitude")
 
         save_figure_test(newpath, func_name)
 
@@ -160,8 +166,8 @@ class Test_Scalar_fields_X():
             verbose=True)
 
         plt.figure()
-        plt.plot(u_s0.x, intensity0, 'k', lw=2, label='monochromatic')
-        plt.plot(u_s[0].x, intensity, 'r', lw=2, label='polychromatic')
+        plt.plot(u_s0.x, intensity0, "k", lw=2, label="monochromatic")
+        plt.plot(u_s[0].x, intensity, "r", lw=2, label="polychromatic")
         plt.legend()
 
         save_figure_test(newpath, func_name)
@@ -190,8 +196,8 @@ class Test_Scalar_fields_X():
             verbose=True)
 
         plt.figure()
-        plt.plot(u_s0.x, intensity0, 'k', lw=2, label='punctual source')
-        plt.plot(u_s[0].x, intensity, 'r', lw=2, label='extended source')
+        plt.plot(u_s0.x, intensity0, "k", lw=2, label="punctual source")
+        plt.plot(u_s[0].x, intensity, "r", lw=2, label="extended source")
         plt.legend()
 
         save_figure_test(newpath, func_name)
@@ -248,22 +254,22 @@ class Test_Scalar_fields_X():
 
         fig = plt.figure()
         ax1 = fig.add_subplot(211)
-        h1, = ax1.plot(x, np.zeros_like(x), 'k', lw=2)
+        h1, = ax1.plot(x, np.zeros_like(x), "k", lw=2)
         ax1.set_xlim(x[0], x[-1])
         ax1.set_ylim(0, 2)
-        ax1.set_xlabel(r'$x (\mu m)$')
+        ax1.set_xlabel(r"$x (\mu m)$")
 
         ax2 = fig.add_subplot(212)
-        h2, = ax2.plot(deltas_x, perfil, 'k', lw=2)
+        h2, = ax2.plot(deltas_x, perfil, "k", lw=2)
         ax2.set_xlim(deltas_x[0], deltas_x[-1])
         ax2.set_ylim(0, .5)
-        ax2.set_xlabel(r'$\Delta x (\mu m)$')
+        ax2.set_xlabel(r"$\Delta x (\mu m)$")
 
         incr_frames = 1
         for i in range(0, len(deltas_x), incr_frames):
             intensidad = abs(u_s[i].u)**2  # sacar fuera
             perfil[i] = intensidad.mean()
-            plt.suptitle(r"$\delta x={:6.2f}\,\mu m$".format(deltas_x[i]),
+            plt.suptitle(rf"$\delta x={deltas_x[i]:6.2f}\,\mu m$",
                          fontsize=18)
             h1.set_ydata(intensidad)
             h2.set_ydata(perfil)
@@ -276,11 +282,11 @@ class Test_Scalar_fields_X():
 
 
 def __experiment_double_slit_dictionary__(dict_params):
-    x0 = dict_params['x0']
-    wavelength = dict_params['wavelength']
-    z = dict_params['z']
-    slit_size = dict_params['slit_size']
-    separation = dict_params['separation']
+    x0 = dict_params["x0"]
+    wavelength = dict_params["wavelength"]
+    z = dict_params["z"]
+    slit_size = dict_params["slit_size"]
+    separation = dict_params["separation"]
     t1 = Scalar_mask_X(x0, wavelength)
     t1.slit(x0=0, size=20*um)
     t1.double_slit(x0=0, size=slit_size, separation=separation)
@@ -314,8 +320,8 @@ def __experiment_double_slit_array__(slit_size):
 
 
 def __experiment_extended_polychromatic_source__(dict_params):
-    wavelength = dict_params['wavelength']
-    x0 = dict_params['x0']
+    wavelength = dict_params["wavelength"]
+    x0 = dict_params["x0"]
 
     x = np.linspace(-1250*um, 1250*um, 1024 * 8)
     periodo = 100*um
@@ -334,7 +340,7 @@ def __experiment_extended_polychromatic_source__(dict_params):
     return u1
 
 
-class Test_Scalar_fields_X_multiprocessing():
+class Test_Scalar_fields_X_multiprocessing:
 
     def test_multiprocessing_dictionary(self):
         func_name = sys._getframe().f_code.co_name
@@ -381,7 +387,7 @@ class Test_Scalar_fields_X_multiprocessing():
             num_processors,
             verbose=False)
 
-        print("num_proc= {}, time={}".format(num_processors, time_proc))
+        print(f"num_proc= {num_processors}, time={time_proc}")
 
         intensity = np.zeros_like(I_wavelengths[0].x)
         for i in range(len(wavelengths)):
@@ -389,9 +395,9 @@ class Test_Scalar_fields_X_multiprocessing():
                 I_wavelengths[i].u)**2
 
         plt.figure()
-        plt.plot(x0, abs(I0.u)**2, 'k', lw=2, label='monochromatic')
-        plt.plot(x0, intensity, 'r', lw=2, label='polychromatic')
-        plt.title('polychromatic')
+        plt.plot(x0, abs(I0.u)**2, "k", lw=2, label="monochromatic")
+        plt.plot(x0, intensity, "r", lw=2, label="polychromatic")
+        plt.title("polychromatic")
         plt.legend()
 
         save_figure_test(newpath, func_name)
@@ -417,14 +423,14 @@ class Test_Scalar_fields_X_multiprocessing():
             ax.plot(u_s[i].x,
                     abs(u_s[i].u)**2 + 2 * i,
                     lw=2,
-                    label=r"${:2.2f}\,\mu m$".format(slit_size))
+                    label=rf"${slit_size:2.2f}\,\mu m$")
         box = ax.get_position()
         ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
 
         # Put a legend to the right of the current axis
         ax.legend(fontsize=8,
                   frameon=False,
-                  loc='center left',
+                  loc="center left",
                   bbox_to_anchor=(1, 0.5))
 
         save_figure_test(newpath, func_name)
@@ -454,8 +460,8 @@ class Test_Scalar_fields_X_multiprocessing():
             verbose=True)
 
         plt.figure()
-        plt.plot(u_s[0].x, abs(u0.u)**2, 'k', lw=1, label='mono')
-        plt.plot(u_s[0].x, intensity, 'r', lw=2, label='LED')
+        plt.plot(u_s[0].x, abs(u0.u)**2, "k", lw=1, label="mono")
+        plt.plot(u_s[0].x, intensity, "r", lw=2, label="LED")
         plt.legend()
 
         save_figure_test(newpath, func_name)

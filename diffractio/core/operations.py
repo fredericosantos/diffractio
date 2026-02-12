@@ -273,11 +273,11 @@ def add(self, other, kind: Options_add = "source"):
         sum of the two fields.
     """
 
-    t = self.duplicate(clear=True)
+    t = self.empty_copy()
 
     if kind == "source":
         if isinstance(other, tuple):
-            t.u = self.u
+            t.u = self.u.copy()
             for o in other:
                 t.u += o.u
         else:
@@ -287,7 +287,7 @@ def add(self, other, kind: Options_add = "source"):
         t1 = np.abs(self.u)
         f1 = np.angle(self.u)
         if isinstance(other, tuple):
-            t.u = self.u
+            t.u = self.u.copy()
             for o in other:
                 t2 = np.abs(o.u)
                 f2 = np.angle(o.u)
@@ -311,7 +311,7 @@ def add(self, other, kind: Options_add = "source"):
         f1 = np.angle(self.u)
 
         if isinstance(other, tuple):
-            t.u = self.u
+            t.u = self.u.copy()
             for o in other:
                 t2 = np.abs(o.u)
                 f2 = np.angle(o.u)
@@ -327,7 +327,7 @@ def add(self, other, kind: Options_add = "source"):
 
     elif kind == "no_overlap":
         if isinstance(other, tuple):
-            t.u = self.u
+            t.u = self.u.copy()
             for i, o in enumerate(other):
                 i_pos1 = np.abs(t.u) > 0
                 i_pos2 = np.abs(o.u) > 0
@@ -420,11 +420,11 @@ def sub(self, other, kind: Options_sub = "source"):
         Substraction of the two fields.
     """
 
-    t = self.duplicate(clear=True)
+    t = self.empty_copy()
 
     if kind == "source":
         if isinstance(other, tuple):
-            t.u = self.u
+            t.u = self.u.copy()
             for o in other:
                 t.u -= o.u
         else:
@@ -434,7 +434,7 @@ def sub(self, other, kind: Options_sub = "source"):
         t1 = np.abs(self.u)
         f1 = np.angle(self.u)
         if isinstance(other, tuple):
-            t.u = self.u
+            t.u = self.u.copy()
             for o in other:
                 t2 = np.abs(o.u)
                 f2 = np.angle(o.u)
@@ -458,7 +458,7 @@ def sub(self, other, kind: Options_sub = "source"):
         f1 = np.angle(self.u)
 
         if isinstance(other, tuple):
-            t.u = self.u
+            t.u = self.u.copy()
             for o in other:
                 t2 = np.abs(o.u)
                 f2 = np.angle(o.u)
@@ -474,7 +474,7 @@ def sub(self, other, kind: Options_sub = "source"):
 
     elif kind == "no_overlap":
         if isinstance(other, tuple):
-            t.u = self.u
+            t.u = self.u.copy()
             for i, o in enumerate(other):
                 i_pos1 = np.abs(t.u) > 0
                 i_pos2 = np.abs(o.u) > 0
@@ -522,7 +522,7 @@ def rmul(cls, number: float | complex | int, kind: Options_rmul = "intensity"):
         The field multiplied by the number.
     """
 
-    t = cls.duplicate(clear=True)
+    t = cls.empty_copy()
 
     if kind == "intensity":
         t.u = cls.u * np.sqrt(number)

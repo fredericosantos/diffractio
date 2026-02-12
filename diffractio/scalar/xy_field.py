@@ -112,7 +112,7 @@ from diffractio.core.math import (
 )
 from diffractio.core.optics import beam_width_2D, field_parameters, normalize_field
 from diffractio.scalar.x_field import Scalar_field_X
-from diffractio.scalar.xz_field import Scalar_field_XZ
+
 from diffractio.scalar.z_field import Scalar_field_Z
 from diffractio.core.operations import get_instance_size_MB
 
@@ -383,6 +383,14 @@ class Scalar_field_XY:
         new_field = copy.deepcopy(self)
         if clear is True:
             new_field.clear_field()
+        return new_field
+
+    def empty_copy(self):
+        """Creates a copy with same parameters but empty u array"""
+        new_field = type(self)(self.x, self.y, self.wavelength)
+        new_field.n = self.n.copy() if hasattr(self, "n") and self.n is not None else None
+        new_field.n_background = self.n_background if hasattr(self, "n_background") else 1.0
+        new_field.borders = self.borders if hasattr(self, "borders") else None
         return new_field
 
     def reduce_to_1(self):

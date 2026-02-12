@@ -89,6 +89,7 @@ from diffractio.core.operations import (
     get_scalar,
     get_instance_size_MB,
 )
+from diffractio.core.optics import field_parameters, normalize_field
 from diffractio.core.drawing import normalize_draw
 from diffractio.core.math import (
     fft_filter,
@@ -99,10 +100,11 @@ from diffractio.core.math import (
     get_k,
     nearest2,
 )
-from diffractio.utils.multiprocessing import _pickle_method, _unpickle_method, execute_multiprocessing
-from diffractio.core.optics import field_parameters, normalize_field
-
-copyreg.pickle(types.MethodType, _pickle_method, _unpickle_method)
+from diffractio.utils.multiprocessing import (
+    _pickle_method,
+    _unpickle_method,
+    execute_multiprocessing,
+)
 
 num_max_processors = multiprocessing.cpu_count()
 
@@ -147,6 +149,15 @@ class Scalar_field_X:
         self.info = info
         self.type = "Scalar_field_X"
         self.date = get_date()
+
+        # Import and setup multiprocessing for pickling
+        from diffractio.utils.multiprocessing import (
+            _pickle_method,
+            _unpickle_method,
+            execute_multiprocessing,
+        )
+
+        copyreg.pickle(types.MethodType, _pickle_method, _unpickle_method)
 
     @check_none("x", "u", raise_exception=bool_raise_exception)
     def __str__(self):
@@ -344,6 +355,13 @@ class Scalar_field_X:
         new_field = copy.deepcopy(self)
         if clear is True:
             new_field.clear_field()
+        return new_field
+
+    def empty_copy(self):
+        """Creates a copy with same parameters but empty u array"""
+        new_field = type(self)(self.x, self.wavelength)
+        new_field.n = self.n.copy() if hasattr(self, "n") and self.n is not None else None
+        new_field.n_background = self.n_background if hasattr(self, "n_background") else 1.0
         return new_field
 
     def reduce_to_1(self):

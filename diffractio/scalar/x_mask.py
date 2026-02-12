@@ -36,10 +36,10 @@ The main atributes are:
 from scipy.interpolate import interp1d
 
 from diffractio import degrees, np, plt, um
-from diffractio.scalar.x_field import Scalar_field_X
-from diffractio.core.operations import check_none
 from diffractio.core.math import cut_function, fft_convolution1d, nearest, nearest2
+from diffractio.core.operations import check_none
 from diffractio.core.optics import roughness_1D
+from diffractio.scalar.x_field import Scalar_field_X
 from diffractio.typing import NDArrayFloat
 
 

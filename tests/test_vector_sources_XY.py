@@ -14,12 +14,12 @@ path_base = "test_results"
 path_class = "vector_sources_XY"
 
 if no_date is True:
-    date = '0'
+    date = "0"
 else:
     now = datetime.datetime.now()
     date = now.strftime("%Y-%m-%d_%H")
 
-newpath = "{}/{}/{}/".format(path_base, date, path_class)
+newpath = f"{path_base}/{date}/{path_class}/"
 
 if not os.path.exists(newpath):
     os.makedirs(newpath)
@@ -32,7 +32,7 @@ polarization_45 = [1, 1] / np.sqrt(2)
 polarization_m45 = [1, -1] / np.sqrt(2)
 
 
-class Test_vector_sources_XY():
+class Test_vector_sources_XY:
 
     def test_constant_polarization(self):
         func_name = sys._getframe().f_code.co_name
@@ -47,10 +47,10 @@ class Test_vector_sources_XY():
         EM = Vector_source_XY(x0, y0, wavelength)
         EM.constant_polarization(u=1, v=(1, 1j))
 
-        save_figure_test(newpath, func_name, add_name='_fields')
+        save_figure_test(newpath, func_name, add_name="_fields")
 
-        EM.draw(kind='stokes')
-        save_figure_test(newpath, func_name, add_name='_stokes')
+        EM.draw(kind="stokes")
+        save_figure_test(newpath, func_name, add_name="_stokes")
         assert True
 
     def test_interferences(self):
@@ -77,11 +77,11 @@ class Test_vector_sources_XY():
 
         EM = EM1 + EM2
 
-        EM.draw(kind='fields')
-        save_figure_test(newpath, func_name, add_name='_fields')
+        EM.draw(kind="fields")
+        save_figure_test(newpath, func_name, add_name="_fields")
 
-        EM.draw(kind='stokes')
-        save_figure_test(newpath, func_name, add_name='_stokes')
+        EM.draw(kind="stokes")
+        save_figure_test(newpath, func_name, add_name="_stokes")
 
         assert True
 
@@ -100,11 +100,11 @@ class Test_vector_sources_XY():
                           r0=(0*um, 0*um),
                           radius=(length/2, length/2))
 
-        EM.draw(kind='fields')
-        save_figure_test(newpath, func_name, add_name='_fields')
+        EM.draw(kind="fields")
+        save_figure_test(newpath, func_name, add_name="_fields")
 
-        EM.draw(kind='stokes')
-        save_figure_test(newpath, func_name, add_name='_stokes')
+        EM.draw(kind="stokes")
+        save_figure_test(newpath, func_name, add_name="_stokes")
 
         assert True
 
@@ -123,11 +123,11 @@ class Test_vector_sources_XY():
                        r0=(0*um, 0*um),
                        radius=(length/2, length/2))
 
-        EM.draw(kind='fields')
-        save_figure_test(newpath, func_name, add_name='_fields')
+        EM.draw(kind="fields")
+        save_figure_test(newpath, func_name, add_name="_fields")
 
-        EM.draw(kind='stokes')
-        save_figure_test(newpath, func_name, add_name='_stokes')
+        EM.draw(kind="stokes")
+        save_figure_test(newpath, func_name, add_name="_stokes")
 
         assert True
 
@@ -150,11 +150,11 @@ class Test_vector_sources_XY():
         EM = Vector_source_XY(x0, y0, wavelength)
         EM.constant_polarization(u, v=(1, 1))
 
-        EM.draw(kind='fields')
-        save_figure_test(newpath, func_name, add_name='_fields')
+        EM.draw(kind="fields")
+        save_figure_test(newpath, func_name, add_name="_fields")
 
-        EM.draw(kind='stokes')
-        save_figure_test(newpath, func_name, add_name='_stokes')
+        EM.draw(kind="stokes")
+        save_figure_test(newpath, func_name, add_name="_stokes")
 
         assert True
 
@@ -177,11 +177,11 @@ class Test_vector_sources_XY():
         EM = Vector_source_XY(x0, y0, wavelength)
         EM.azimuthal_wave(u)
 
-        EM.draw(kind='fields')
-        save_figure_test(newpath, func_name, add_name='_fields')
+        EM.draw(kind="fields")
+        save_figure_test(newpath, func_name, add_name="_fields")
 
-        EM.draw(kind='stokes')
-        save_figure_test(newpath, func_name, add_name='_stokes')
+        EM.draw(kind="stokes")
+        save_figure_test(newpath, func_name, add_name="_stokes")
 
         assert True
 
@@ -201,11 +201,11 @@ class Test_vector_sources_XY():
                                        m=1.5,
                                        fi0=0 * np.pi)
 
-        EM.draw(kind='fields')
-        save_figure_test(newpath, func_name, add_name='_fields')
+        EM.draw(kind="fields")
+        save_figure_test(newpath, func_name, add_name="_fields")
 
-        EM.draw(kind='stokes')
-        save_figure_test(newpath, func_name, add_name='_stokes')
+        EM.draw(kind="stokes")
+        save_figure_test(newpath, func_name, add_name="_stokes")
 
         assert True
 
@@ -225,11 +225,11 @@ class Test_vector_sources_XY():
                                               m=0.5,
                                               fi0=np.pi/2)
 
-        EM.draw(kind='fields')
-        save_figure_test(newpath, func_name, add_name='_fields')
+        EM.draw(kind="fields")
+        save_figure_test(newpath, func_name, add_name="_fields")
 
-        EM.draw(kind='stokes')
-        save_figure_test(newpath, func_name, add_name='_stokes')
+        EM.draw(kind="stokes")
+        save_figure_test(newpath, func_name, add_name="_stokes")
 
         assert True
 
@@ -250,10 +250,10 @@ class Test_vector_sources_XY():
                                               n=3,
                                               fi0=np.pi/2)
 
-        EM.draw(kind='fields')
-        save_figure_test(newpath, func_name, add_name='_fields')
+        EM.draw(kind="fields")
+        save_figure_test(newpath, func_name, add_name="_fields")
 
-        EM.draw(kind='stokes')
-        save_figure_test(newpath, func_name, add_name='_stokes')
+        EM.draw(kind="stokes")
+        save_figure_test(newpath, func_name, add_name="_stokes")
 
         assert True

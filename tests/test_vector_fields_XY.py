@@ -16,12 +16,12 @@ path_base = "test_results"
 path_class = "Vector_fields_XY"
 
 if no_date is True:
-    date = '0'
+    date = "0"
 else:
     now = datetime.datetime.now()
     date = now.strftime("%Y-%m-%d_%H")
 
-newpath = "{}/{}/{}/".format(path_base, date, path_class)
+newpath = f"{path_base}/{date}/{path_class}/"
 
 if not os.path.exists(newpath):
     os.makedirs(newpath)
@@ -30,7 +30,7 @@ v_lineal = (1, 0, 0)
 v_circular = (1, 1j, 0) / np.sqrt(2)
 
 
-class Test_Vector_fields_XY():
+class Test_Vector_fields_XY:
 
     def test_save_load(self):
         # func_name = sys._getframe().f_code.co_name
@@ -57,7 +57,7 @@ class Test_Vector_fields_XY():
         mask.fresnel_lens(r0=(0*um, 0*um),
                           radius=(125*um, 125*um),
                           focal=(2*mm, 2*mm),
-                          kind='amplitudes')
+                          kind="amplitudes")
 
         pol_state = np.array([[1, 0], [0, 1j]])
 
@@ -68,12 +68,12 @@ class Test_Vector_fields_XY():
         vp.polarizer_linear(azimuth=0*degrees)
 
         EM = vp
-        EM.draw(kind='intensities')
-        save_figure_test(newpath, func_name, add_name='_vc')
+        EM.draw(kind="intensities")
+        save_figure_test(newpath, func_name, add_name="_vc")
 
         EM2 = vc * vp
-        EM2.draw(kind='stokes')
-        save_figure_test(newpath, func_name, add_name='_vp')
+        EM2.draw(kind="stokes")
+        save_figure_test(newpath, func_name, add_name="_vp")
         assert True
 
     def test_generar_field_vectorial1(self):
@@ -95,11 +95,11 @@ class Test_Vector_fields_XY():
                           r0=(0*um, 0*um),
                           radius=(length / 5, length / 5))
 
-        EM.draw(kind='stokes')
-        save_figure_test(newpath, func_name, add_name='_0')
+        EM.draw(kind="stokes")
+        save_figure_test(newpath, func_name, add_name="_0")
 
-        EM.draw(kind='intensities')
-        save_figure_test(newpath, func_name, add_name='_2')
+        EM.draw(kind="intensities")
+        save_figure_test(newpath, func_name, add_name="_2")
 
         assert True
 
@@ -123,10 +123,10 @@ class Test_Vector_fields_XY():
         EM = Vector_source_XY(x0, y0, wavelength)
         EM.constant_polarization(u0, v=[1, 1])
 
-        EM.draw(kind='stokes')
-        save_figure_test(newpath, func_name, add_name='_0')
-        EM.draw(kind='intensities')
-        save_figure_test(newpath, func_name, add_name='_1')
+        EM.draw(kind="stokes")
+        save_figure_test(newpath, func_name, add_name="_0")
+        EM.draw(kind="intensities")
+        save_figure_test(newpath, func_name, add_name="_1")
         assert True
 
     def test_plane_wave_generacion(self):
@@ -143,10 +143,10 @@ class Test_Vector_fields_XY():
         EM = Vector_source_XY(x0, y0, wavelength)
         EM.constant_polarization(u=1, v=[1, 0])
 
-        EM.draw(kind='stokes')
-        save_figure_test(newpath, func_name, add_name='_0')
-        EM.draw(kind='intensities')
-        save_figure_test(newpath, func_name, add_name='_1')
+        EM.draw(kind="stokes")
+        save_figure_test(newpath, func_name, add_name="_0")
+        EM.draw(kind="intensities")
+        save_figure_test(newpath, func_name, add_name="_1")
 
         t1 = Scalar_mask_XY(x=x0, y=y0, wavelength=wavelength)
         t1.circle(r0=(0*um, 0*um),
@@ -158,10 +158,10 @@ class Test_Vector_fields_XY():
 
         EM.apply_mask(t1)
 
-        EM.draw(kind='stokes')
-        save_figure_test(newpath, func_name, add_name='_2')
-        EM.draw(kind='intensities')
-        save_figure_test(newpath, func_name, add_name='_3')
+        EM.draw(kind="stokes")
+        save_figure_test(newpath, func_name, add_name="_2")
+        EM.draw(kind="intensities")
+        save_figure_test(newpath, func_name, add_name="_3")
 
         assert True
 
@@ -183,18 +183,18 @@ class Test_Vector_fields_XY():
                                               radius=0.)
         EM.pupil()
 
-        EM.draw(kind='stokes')
-        save_figure_test(newpath, func_name, add_name='_1EH')
+        EM.draw(kind="stokes")
+        save_figure_test(newpath, func_name, add_name="_1EH")
 
-        EM.draw(kind='intensities')
-        save_figure_test(newpath, func_name, add_name='_2S')
+        EM.draw(kind="intensities")
+        save_figure_test(newpath, func_name, add_name="_2S")
 
         EMz = EM.VRS(z=.5*mm)
-        EMz.draw(kind='intensities')
-        save_figure_test(newpath, func_name, add_name='_3EH_p')
+        EMz.draw(kind="intensities")
+        save_figure_test(newpath, func_name, add_name="_3EH_p")
 
-        EMz.draw(kind='intensities')
-        save_figure_test(newpath, func_name, add_name='_4S_p')
+        EMz.draw(kind="intensities")
+        save_figure_test(newpath, func_name, add_name="_4S_p")
 
         return True
 
@@ -216,17 +216,17 @@ class Test_Vector_fields_XY():
                                               radius=0.)
         EM.pupil()
 
-        EM.draw(kind='stokes')
-        save_figure_test(newpath, func_name, add_name='_1EH')
+        EM.draw(kind="stokes")
+        save_figure_test(newpath, func_name, add_name="_1EH")
 
-        EM.draw(kind='intensities')
-        save_figure_test(newpath, func_name, add_name='_2S')
+        EM.draw(kind="intensities")
+        save_figure_test(newpath, func_name, add_name="_2S")
 
         EMz = EM.VRS(z=.5*mm)
-        EMz.draw(kind='intensities')
-        save_figure_test(newpath, func_name, add_name='_3EH_p')
+        EMz.draw(kind="intensities")
+        save_figure_test(newpath, func_name, add_name="_3EH_p")
 
-        EMz.draw(kind='intensities')
-        save_figure_test(newpath, func_name, add_name='_4S_p')
+        EMz.draw(kind="intensities")
+        save_figure_test(newpath, func_name, add_name="_4S_p")
 
         return True
