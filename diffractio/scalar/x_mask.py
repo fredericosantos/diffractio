@@ -101,17 +101,19 @@ class Scalar_mask_X(Scalar_field_X):
             new.u = covolved_image
             return new
         self.u = covolved_image
+        return None
 
     def mask_from_function(
         self,
         index: float = 1.5,
         f1: float = 0,
         f2: float = 0,
-        v_globals: dict = {},
+        v_globals: dict | None = None,
         x0: float = 0 * um,
         radius: float = 0 * um,
     ):
-        r"""Phase mask defined between two surfaces :math:`f_1` and :math:`f_2`: :math:`h(x,y)=f_2(x,y)-f_1(x,y)`, :math:`t(x)=mask(x)e^{i\,k\,(n-1)(f_{2}-f_{1})}`
+        r"""Phase mask defined between two surfaces :math:`f_1` and :math:`f_2`:
+            :math:`h(x,y)=f_2(x,y)-f_1(x,y)`, :math:`t(x)=mask(x)e^{i\,k\,(n-1)(f_{2}-f_{1})}`
 
         Args:
             index (float): refractive index of the mask
@@ -123,6 +125,8 @@ class Scalar_mask_X(Scalar_field_X):
             radius (float): radius of the mask
         """
 
+        if v_globals is None:
+            v_globals = {}
         k = 2 * np.pi / self.wavelength
 
         if radius > 0:
@@ -147,7 +151,8 @@ class Scalar_mask_X(Scalar_field_X):
         radius: float = 0 * um,
         x0: float = 0 * um,
     ):
-        r"""Phase mask defined between two surfaces defined by arrays: array1 and array2, :math:`t(x)=mask(x)e^{i\,k\,(n-1)(array2(x,z)-array1(x,z))}`
+        r"""Phase mask defined between two surfaces defined by arrays: array1 and array2,
+            :math:`t(x)=mask(x)e^{i\,k\,(n-1)(array2(x,z)-array1(x,z))}`
 
         Args:
             index (float): refractive index of the mask
@@ -290,8 +295,7 @@ class Scalar_mask_X(Scalar_field_X):
         h = (self.x - x0) * np.tan(angle)
         self.u = np.exp(1j * k * (n - 1) * h)
 
-        h = h - h.min()
-        return h
+        return h - h.min()
 
     def biprism_fresnel(self, angle: float, x0: float, radius: float = 0):
         """Fresnel biprism.
@@ -383,11 +387,11 @@ class Scalar_mask_X(Scalar_field_X):
         self.u = t * np.exp(-1.0j * (k * h + np.pi))
 
         h = h - h.min()
-        h = h / h.max()
-        return h
+        return h / h.max()
 
     def lens_spherical(self, x0: float, radius: float, focal: float, refractive_index: float = 1.5):
-        """Spherical lens, without paraxial approximation. The focal distance and the refractive index are used for the definition.
+        """Spherical lens, without paraxial approximation. The focal distance and the refractive
+            index are used for the definition.
         When the refractive index decreases, the radius of curvature decrases and less paraxial.
 
         Args:
@@ -517,8 +521,7 @@ class Scalar_mask_X(Scalar_field_X):
         h = h - h.min()
 
         self.u = u_fresnel * t1
-        h = t1 * h
-        return h
+        return t1 * h
 
     def roughness(self, t: float, s: float):
         """Rough surface, phase
@@ -627,12 +630,13 @@ class Scalar_mask_X(Scalar_field_X):
         x0: float,
         period: float,
         fourier: np.ndarray = None,
-        orders: list = None,
-        values: list = None,
+        orders: list | None = None,
+        values: list | None = None,
     ):
         """
         Generates a 1D diffraction grating profile using Fourier coefficients.
-        Fourier coefficients are defined as a list of tuples, where each tuple contains the order and the corresponding value.
+        Fourier coefficients are defined as a list of tuples, where each tuple contains the order
+            and the corresponding value.
         Args:
             x0     : Center of the grating.
             period : Grating period.
@@ -673,7 +677,8 @@ class Scalar_mask_X(Scalar_field_X):
         return self.u
 
     def ronchi_grating(self, x0: float, period: float, fill_factor: float = 0.5):
-        """Amplitude binary grating, fill-factor can be defined. It is obtained as a sine_grating that after is binarized. Fill factor is determined as  y0=cos(pi*fill_factor)
+        """Amplitude binary grating, fill-factor can be defined. It is obtained as a sine_grating
+            that after is binarized. Fill factor is determined as  y0=cos(pi*fill_factor)
 
         Args:
             x0 (float): shift of the grating
@@ -721,7 +726,7 @@ class Scalar_mask_X(Scalar_field_X):
             phase (np.array): phase for each position
         """
 
-        k = 2 * np.pi / self.wavelength
+        2 * np.pi / self.wavelength
 
         # Slope computation
         num_periods = (self.x[-1] - self.x[0]) / period
@@ -743,7 +748,7 @@ class Scalar_mask_X(Scalar_field_X):
         amp_max: float,
         phase_max: float,
         delta_x: float = 0,
-        x0: float = None,
+        x0: float | None = None,
         length: float = 0,
         x_center: float = 0,
     ):
@@ -758,7 +763,8 @@ class Scalar_mask_X(Scalar_field_X):
             phase_max (float): maximum modulation for phase gratings
             delta_x (float): x shifting for movement of grating
             x0 (float):  -
-            length (float): length of the grating.  0: length is equal to size of x l=(x[-1]-x[0]),  <l: it can be shorter than l
+            length (float): length of the grating.  0: length is equal to size of x l=(x[-1]-x[0]),
+                <l: it can be shorter than l
             x_center (float): x-position of center of grating
 
         Returns:
@@ -842,7 +848,8 @@ class Scalar_mask_X(Scalar_field_X):
         length: float = 0,
         x_center: float = 0,
     ):
-        """Chirped grating with linear q(x) variation. The transmitance is: t = np.cos(np.pi*q*(x-x0) + np.pi*q0*(x-x0))
+        """Chirped grating with linear q(x) variation. The transmitance is: t =
+            np.cos(np.pi*q*(x-x0) + np.pi*q0*(x-x0))
 
         Args:
             kind (str): 'amplitude', 'phase', 'amplitude_binary', 'phase_binary'
@@ -852,7 +859,8 @@ class Scalar_mask_X(Scalar_field_X):
             amp_max (float): maximum transmittance
             phase_max (float): maximum modulation for phase gratings
             delta_x (float): x shifting for movement of grating
-            length (float): length of the grating,  0: length is equal to size of x l=(x[-1]-x[0]). <l: it can be shorter than l
+            length (float): length of the grating,  0: length is equal to size of x l=(x[-1]-x[0]).
+                <l: it can be shorter than l
             x_center (float): x-position of center of grating
 
         Returns:
@@ -946,13 +954,14 @@ class Scalar_mask_X(Scalar_field_X):
             amp_max (float): maximum transmittance
             phase_max (float): maximum modulation for phase gratings
             delta_x (float): x shifting for movement of grating
-            length (float): length of the grating. 0: length is equal to size of x l=(x[-1]-x[0]).  <l: it can be shorter than l
+            length (float): length of the grating. 0: length is equal to size of x l=(x[-1]-x[0]).
+                <l: it can be shorter than l
 
         Returns:
             numpy.array: p(x)
         """
 
-        if length == 0 or length == []:
+        if length in (0, []):
             length = self.x[-1] - self.x[0]
 
         period = eval(p_x)
@@ -1048,7 +1057,7 @@ class Scalar_mask_X(Scalar_field_X):
         t2 = Scalar_mask_X(self.x, self.wavelength)
         t.u = np.zeros(self.x.shape)
 
-        for i0j, j in zip(code, list(range(len(code)))):
+        for i0j, j in zip(code, list(range(len(code))), strict=False):
             t2.slit(x0 + (j + 0.5) * bit_width, bit_width)
             t.u = t.u + i0j * t2.u
 

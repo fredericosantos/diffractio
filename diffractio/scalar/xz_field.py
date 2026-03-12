@@ -20,7 +20,8 @@ It can be considered an extension of Scalar_field_X for visualizing XZ fields
 
 For the case of Rayleigh sommefeld it is not necessary to compute all z positions but the final.
 
-Nevertheless, for BPM method, intermediate computations are required. In this class, intermediate results are stored.
+Nevertheless, for BPM method, intermediate computations are required. In this class, intermediate
+    results are stored.
 
 X,Z fields are defined using ndgrid (not with meshgrid, it is different).
 
@@ -193,10 +194,12 @@ class Scalar_field_XZ:
         kappa_max = np.imag(self.n).max()
         print(f"{self.type}\n - x:  {self.x.shape},   z:  {self.z.shape},   u:  {self.u.shape}")
         print(
-            f" - xmin:       {self.x[0]:2.2f} um,  xmax:      {self.x[-1]:2.2f} um,  Dx:   {self.x[1] - self.x[0]:2.2f} um"
+            f" - xmin:       {self.x[0]:2.2f} um,  xmax:      {self.x[-1]:2.2f} um,"
+            f"  Dx: {self.x[1] - self.x[0]:2.2f} um"
         )
         print(
-            f" - zmin:       {self.z[0]:2.2f} um,  zmax:      {self.z[-1]:2.2f} um,  Dz:   {self.z[1] - self.z[0]:2.2f} um"
+            f" - zmin:       {self.z[0]:2.2f} um,  zmax:      {self.z[-1]:2.2f} um,"
+            f"  Dz: {self.z[1] - self.z[0]:2.2f} um"
         )
         print(f" - nmin:       {n_min:2.2f},     nmax:      {n_max:2.2f}")
         print(rf" - kappa_min:       {kappa_min:2.2f},     kappa_max:      {kappa_max:2.2f}")
@@ -215,12 +218,16 @@ class Scalar_field_XZ:
 
         Args:
             other (Vector_field_X): 2nd field to add
-            kind (str): instruction how to add the fields: ['source', 'mask', 'phases', 'no_overlap', 'distances'].
+            kind (str): instruction how to add the fields: ['source', 'mask', 'phases',
+                'no_overlap', 'distances'].
                 - 'source': adds the fields as they are
-                - 'mask': adds the fields as complex numbers and then normalizes so that the maximum amplitude is 1.
+                - 'mask': adds the fields as complex numbers and then normalizes so that the maximum
+                    amplitude is 1.
                 - 'phases': adds the phases and then normalizes so that the maximum amplitude is 1.
-                - 'np_overlap': adds the fields as they are. If the sum of the amplitudes is greater than 1, an error is produced
-                - 'distances': adds the fields as they are. If the fields overlap, the field with the smallest distance is kept.
+                - 'np_overlap': adds the fields as they are. If the sum of the amplitudes is greater
+                    than 1, an error is produced
+                - 'distances': adds the fields as they are. If the fields overlap, the field with
+                    the smallest distance is kept.
 
         Returns:
             Scalar_field_XZ: `u3 = u1 + u2`
@@ -275,8 +282,10 @@ class Scalar_field_XZ:
     def rmul(self, number, kind):
         """Multiply a field by a number.  For example  :math: `u_1(x)= m * u_0(x)`.
 
-        This function is general for all the SCALAR modules of the package. After, this function is called by the rmul method of each class.
-        When module is for sources, any value for the number is valid. When module is for masks, the modulus is <=1.
+        This function is general for all the SCALAR modules of the package. After, this function is
+            called by the rmul method of each class.
+        When module is for sources, any value for the number is valid. When module is for masks, the
+            modulus is <=1.
 
         The kind parameter is used to specify how to multiply the field. The options are:
         - 'intensity': Multiply the intensity of the field by the number.
@@ -294,9 +303,7 @@ class Scalar_field_XZ:
             The field multiplied by the number.
         """
 
-        t = rmul(self, number, kind)
-
-        return t
+        return rmul(self, number, kind)
 
     @check_none("x", "z", raise_exception=bool_raise_exception)
     def __rotate__(self, angle: float, position=None):
@@ -331,7 +338,8 @@ class Scalar_field_XZ:
         return get_instance_size_MB(self, verbose)
 
     def reduce_to_1(self):
-        """All the values greater than 1 pass to 1. This is used for Scalar_masks when we add two masks."""
+        """All the values greater than 1 pass to 1. This is used for Scalar_masks when we add two
+            masks."""
 
         self = reduce_to_1(self)
 
@@ -438,7 +446,8 @@ class Scalar_field_XZ:
 
         Args:
             kind (str): 'amplitude', or 'intensity'
-            new_field (bool): If False the computation goes to self.u. If True a new instance is produced
+            new_field (bool): If False the computation goes to self.u. If True a new instance is
+                produced
 
         Returns
             u (numpy.array): normalized optical field
@@ -474,7 +483,8 @@ class Scalar_field_XZ:
         Args:
             type_filter (int): 1 - 2D, 2 - 1D z (selective), 3 - 1D x (selective)
             pixels_filtering (int): num_pixels used for filtering
-            max_diff_filter (float): maximum difference of n in profile between two adjancted pixels to use selective filtering
+            max_diff_filter (float): maximum difference of n in profile between two adjancted pixels
+                to use selective filtering
             draw_check (bool): draw the differences.
 
         Returns:
@@ -482,7 +492,8 @@ class Scalar_field_XZ:
             (np.array): lineas_filtradas
 
         References:
-            Robert McLeod "Numerical Methods in Photonics Lecture Notes"  University of Colorado at Boulder, pag 204 (15/54)
+            Robert McLeod "Numerical Methods in Photonics Lecture Notes"  University of Colorado at
+                Boulder, pag 204 (15/54)
         """
 
         if draw_check is True:
@@ -581,8 +592,7 @@ class Scalar_field_XZ:
             (str): filename. If False, file could not be saved.
         """
         try:
-            final_filename = save_data_common(self, filename, add_name, description, verbose)
-            return final_filename
+            return save_data_common(self, filename, add_name, description, verbose)
         except:
             return False
 
@@ -600,12 +610,15 @@ class Scalar_field_XZ:
             if isinstance(dict0, dict):
                 self.__dict__ = dict0
             else:
-                raise Exception("no dictionary in load_data")
+                msg = "no dictionary in load_data"
+                raise Exception(msg)
 
     @check_none("x", "z", "u")
     def oversampling(self, factor_rate: int | tuple):
-        """Overfample function has been implemented in scalar X, XY, XZ, and XYZ frames reduce the pixel size of the masks and fields.
-        This is also performed with the cut_resample function. However, this function oversamples with integer factors.
+        """Overfample function has been implemented in scalar X, XY, XZ, and XYZ frames reduce the
+            pixel size of the masks and fields.
+        This is also performed with the cut_resample function. However, this function oversamples
+            with integer factors.
 
         Args:
             factor_rate (int | tuple, optional): factor rate. Defaults to 2.
@@ -622,12 +635,17 @@ class Scalar_field_XZ:
         new_field: bool = False,
         interp_kind: tuple[int, int] = (3, 1),
     ):
-        """it cut the field to the range (x0,x1). if one of this x0,x1 positions is out of the self.x range it do nothing. It is also valid for resampling the field, just write x0,x1 as the limits of self.x
+        """it cut the field to the range (x0,x1). if one of this x0,x1 positions is out of the
+            self.x range it do nothing. It is also valid for resampling the field, just write x0,x1
+            as the limits of self.x
 
         Args:
-            x_limits (float,float): (x0,x1) starting and final points to cut. if '' - takes the current limit x[0] and x[-1]
-            z_limits (float,float): (z0,z1) - starting and final points to cut. if '' - takes the current limit z[0] and z[-1]
-            num_points (int): it resamples x, z and u. ([], '',0,None) -> it leave the points as it is
+            x_limits (float,float): (x0,x1) starting and final points to cut. if '' - takes the
+                current limit x[0] and x[-1]
+            z_limits (float,float): (z0,z1) - starting and final points to cut. if '' - takes the
+                current limit z[0] and z[-1]
+            num_points (int): it resamples x, z and u. ([], '',0,None) -> it leave the points as it
+                is
             new_field (bool): it returns a new Scalar_field_XZ
             interp_kind: numbers between 1 and 5
         """
@@ -703,6 +721,7 @@ class Scalar_field_XZ:
             field.n = n_new
 
             return field
+        return None
 
     @check_none("x", "z", "u", raise_exception=bool_raise_exception)
     def incident_field(self, u0, z0: float | None = None):
@@ -743,8 +762,7 @@ class Scalar_field_XZ:
             matrices with required values
         """
 
-        data = get_scalar(self, kind)
-        return data
+        return get_scalar(self, kind)
 
     @check_none("x", "z", "n")
     def __BPM__(
@@ -782,7 +800,7 @@ class Scalar_field_XZ:
         deltaz = self.z[1] - self.z[0]  # Tamaño del sampling
         rangox = self.x[-1] - self.x[0]
 
-        pixelx = np.linspace(-int(numx / 2), int(numx / 2), numx)
+        np.linspace(-int(numx / 2), int(numx / 2), numx)
         # initial field
         field_z = self.u0.u
 
@@ -830,6 +848,7 @@ class Scalar_field_XZ:
 
         if matrix is True:
             return self.u
+        return None
 
     @check_none("x", "z", "n")
     def BPM(
@@ -843,9 +862,11 @@ class Scalar_field_XZ:
         """Beam propagation method (BPM).
 
         Args:
-            has_edges (bool or np.array): If True absorbing edges are used. If np.array, they are 0 or 1 depending if at this z position filtering is performed.
+            has_edges (bool or np.array): If True absorbing edges are used. If np.array, they are 0
+                or 1 depending if at this z position filtering is performed.
             pow_edge (float): If has_edges, power of the supergaussian
-            division (False, int): If False nothing, else divides the BPM algorithm in several different executions. To avoid RAM problems
+            division (False, int): If False nothing, else divides the BPM algorithm in several
+                different executions. To avoid RAM problems
             matrix (bool): if True returns a matrix else
             verbose (bool): shows data process by screen
 
@@ -887,6 +908,7 @@ class Scalar_field_XZ:
         if verbose is True:
             t2 = time.time()
             print(f"Time = {t2 - t1:2.2f} s, time/loop = {(t2 - t1) / len(self.z) * 1000:2.4} ms")
+        return None
 
     @check_none("x", "z", "n")
     def BPM_inverse(self, verbose: bool = False):
@@ -1063,10 +1085,11 @@ class Scalar_field_XZ:
             numpy.array(): Field at at distance dz from the incident field
 
         References:
-            1. Schmidt, S. et al. Wave-optical modeling beyond the thin-element-approximation. Opt. Express 24, 30188 (2016).
+            1. Schmidt, S. et al. Wave-optical modeling beyond the thin-element-approximation. Opt.
+                Express 24, 30188 (2016).
 
         """
-        dx = self.x[1] - self.x[0]
+        self.x[1] - self.x[0]
         dz = self.z[1] - self.z[0]
         k0 = 2 * np.pi / self.wavelength
 
@@ -1079,7 +1102,7 @@ class Scalar_field_XZ:
         num_steps = len(self.z)
         self.clear_field()
         self.u[0, :] = self.u0.u
-        for i, zi in enumerate(self.z[0:-1]):
+        for i, _zi in enumerate(self.z[0:-1]):
             result = self.u[i, :]
             result_next = PWD_kernel(result, n, k0, K_perp2, dz)
             self.u[i + 1, :] = result_next
@@ -1088,6 +1111,7 @@ class Scalar_field_XZ:
 
         if matrix is True:
             return self.u
+        return None
 
     @check_none("x", "z")
     def WPM(
@@ -1112,16 +1136,18 @@ class Scalar_field_XZ:
 
         References:
 
-            1. M. W. Fertig and K.-H. Brenner, “Vector wave propagation method,” J. Opt. Soc. Am. A, vol. 27, no. 4, p. 709, 2010.
+            1. M. W. Fertig and K.-H. Brenner, “Vector wave propagation method,” J. Opt. Soc. Am. A,
+                vol. 27, no. 4, p. 709, 2010.
 
-            2. S. Schmidt et al., “Wave-optical modeling beyond the thin-element-approximation,” Opt. Express, vol. 24, no. 26, p. 30188, 2016.
+            2. S. Schmidt et al., “Wave-optical modeling beyond the thin-element-approximation,”
+                Opt. Express, vol. 24, no. 26, p. 30188, 2016.
 
         """
 
         k0 = 2 * np.pi / self.wavelength
         x = self.x
         z = self.z
-        dx = x[1] - x[0]
+        x[1] - x[0]
         dz = z[1] - z[0]
 
         self.u[0, :] = self.u0.u
@@ -1184,6 +1210,7 @@ class Scalar_field_XZ:
 
         if matrix is True:
             return self.u
+        return None
 
     def RS_polychromatic(
         self,
@@ -1380,7 +1407,8 @@ class Scalar_field_XZ:
     @check_none("x", "z", "u")
     def check_intensity(self, has_draw: bool = True, normalized: bool = True):
         """
-        Checks that intensity distribution is not lost by edges. It can be executed after a RS or BPM propagation.
+        Checks that intensity distribution is not lost by edges. It can be executed after a RS or
+            BPM propagation.
 
         Args:
             has_draw (bool): Draws the intensity
@@ -1553,18 +1581,23 @@ class Scalar_field_XZ:
         """Draws  XZ field.
 
         Args:
-            kind (str): type of drawing: 'amplitude', 'intensity', 'phase', 'real', 'refractive_index'
+            kind (str): type of drawing: 'amplitude', 'intensity', 'phase', 'real',
+                'refractive_index'
             logarithm (float): If >0, intensity is scaled in logarithm
             normalize (bool): If True, max(intensity)=1
             draw_borders (bool): If True draw edges of objects
             filename (str): if not '' stores drawing in file,
             scale (str): '', 'scaled', 'equal', scales the XY drawing
             min_incr: incrimum increment in refractive index for detecting edges
-            reduce_matrix (int, int), 'standard' or False: when matrix is enormous, we can reduce it only for drawing purposes. If True, reduction factor
+            reduce_matrix (int, int), 'standard' or False: when matrix is enormous, we can reduce it
+                only for drawing purposes. If True, reduction factor
             z_scale (str): 'mm', 'um'
             edge_matrix (numpy.array): positions of borders
-            interpolation(str): methods = [None, 'none', 'nearest', 'bilinear', 'bicubic', 'spline16', 'spline36', 'hanning', 'hamming', 'hermite', 'kaiser', 'quadric', 'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc', 'lanczos']
-            percentage_intensity (None or number): If None it takes from CONF_DRAWING['percentage_intensity'], else uses this value
+            interpolation(str): methods = [None, 'none', 'nearest', 'bilinear', 'bicubic',
+                'spline16', 'spline36', 'hanning', 'hamming', 'hermite', 'kaiser', 'quadric',
+                'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc', 'lanczos']
+            percentage_intensity (None or number): If None it takes from
+                CONF_DRAWING['percentage_intensity'], else uses this value
         """
 
         if reduce_matrix is False:
@@ -1697,7 +1730,8 @@ class Scalar_field_XZ:
             title (str): title of drawing
             scale (str): '', 'scaled', 'equal', scales the XY drawing
             min_incr: minimum increment in refractive index for detecting edges
-            reduce_matrix (int, int), 'standard' or False: when matrix is enormous, we can reduce it only for drawing purposes. If True, reduction factor
+            reduce_matrix (int, int), 'standard' or False: when matrix is enormous, we can reduce it
+                only for drawing purposes. If True, reduction factor
             edge_matrix (numpy.array): positions of borders
         """
 
@@ -2009,7 +2043,7 @@ class Scalar_field_XZ:
         widths = np.zeros_like(self.z)
         positions_center = np.zeros_like(self.z)
 
-        for i, zi in enumerate(self.z):
+        for i, _zi in enumerate(self.z):
             field = np.abs(self.u[i, :])
             if kind == "sigma4":
                 widths[i], positions_center[i] = beam_width_1D(field, self.x)
@@ -2129,11 +2163,11 @@ class Scalar_field_XZ:
 
         z_actual = self.z[0]
         x = self.x
-        ix, iz = np.unravel_index(I_drawing.argmax(), I_drawing.shape)
+        _ix, _iz = np.unravel_index(I_drawing.argmax(), I_drawing.shape)
 
         extension = [self.x[0], self.x[-1], I_drawing.min(), I_drawing.max()]
 
-        imenor, value, distance = nearest(vector=self.z, number=z_actual)
+        imenor, _value, _distance = nearest(vector=self.z, number=z_actual)
         I_drawing_actual = np.squeeze(I_drawing[imenor, :])
 
         z = self.z
@@ -2150,7 +2184,7 @@ class Scalar_field_XZ:
 def __update__(val: float):
     """for making videos."""
     zz = zZ.val
-    i_z_min, value, distance = nearest(vector=z, number=zz)
+    i_z_min, _value, _distance = nearest(vector=z, number=zz)
     I_drawing_profile = np.squeeze(I_drawing[i_z_min, :])
 
     I_drawing_profile = normalize_draw(I_drawing_profile, log1, norm1)

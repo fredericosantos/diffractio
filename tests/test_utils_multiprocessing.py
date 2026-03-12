@@ -42,7 +42,6 @@ def function_to_test(iterable, constant):
 class Test_utils_math:
     def test_distance(self):
 
-        dict_constants = {"x": 3, "y": 4}
         N = 50000
         variable_process = np.linspace(0, 1, N)
         start = time.time()
@@ -54,7 +53,6 @@ class Test_utils_math:
         res = np.zeros(N)
         for ind, val in enumerate(variable_process):
             res[ind] = function_to_test(val, 1)
-        print(
-            f"Single process pool took {time.time() - start} seconds")
+        print(f"Single process pool took {time.time() - start} seconds")
 
         assert True

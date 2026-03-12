@@ -40,7 +40,7 @@ class Test_utils_math:
     def test_distance(self):
         func_name = sys._getframe().f_code.co_name
 
-        solution = 1.
+        solution = 1.0
         x1 = np.array([0, 1, 1])
         x2 = np.array([0, 0, 1])
         proposal = distance(x1, x2)
@@ -81,7 +81,7 @@ class Test_utils_math:
 
         solution = np.array([[0, 1], [0, 1], [0, 1]])
         x, y = [0, 1], [2, 3, 4]
-        X, Y = np.meshgrid(x, y)
+        X, _Y = np.meshgrid(x, y)
         print(X)
         print(solution)
         proposal = X
@@ -90,12 +90,12 @@ class Test_utils_math:
     def test_binarize(self):
         func_name = sys._getframe().f_code.co_name
 
-        solution = np.array([0., 0., 0., 1., 1., 1.])
+        solution = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
         vector = np.linspace(0, 1, 6)
         proposal = binarize(vector, min_value=0, max_value=1)
         assert comparison(proposal, solution, eps), func_name
 
-        solution = np.array([-1., -1., -1., 1., 1., 1.])
+        solution = np.array([-1.0, -1.0, -1.0, 1.0, 1.0, 1.0])
         vector = np.linspace(-1, 1, 6)
         proposal = binarize(vector, min_value=-1, max_value=1)
         assert comparison(proposal, solution, eps), func_name

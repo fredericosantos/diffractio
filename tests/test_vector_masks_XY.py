@@ -28,30 +28,31 @@ if not os.path.exists(newpath):
 
 polarization_x = [1, 0]
 polarization_y = [0, 1]
-polarization_right = [1, 1.j] / np.sqrt(2)
-polarization_left = [1, -1.j] / np.sqrt(2)
+polarization_right = [1, 1.0j] / np.sqrt(2)
+polarization_left = [1, -1.0j] / np.sqrt(2)
 polarization_45 = [1, 1] / np.sqrt(2)
 polarization_m45 = [1, -1] / np.sqrt(2)
 
 
 class Test_vector_masks_XY:
-
     def test_equal_mask(self):
         func_name = sys._getframe().f_code.co_name
         # filename = '{}{}.npz'.format(newpath, func_name)
-        length = 250*um
+        length = 250 * um
         num_data = 256
-        wavelength = 0.6328*um
+        wavelength = 0.6328 * um
 
-        x0 = np.linspace(-length/2, length/2, num_data)
-        y0 = np.linspace(-length/2, length/2, num_data)
+        x0 = np.linspace(-length / 2, length / 2, num_data)
+        y0 = np.linspace(-length / 2, length / 2, num_data)
 
         # mask escalar
         mask = Scalar_mask_XY(x=x0, y=y0, wavelength=wavelength)
-        mask.ring(r0=(0*um, 0*um),
-                  radius1=(25*um, 25*um),
-                  radius2=(75*um, 75*um),
-                  angle=0*degrees)
+        mask.ring(
+            r0=(0 * um, 0 * um),
+            radius1=(25 * um, 25 * um),
+            radius2=(75 * um, 75 * um),
+            angle=0 * degrees,
+        )
 
         # mask vectorial
         pol_state = np.array([[1, 0], [1, 1j]])
@@ -67,24 +68,28 @@ class Test_vector_masks_XY:
         func_name = sys._getframe().f_code.co_name
         # filename = '{}{}.npz'.format(newpath, func_name)
 
-        length = 250*um
+        length = 250 * um
         num_data = 256
-        wavelength = 0.6328*um
+        wavelength = 0.6328 * um
 
-        x0 = np.linspace(-length/2, length/2, num_data)
-        y0 = np.linspace(-length/2, length/2, num_data)
+        x0 = np.linspace(-length / 2, length / 2, num_data)
+        y0 = np.linspace(-length / 2, length / 2, num_data)
 
         mask = Scalar_mask_XY(x=x0, y=y0, wavelength=wavelength)
-        mask.fresnel_lens(r0=(0*um, 0*um),
-                          radius=(125*um, 125*um),
-                          focal=(2*mm, 2*mm),
-                          angle=0*degrees,
-                          kind="amplitudes")
+        mask.fresnel_lens(
+            r0=(0 * um, 0 * um),
+            radius=(125 * um, 125 * um),
+            focal=(2 * mm, 2 * mm),
+            angle=0 * degrees,
+            kind="amplitudes",
+        )
 
         EM = Vector_mask_XY(x0, y0, wavelength)
-        EM.complementary_masks(mask=mask,
-                               pol_state_0=np.array([[1, 0], [0, 0]]),
-                               pol_state_1=np.array([[0, 0], [0, 1]]))
+        EM.complementary_masks(
+            mask=mask,
+            pol_state_0=np.array([[1, 0], [0, 0]]),
+            pol_state_1=np.array([[0, 0], [0, 1]]),
+        )
 
         EM.draw(kind="amplitudes")
         save_figure_test(newpath, func_name, add_name="_amplitude")
@@ -96,12 +101,12 @@ class Test_vector_masks_XY:
         func_name = sys._getframe().f_code.co_name
         # filename = '{}{}.npz'.format(newpath, func_name)
 
-        length = 250*um
+        length = 250 * um
         num_data = 256
-        wavelength = 0.6328*um
+        wavelength = 0.6328 * um
 
-        x0 = np.linspace(-length/2, length/2, num_data)
-        y0 = np.linspace(-length/2, length/2, num_data)
+        x0 = np.linspace(-length / 2, length / 2, num_data)
+        y0 = np.linspace(-length / 2, length / 2, num_data)
 
         PL = Jones_matrix("m0")
         PL.from_components(components=(0.9, 0, 0, 0.2 * np.exp(1j)))
@@ -119,15 +124,15 @@ class Test_vector_masks_XY:
         func_name = sys._getframe().f_code.co_name
         # filename = '{}{}.npz'.format(newpath, func_name)
 
-        length = 250*um
+        length = 250 * um
         num_data = 256
-        wavelength = 0.6328*um
+        wavelength = 0.6328 * um
 
-        x0 = np.linspace(-length/2, length/2, num_data)
-        y0 = np.linspace(-length/2, length/2, num_data)
+        x0 = np.linspace(-length / 2, length / 2, num_data)
+        y0 = np.linspace(-length / 2, length / 2, num_data)
 
         EM = Vector_mask_XY(x0, y0, wavelength)
-        EM.polarizer_linear(azimuth=0*degrees)
+        EM.polarizer_linear(azimuth=0 * degrees)
 
         EM.draw(kind="amplitudes")
         save_figure_test(newpath, func_name, add_name="_amplitude")
@@ -139,15 +144,15 @@ class Test_vector_masks_XY:
         func_name = sys._getframe().f_code.co_name
         # filename = '{}{}.npz'.format(newpath, func_name)
 
-        length = 250*um
+        length = 250 * um
         num_data = 256
-        wavelength = 0.6328*um
+        wavelength = 0.6328 * um
 
-        x0 = np.linspace(-length/2, length/2, num_data)
-        y0 = np.linspace(-length/2, length/2, num_data)
+        x0 = np.linspace(-length / 2, length / 2, num_data)
+        y0 = np.linspace(-length / 2, length / 2, num_data)
 
         EM = Vector_mask_XY(x0, y0, wavelength)
-        EM.quarter_waveplate(azimuth=0*degrees)
+        EM.quarter_waveplate(azimuth=0 * degrees)
 
         EM.draw(kind="amplitudes")
         save_figure_test(newpath, func_name, add_name="_amplitude")
@@ -159,15 +164,15 @@ class Test_vector_masks_XY:
         func_name = sys._getframe().f_code.co_name
         # filename = '{}{}.npz'.format(newpath, func_name)
 
-        length = 250*um
+        length = 250 * um
         num_data = 256
-        wavelength = 0.6328*um
+        wavelength = 0.6328 * um
 
-        x0 = np.linspace(-length/2, length/2, num_data)
-        y0 = np.linspace(-length/2, length/2, num_data)
+        x0 = np.linspace(-length / 2, length / 2, num_data)
+        y0 = np.linspace(-length / 2, length / 2, num_data)
 
         EM = Vector_mask_XY(x0, y0, wavelength)
-        EM.half_waveplate(azimuth=0*degrees)
+        EM.half_waveplate(azimuth=0 * degrees)
 
         EM.draw(kind="amplitudes")
         save_figure_test(newpath, func_name, add_name="_amplitude")
@@ -179,18 +184,15 @@ class Test_vector_masks_XY:
         func_name = sys._getframe().f_code.co_name
         # filename = '{}{}.npz'.format(newpath, func_name)
 
-        length = 250*um
+        length = 250 * um
         num_data = 256
-        wavelength = 0.6328*um
+        wavelength = 0.6328 * um
 
-        x0 = np.linspace(-length/2, length/2, num_data)
-        y0 = np.linspace(-length/2, length/2, num_data)
+        x0 = np.linspace(-length / 2, length / 2, num_data)
+        y0 = np.linspace(-length / 2, length / 2, num_data)
 
         EM = Vector_mask_XY(x0, y0, wavelength)
-        EM.polarizer_retarder(R=90*degrees,
-                              p1=0.9,
-                              p2=0.1,
-                              azimuth=0*degrees)
+        EM.polarizer_retarder(R=90 * degrees, p1=0.9, p2=0.1, azimuth=0 * degrees)
 
         EM.draw(kind="amplitudes")
         save_figure_test(newpath, func_name, add_name="_amplitude")

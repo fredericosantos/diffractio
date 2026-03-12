@@ -11,3 +11,5 @@ core/
 """
 
 from . import drawing, drawing3D, math, operations, optics
+
+__all__ = ["drawing", "drawing3D", "math", "operations", "optics"]

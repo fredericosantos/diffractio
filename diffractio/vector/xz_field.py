@@ -60,7 +60,13 @@ from diffractio.config import (
     Draw_Vector_XZ_Options,
 )
 from diffractio.typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
-from diffractio.core.operations import get_date, load_data_common, save_data_common, check_none, get_vector
+from diffractio.core.operations import (
+    get_date,
+    load_data_common,
+    save_data_common,
+    check_none,
+    get_vector,
+)
 from diffractio.core.operations import get_instance_size_MB
 from diffractio.core.drawing import normalize_draw, reduce_matrix_size, draw_edges, draw2D
 from diffractio.core.math import get_k, nearest

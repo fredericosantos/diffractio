@@ -15,7 +15,8 @@
 This module generates Scalar_field_Z class
 
 The main atributes are:
-    * self.z (numpy.array): linear array with equidistant positions. The number of data is preferibly :math:`2^n` .
+    * self.z (numpy.array): linear array with equidistant positions. The number of data is
+        preferibly :math:`2^n` .
     * self.wavelength (float): wavelength of the incident field.
     * self.u (numpy.array): equal size than  x. complex field
 
@@ -57,6 +58,7 @@ from diffractio.core.operations import (
     add,
     check_none,
     get_date,
+    get_instance_size_MB,
     get_scalar,
     load_data_common,
     oversampling,
@@ -118,7 +120,8 @@ class Scalar_field_Z:
         phase_max = (np.angle(self.u)).max() / degrees
         print(f"{self.type}\n - z:  {self.z.shape},   u:  {self.u.shape}")
         print(
-            f" - zmin:       {self.z[0]:2.2f} um,  zmax:      {self.z[-1]:2.2f} um,  Dz:   {self.z[1] - self.z[0]:2.2f} um"
+            f" - zmin:       {self.z[0]:2.2f} um,  zmax:      {self.z[-1]:2.2f} um,"
+            f"  Dz: {self.z[1] - self.z[0]:2.2f} um"
         )
         print(f" - Imin:       {Imin:2.2f},     Imax:      {Imax:2.2f}")
         print(f" - phase_min:  {phase_min:2.2f} deg, phase_max: {phase_max:2.2f} deg")
@@ -140,9 +143,7 @@ class Scalar_field_Z:
             Scalar_field_Z: `u3 = u1 + u2`
         """
 
-        u = add(self, other, kind="source")
-
-        return u
+        return add(self, other, kind="source")
 
     @check_none("z", "u", raise_exception=bool_raise_exception)
     def __sub__(self, other):
@@ -175,16 +176,16 @@ class Scalar_field_Z:
             Scalar_field_XYZ:
         """
 
-        t = rmul(self, number, kind="amplitude")
-
-        return t
+        return rmul(self, number, kind="amplitude")
 
     @check_none("z", "u", raise_exception=bool_raise_exception)
     def rmul(self, number, kind):
         """Multiply a field by a number.  For example  :math: `u_1(x)= m * u_0(x)`.
 
-        This function is general for all the SCALAR modules of the package. After, this function is called by the rmul method of each class.
-        When module is for sources, any value for the number is valid. When module is for masks, the modulus is <=1.
+        This function is general for all the SCALAR modules of the package. After, this function is
+            called by the rmul method of each class.
+        When module is for sources, any value for the number is valid. When module is for masks, the
+            modulus is <=1.
 
         The kind parameter is used to specify how to multiply the field. The options are:
         - 'intensity': Multiply the intensity of the field by the number.
@@ -202,9 +203,7 @@ class Scalar_field_Z:
             The field multiplied by the number.
         """
 
-        t = rmul(self, number, kind)
-
-        return t
+        return rmul(self, number, kind)
 
     def size(self, verbose: bool = False):
         """returns the size of the instance in MB.
@@ -235,6 +234,7 @@ class Scalar_field_Z:
             u_new.u = np.conj(self.u)
             return u_new
         self.u = np.conj(self.u)
+        return None
 
     @check_none("u", raise_exception=bool_raise_exception)
     def clear_field(self):
@@ -257,8 +257,7 @@ class Scalar_field_Z:
             (str): filename. If False, file could not be saved.
         """
         try:
-            final_filename = save_data_common(self, filename, add_name, description, verbose)
-            return final_filename
+            return save_data_common(self, filename, add_name, description, verbose)
         except:
             return False
 
@@ -276,15 +275,18 @@ class Scalar_field_Z:
             if isinstance(dict0, dict):
                 self.__dict__ = dict0
             else:
-                raise Exception("no dictionary in load_data")
+                msg = "no dictionary in load_data"
+                raise Exception(msg)
 
         if verbose is True:
             print(dict0.keys())
 
     @check_none("z", "u", raise_exception=bool_raise_exception)
     def oversampling(self, factor_rate: int | tuple):
-        """Overfample function has been implemented in scalar X, XY, XZ, and XYZ frames reduce the pixel size of the masks and fields.
-        This is also performed with the cut_resample function. However, this function oversamples with integer factors.
+        """Overfample function has been implemented in scalar X, XY, XZ, and XYZ frames reduce the
+            pixel size of the masks and fields.
+        This is also performed with the cut_resample function. However, this function oversamples
+            with integer factors.
 
         Args:
             factor_rate (int | tuple, optional): factor rate. Defaults to 2.
@@ -303,8 +305,7 @@ class Scalar_field_Z:
             matrices with required values
         """
 
-        data = get_scalar(self, kind)
-        return data
+        return get_scalar(self, kind)
 
     @check_none("z", "u", raise_exception=bool_raise_exception)
     def cut_resample(
@@ -314,11 +315,13 @@ class Scalar_field_Z:
         new_field: bool = False,
         interp_kind: str = "linear",
     ):
-        """Cuts the field to the range (z0,z1). If one of this z0,z1 positions is out of the self.z range it does nothing.
+        """Cuts the field to the range (z0,z1). If one of this z0,z1 positions is out of the self.z
+            range it does nothing.
         It is also valid for resampling the field, just write z0,z1 as the limits of self.z
 
         Args:
-            z_limits (numpy.array): (z0,z1) - starting and final points to cut, if '' - takes the current limit z[0] and z[-1]
+            z_limits (numpy.array): (z0,z1) - starting and final points to cut, if '' - takes the
+                current limit z[0] and z[-1]
             num_points (int): it resamples z, and u [], '',0,None -> it leave the points as it is
             new_field (bool): if True it returns a new Scalar_field_z
             interp_kind (str): 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
@@ -366,6 +369,7 @@ class Scalar_field_Z:
             field = Scalar_field_Z(z=z_new, wavelength=self.wavelength)
             field.u = u_new
             return field
+        return None
 
     @check_none("u", raise_exception=bool_raise_exception)
     def normalize(self, kind="amplitude", new_field: bool = False):
@@ -373,7 +377,8 @@ class Scalar_field_Z:
 
         Args:
             kind (str): 'amplitude', or 'intensity'
-            new_field (bool): If False the computation goes to self.u. If True a new instance is produced
+            new_field (bool): If False the computation goes to self.u. If True a new instance is
+                produced
 
         Returns
             u (numpy.array): normalized optical field
@@ -388,8 +393,7 @@ class Scalar_field_Z:
             (numpy.array): Intensity
         """
 
-        intensity = np.abs(self.u) ** 2
-        return intensity
+        return np.abs(self.u) ** 2
 
     @check_none("u", raise_exception=bool_raise_exception)
     def average_intensity(self, verbose: bool = False):
@@ -409,13 +413,14 @@ class Scalar_field_Z:
 
     @check_none("z", "u", raise_exception=bool_raise_exception)
     def FWHM1D(
-        self, percentage: float = 0.5, remove_background: bool = None, has_draw: bool = False
+        self, percentage: float = 0.5, remove_background: bool | None = None, has_draw: bool = False
     ):
         """
         FWHM1D
 
         Args:
-            percentage (float): value between 0 and 1. 0.5 means that the width is computed at half maximum.
+            percentage (float): value between 0 and 1. 0.5 means that the width is computed at half
+                maximum.
             remove_background (str): 'min', 'mean', None
             has_draw (bool): If true it draws
 
@@ -437,7 +442,8 @@ class Scalar_field_Z:
         """Determines Depth-of_focus (DOF) in terms of the width at different distances
 
         Args:
-            percentage (float): value between 0 and 1. 0.5 means that the width is computed at half maximum.
+            percentage (float): value between 0 and 1. 0.5 means that the width is computed at half
+                maximum.
             remove_background (str): 'min', 'mean', None
             has_draw (bool): If true it draws
 
@@ -446,7 +452,8 @@ class Scalar_field_Z:
 
         References:
 
-            B. E. A. Saleh and M. C. Teich, Fundamentals of photonics. john Wiley & sons, 2nd ed. 2007. Eqs (3.1-18) (3.1-22) page 79
+            B. E. A. Saleh and M. C. Teich, Fundamentals of photonics. john Wiley & sons, 2nd ed.
+                2007. Eqs (3.1-18) (3.1-22) page 79
 
         Returns:
 
@@ -467,7 +474,8 @@ class Scalar_field_Z:
         unwrap: bool = False,
         filename: str = "",
     ):
-        """Draws z field. There are several data from the field that are extracted, depending of 'kind' parameter.
+        """Draws z field. There are several data from the field that are extracted, depending of
+            'kind' parameter.
 
         Args:
             kind (str): type of drawing: 'amplitude', 'intensity', 'field', 'phase'
@@ -532,6 +540,5 @@ class Scalar_field_Z:
         if kind == "intensity":
             plt.ylim(bottom=0)
 
-        elif kind == "phase":
-            if unwrap == False:
-                plt.ylim(-pi, pi)
+        elif kind == "phase" and not unwrap:
+            plt.ylim(-pi, pi)

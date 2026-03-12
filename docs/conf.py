@@ -37,8 +37,12 @@ sys.path.insert(0, os.path.abspath(".."))
 # ]
 
 extensions = [
-    "sphinx.ext.autodoc", "sphinx.ext.viewcode", "sphinx.ext.mathjax",
-    "sphinx.ext.napoleon", "nbsphinx", "sphinx.ext.todo"
+    "sphinx.ext.autodoc",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.napoleon",
+    "nbsphinx",
+    "sphinx.ext.todo",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -79,9 +83,7 @@ language = "en"
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = [
-    "_build", "Thumbs.db", ".DS_Store", "_build", "**.ipynb_checkpoints"
-]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "_build", "**.ipynb_checkpoints"]
 # LM: exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
@@ -118,15 +120,12 @@ latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
-
     # The font size ('10pt', '11pt' or '12pt').
     #
     # 'pointsize': '10pt',
-
     # Additional stuff for the LaTeX preamble.
     #
     # 'preamble': '',
-
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
@@ -136,18 +135,22 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass
 # [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, "diffractio.tex",
-     "Python diffraction and interference Documentation",
-     "Luis Miguel Sanchez Brea", "manual"),
+    (
+        master_doc,
+        "diffractio.tex",
+        "Python diffraction and interference Documentation",
+        "Luis Miguel Sanchez Brea",
+        "manual",
+    ),
 ]
 
 # -- Options for manual page output ------------------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "diffractio",
-              "Python diffraction and interference Documentation", [author
-                                                                     ], 1)]
+man_pages = [
+    (master_doc, "diffractio", "Python diffraction and interference Documentation", [author], 1)
+]
 
 # -- Options for Texinfo output ----------------------------------------------------
 
@@ -155,9 +158,13 @@ man_pages = [(master_doc, "diffractio",
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, "diffractio",
-     "Python diffraction and interference Documentation", author,
-     "diffractio"),
+    (
+        master_doc,
+        "diffractio",
+        "Python diffraction and interference Documentation",
+        author,
+        "diffractio",
+    ),
 ]
 
 # Module items sort order

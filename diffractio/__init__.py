@@ -14,8 +14,8 @@
 """
 Top-level package for Python Scalar and vector diffraction and interference.
 
-Diffractio: A scientific computing package for Scalar and Vector Optical Interference and Diffraction in Python.
-==================================================================================================================
+Diffractio: Scalar and Vector Optical Interference and Diffraction.
+====================================================================
 
 diffractio/
 ├── __init__.py        # Package init, version, units, and constants.
@@ -35,6 +35,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sp
 from matplotlib import cm, rcParams
+
+__all__ = ["cm", "multiprocessing", "np", "plt", "rcParams", "sp"]
 
 __author__ = """Luis Miguel Sanchez Brea"""
 __email__ = "optbrea@ucm.es"

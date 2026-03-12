@@ -46,9 +46,20 @@ from matplotlib import rcParams
 
 from diffractio import degrees, eps, mm, np, plt
 from diffractio.typing import npt, Any, NDArray, NDArrayFloat, NDArrayComplex
-from diffractio.config import bool_raise_exception, CONF_DRAWING, Draw_Vector_X_Options, get_vector_options
+from diffractio.config import (
+    bool_raise_exception,
+    CONF_DRAWING,
+    Draw_Vector_X_Options,
+    get_vector_options,
+)
 from diffractio.scalar.x_field import Scalar_field_X
-from diffractio.core.operations import get_date, load_data_common, save_data_common, check_none, get_vector
+from diffractio.core.operations import (
+    get_date,
+    load_data_common,
+    save_data_common,
+    check_none,
+    get_vector,
+)
 from diffractio.core.operations import get_instance_size_MB
 
 from diffractio.core.drawing import normalize_draw

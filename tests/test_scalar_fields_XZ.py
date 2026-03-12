@@ -1,6 +1,7 @@
 # !/usr/bin/env python3
 
 """Tests for Scalar_mask_XZ"""
+
 import datetime
 import os
 import sys
@@ -31,50 +32,46 @@ if not os.path.exists(newpath):
 
 
 def _func_polychromatic_RS_(wavelength):
-    x0 = np.linspace(-100*um, 100*um, 512)
+    x0 = np.linspace(-100 * um, 100 * um, 512)
 
     f1 = Scalar_source_X(x0, wavelength)
-    f1.gauss_beam(A=1, x0=0, z0=0*um, w0=50*um, theta=0*degrees)
+    f1.gauss_beam(A=1, x0=0, z0=0 * um, w0=50 * um, theta=0 * degrees)
 
     t1 = Scalar_mask_X(x0, wavelength)
-    t1.ronchi_grating(period=10*um, x0=0*um, fill_factor=0.5)
+    t1.ronchi_grating(period=10 * um, x0=0 * um, fill_factor=0.5)
 
-    initial_field = t1
-    return initial_field
+    return t1
 
 
 def _func_polychromatic_BPM_(wavelength):
-    x0 = np.linspace(-200*um, 200*um, 512)
+    x0 = np.linspace(-200 * um, 200 * um, 512)
 
     t1 = Scalar_mask_X(x0, wavelength)
-    t1.ronchi_grating(period=15*um, x0=0*um, fill_factor=0.5)
+    t1.ronchi_grating(period=15 * um, x0=0 * um, fill_factor=0.5)
 
     f1 = Scalar_source_X(x0, wavelength)
-    f1.gauss_beam(A=1, x0=0, z0=0*um, w0=100*um, theta=0*degrees)
+    f1.gauss_beam(A=1, x0=0, z0=0 * um, w0=100 * um, theta=0 * degrees)
 
-    z = np.linspace(0*um, 5*mm, 512)
+    z = np.linspace(0 * um, 5 * mm, 512)
     u1 = Scalar_mask_XZ(x0, z, wavelength, n_background=1)
     u1.incident_field(f1 * t1)
 
-    u1.square(r0=(-100*um, 1500*um),
-                 size=(200*um, 1000*um),
-                 angle=0*degrees,
-                 refractive_index=4)
+    u1.square(
+        r0=(-100 * um, 1500 * um), size=(200 * um, 1000 * um), angle=0 * degrees, refractive_index=4
+    )
 
     return u1
 
 
 def generate_BPM_field():
-    x0 = np.linspace(-25*um, 25*um, 512)
-    z0 = np.linspace(0*um, 75*um, 256)
-    wavelength = .5*um
+    x0 = np.linspace(-25 * um, 25 * um, 512)
+    z0 = np.linspace(0 * um, 75 * um, 256)
+    wavelength = 0.5 * um
     u0 = Scalar_source_X(x=x0, wavelength=wavelength)
-    u0.plane_wave(A=1, theta=0*degrees)
+    u0.plane_wave(A=1, theta=0 * degrees)
     u1 = Scalar_mask_XZ(x=x0, z=z0, wavelength=wavelength)
     u1.incident_field(u0)
-    u1.cylinder(r0=(0*um, 0*um),
-              radius=(25*um, 25*um),
-              refractive_index=2)
+    u1.cylinder(r0=(0 * um, 0 * um), radius=(25 * um, 25 * um), refractive_index=2)
     u1.BPM(verbose=False)
 
     return u1
@@ -82,16 +79,16 @@ def generate_BPM_field():
 
 def generate_BPM_gauss():
 
-    length = 500*um
-    wavelength = .5*um
-    x0 = np.linspace(-length/2, length/2, 512)
-    z0 = np.linspace(0*um, 500*um, 256)
+    length = 500 * um
+    wavelength = 0.5 * um
+    x0 = np.linspace(-length / 2, length / 2, 512)
+    z0 = np.linspace(0 * um, 500 * um, 256)
 
-    x_ini = -250*um * np.tan(30*degrees)
+    x_ini = -250 * um * np.tan(30 * degrees)
     print(f"x_ini={x_ini}")
     # source
     f1 = Scalar_source_X(x0, wavelength)
-    f1.gauss_beam(A=1, x0=0, z0=250*um, w0=10*um, theta=0*degrees)
+    f1.gauss_beam(A=1, x0=0, z0=250 * um, w0=10 * um, theta=0 * degrees)
 
     u1 = Scalar_field_XZ(x=x0, z=z0, wavelength=wavelength)
     u1.clear_refractive_index()
@@ -105,47 +102,42 @@ u_gauss = generate_BPM_gauss()
 
 
 class Test_Scalar_fields_XZ:
-
     def test_rotate_field(self):
         func_name = sys._getframe().f_code.co_name
         # filename = '{}{}'.format(newpath, func_name)
 
-        x0 = np.linspace(-200*um, 200*um, 512)
-        z0 = np.linspace(-100*um, 600*um, 512)
-        wavelength = 5*um
+        x0 = np.linspace(-200 * um, 200 * um, 512)
+        z0 = np.linspace(-100 * um, 600 * um, 512)
+        wavelength = 5 * um
 
         u0 = Scalar_source_X(x=x0, wavelength=wavelength)
-        u0.plane_wave(A=1, theta=0*degrees)
+        u0.plane_wave(A=1, theta=0 * degrees)
         u1 = Scalar_mask_XZ(x=x0, z=z0, wavelength=wavelength)
         u1.incident_field(u0)
 
-        u1.lens(r0=(0, 100),
-                           size=300*um,
-                           radii=(1000*um, -250*um),
-                           thickness=100*um,
-                           refractive_index=2,
-                           angle=0*degrees,
-                           mask=(10*um, 3 + 0.05j))
+        u1.lens(
+            r0=(0, 100),
+            size=300 * um,
+            radii=(1000 * um, -250 * um),
+            thickness=100 * um,
+            refractive_index=2,
+            angle=0 * degrees,
+            mask=(10 * um, 3 + 0.05j),
+        )
 
-        u1.smooth_refractive_index(type_filter=3,
-                                   pixels_filtering=2,
-                                   max_diff_filter=0.01,
-                                   draw_check=False)
+        u1.smooth_refractive_index(
+            type_filter=3, pixels_filtering=2, max_diff_filter=0.01, draw_check=False
+        )
         u1.BPM(verbose=False)
 
-        u1.draw(logarithm=True,
-                normalize="maximum",
-                scale="equal",
-                draw_borders=True)
+        u1.draw(logarithm=True, normalize="maximum", scale="equal", draw_borders=True)
         save_figure_test(newpath, func_name, add_name="_wo")
 
         u1.draw_refractive_index(draw_borders=True)
 
         save_figure_test(newpath, func_name, add_name="_no")
 
-        u1.rotate_field(angle=22.5*degrees,
-                        center_rotation=(0, 100),
-                        kind="jones_ap")
+        u1.rotate_field(angle=22.5 * degrees, center_rotation=(0, 100), kind="jones_ap")
         u1.draw_refractive_index(draw_borders=True)
         save_figure_test(newpath, func_name, add_name="_n")
         u1.draw(logarithm=True, draw_borders=True)
@@ -179,14 +171,12 @@ class Test_Scalar_fields_XZ:
         func_name = sys._getframe().f_code.co_name
         filename = f"{newpath}{func_name}"
 
-        x0 = np.linspace(-25*um, 25*um, 512)
-        z0 = np.linspace(0*um, 75*um, 256)
-        wavelength = .5*um
+        x0 = np.linspace(-25 * um, 25 * um, 512)
+        z0 = np.linspace(0 * um, 75 * um, 256)
+        wavelength = 0.5 * um
 
         u1 = Scalar_mask_XZ(x=x0, z=z0, wavelength=wavelength)
-        u1.cylinder(r0=(0*um, 0*um),
-                  radius=(25*um, 25*um),
-                  refractive_index=2)
+        u1.cylinder(r0=(0 * um, 0 * um), radius=(25 * um, 25 * um), refractive_index=2)
 
         u1.info = """info:
             test_save_load():
@@ -209,25 +199,20 @@ class Test_Scalar_fields_XZ:
         func_name = sys._getframe().f_code.co_name
         filename = f"{newpath}{func_name}"
 
-        x0 = np.linspace(-100*um, 100*um, 512)
-        z0 = np.linspace(-5*um, 200*um, 512)
-        wavelength = 5*um
+        x0 = np.linspace(-100 * um, 100 * um, 512)
+        z0 = np.linspace(-5 * um, 200 * um, 512)
+        wavelength = 5 * um
         u0 = Scalar_source_X(x=x0, wavelength=wavelength)
-        u0.plane_wave(theta=0*degrees)
+        u0.plane_wave(theta=0 * degrees)
         u1 = Scalar_mask_XZ(x=x0, z=z0, wavelength=wavelength)
         u1.incident_field(u0)
-        u1.biprism(r0=(0*um, 0*um),
-                   length=200*um,
-                   height=50*um,
-                   refractive_index=1.5,
-                   angle=0)
+        u1.biprism(
+            r0=(0 * um, 0 * um), length=200 * um, height=50 * um, refractive_index=1.5, angle=0
+        )
 
         u1.draw_refractive_index(draw_borders=True, scale="equal")
         u1.BPM()
-        u1.draw(logarithm=True,
-                normalize="maximum",
-                draw_borders=True,
-                scale="equal")
+        u1.draw(logarithm=True, normalize="maximum", draw_borders=True, scale="equal")
         u1.draw(kind="phase", draw_borders=True, scale="equal")
 
         u1.save_data(filename=filename + ".npz", add_name="")
@@ -240,20 +225,22 @@ class Test_Scalar_fields_XZ:
         """
         generates a field and I cut_resample it
         """
-        x0 = np.linspace(-150*um, 150*um, 256)
-        z0 = np.linspace(-50*um*um, 300*um, 256)
-        wavelength = 5*um
+        x0 = np.linspace(-150 * um, 150 * um, 256)
+        z0 = np.linspace(-50 * um * um, 300 * um, 256)
+        wavelength = 5 * um
         u0 = Scalar_source_X(x=x0, wavelength=wavelength)
-        u0.plane_wave(A=1, theta=0*degrees)
+        u0.plane_wave(A=1, theta=0 * degrees)
 
         u1 = Scalar_mask_XZ(x=x0, z=z0, wavelength=wavelength, n_background=4)
         u1.incident_field(u0)
-        u1.slit(r0=(0*um, 10*um),
-                aperture=40*um,
-                depth=10*um,
-                refractive_index=1,
-                refractive_index_center="",
-                angle=0*degrees)
+        u1.slit(
+            r0=(0 * um, 10 * um),
+            aperture=40 * um,
+            depth=10 * um,
+            refractive_index=1,
+            refractive_index_center="",
+            angle=0 * degrees,
+        )
 
         u1.BPM(verbose=False)
         u1.draw(kind="intensity", draw_borders=True)
@@ -265,10 +252,9 @@ class Test_Scalar_fields_XZ:
         u1.save_data(filename=filename + ".npz", add_name="_after")
         save_figure_test(newpath, func_name, add_name="_n_before")
 
-        u1.cut_resample(x_limits=(-75, 75),
-                        z_limits=(0, 30),
-                        num_points=(512, 512),
-                        new_field=False)
+        u1.cut_resample(
+            x_limits=(-75, 75), z_limits=(0, 30), num_points=(512, 512), new_field=False
+        )
         u1.draw(kind="intensity", draw_borders=True)
 
         u1.save_data(filename=filename + ".npz", add_name="_after")
@@ -285,29 +271,17 @@ class Test_Scalar_fields_XZ:
         func_name = sys._getframe().f_code.co_name
         filename = f"{newpath}{func_name}"
 
-        x0 = np.linspace(-60*um, 60*um, 512)
-        z0 = np.linspace(0*um, 100*um, 512)
-        wavelength = 5*um
+        x0 = np.linspace(-60 * um, 60 * um, 512)
+        z0 = np.linspace(0 * um, 100 * um, 512)
+        wavelength = 5 * um
         u0 = Scalar_source_X(x=x0, wavelength=wavelength)
-        u0.gauss_beam(A=1,
-                      x0=0*um,
-                      z0=0*um,
-                      w0=10*um,
-                      theta=0*degrees)
+        u0.gauss_beam(A=1, x0=0 * um, z0=0 * um, w0=10 * um, theta=0 * degrees)
 
         t0 = Scalar_source_X(x=x0, wavelength=wavelength)
-        t0.gauss_beam(A=1,
-                      x0=40*um,
-                      z0=0*um,
-                      w0=10*um,
-                      theta=-45.*degrees)
+        t0.gauss_beam(A=1, x0=40 * um, z0=0 * um, w0=10 * um, theta=-45.0 * degrees)
 
         t1 = Scalar_source_X(x=x0, wavelength=wavelength)
-        t1.gauss_beam(A=1,
-                      x0=-40*um,
-                      z0=0*um,
-                      w0=10*um,
-                      theta=45.*degrees)
+        t1.gauss_beam(A=1, x0=-40 * um, z0=0 * um, w0=10 * um, theta=45.0 * degrees)
 
         u1 = Scalar_mask_XZ(x=x0, z=z0, wavelength=wavelength)
         u1.incident_field(u0)
@@ -322,34 +296,22 @@ class Test_Scalar_fields_XZ:
         func_name = sys._getframe().f_code.co_name
         filename = f"{newpath}{func_name}"
 
-        x0 = np.linspace(-60*um, 60*um, 512)
-        z0 = np.linspace(0*um, 100*um, 512)
-        wavelength = 5*um
+        x0 = np.linspace(-60 * um, 60 * um, 512)
+        z0 = np.linspace(0 * um, 100 * um, 512)
+        wavelength = 5 * um
         u0 = Scalar_source_X(x=x0, wavelength=wavelength)
-        u0.gauss_beam(A=1,
-                      x0=0*um,
-                      z0=0*um,
-                      w0=10*um,
-                      theta=0*degrees)
+        u0.gauss_beam(A=1, x0=0 * um, z0=0 * um, w0=10 * um, theta=0 * degrees)
 
         t0 = Scalar_source_X(x=x0, wavelength=wavelength)
-        t0.gauss_beam(A=1,
-                      x0=40*um,
-                      z0=0*um,
-                      w0=10*um,
-                      theta=-45.*degrees)
+        t0.gauss_beam(A=1, x0=40 * um, z0=0 * um, w0=10 * um, theta=-45.0 * degrees)
 
         t1 = Scalar_source_X(x=x0, wavelength=wavelength)
-        t1.gauss_beam(A=1,
-                      x0=-40*um,
-                      z0=0*um,
-                      w0=10*um,
-                      theta=45.*degrees)
+        t1.gauss_beam(A=1, x0=-40 * um, z0=0 * um, w0=10 * um, theta=45.0 * degrees)
 
         u1 = Scalar_mask_XZ(x=x0, z=z0, wavelength=wavelength)
-        u1.incident_field(u0, z0=10*um)
-        u1.incident_field(t0, z0=25*um)
-        u1.incident_field(t1, z0=25*um)
+        u1.incident_field(u0, z0=10 * um)
+        u1.incident_field(t0, z0=25 * um)
+        u1.incident_field(t1, z0=25 * um)
         u1.draw(kind="intensity", logarithm=True)
 
         u1.save_data(filename=filename + ".npz", add_name="_0")
@@ -366,25 +328,29 @@ class Test_Scalar_fields_XZ:
         func_name = sys._getframe().f_code.co_name
         filename = f"{newpath}{func_name}"
 
-        x0 = np.linspace(-150*um, 150*um, 512)
-        z0 = np.linspace(0*um, 500*um, 512)
-        wavelength = 5*um
+        x0 = np.linspace(-150 * um, 150 * um, 512)
+        z0 = np.linspace(0 * um, 500 * um, 512)
+        wavelength = 5 * um
         u0 = Scalar_source_X(x=x0, wavelength=wavelength)
-        u0.plane_wave(A=1, theta=0*degrees)
+        u0.plane_wave(A=1, theta=0 * degrees)
 
         u1 = Scalar_mask_XZ(x=x0, z=z0, wavelength=wavelength)
         u1.incident_field(u0)
-        u1.slit(r0=(10*um, 0*um),
-                aperture=200*um,
-                depth=15*um,
-                refractive_index=1 + 5j,
-                refractive_index_center="",
-                angle=0*degrees)
-        u1.biprism(r0=(10*um, 0*um),
-                   length=200*um,
-                   height=15*um,
-                   refractive_index=1.5,
-                   angle=0*degrees)
+        u1.slit(
+            r0=(10 * um, 0 * um),
+            aperture=200 * um,
+            depth=15 * um,
+            refractive_index=1 + 5j,
+            refractive_index_center="",
+            angle=0 * degrees,
+        )
+        u1.biprism(
+            r0=(10 * um, 0 * um),
+            length=200 * um,
+            height=15 * um,
+            refractive_index=1.5,
+            angle=0 * degrees,
+        )
         u1.BPM()
         u1.draw(kind="intensity", draw_borders=True)
         u1.save_data(filename=filename + ".npz", add_name="_field")
@@ -401,16 +367,16 @@ class Test_Scalar_fields_XZ:
         func_name = sys._getframe().f_code.co_name
         filename = f"{newpath}{func_name}"
 
-        wavelength = .5*um
-        x0 = np.linspace(-200*um, 200*um, 512)
-        z0 = np.linspace(500*um, 3*mm, 512)
+        wavelength = 0.5 * um
+        x0 = np.linspace(-200 * um, 200 * um, 512)
+        z0 = np.linspace(500 * um, 3 * mm, 512)
 
         t1 = Scalar_mask_X(x0, wavelength)
-        t1.lens(x0=0*um, radius=100*um, focal=2*mm)
+        t1.lens(x0=0 * um, radius=100 * um, focal=2 * mm)
         # t1.draw(kind='phase')
 
         f1 = Scalar_source_X(x0, wavelength)
-        f1.plane_wave(A=1, theta=0*degrees)
+        f1.plane_wave(A=1, theta=0 * degrees)
         # f1.draw()
 
         u1 = Scalar_field_XZ(x=x0, z=z0, wavelength=wavelength)
@@ -429,22 +395,20 @@ class Test_Scalar_fields_XZ:
         func_name = sys._getframe().f_code.co_name
         filename = f"{newpath}{func_name}"
 
-        x0 = np.linspace(-100*um, 100*um, 512)
-        z0 = np.linspace(0*um, 200*um, 512)
-        wavelength = 5*um
+        x0 = np.linspace(-100 * um, 100 * um, 512)
+        z0 = np.linspace(0 * um, 200 * um, 512)
+        wavelength = 5 * um
         u0 = Scalar_source_X(x=x0, wavelength=wavelength)
-        u0.gauss_beam(A=1,
-                      x0=0*um,
-                      z0=0*um,
-                      w0=10*um,
-                      theta=0*degrees)
-        u0.plane_wave(A=1, theta=0*degrees)
+        u0.gauss_beam(A=1, x0=0 * um, z0=0 * um, w0=10 * um, theta=0 * degrees)
+        u0.plane_wave(A=1, theta=0 * degrees)
         u1 = Scalar_mask_XZ(x=x0, z=z0, wavelength=wavelength)
         u1.incident_field(u0)
-        u1.square(r0=(0*um, 100*um),
-                     size=(150*um, 50*um),
-                     angle=45*degrees,
-                     refractive_index=1.5 - 0 * .00025j)
+        u1.square(
+            r0=(0 * um, 100 * um),
+            size=(150 * um, 50 * um),
+            angle=45 * degrees,
+            refractive_index=1.5 - 0 * 0.00025j,
+        )
 
         u1.draw_refractive_index()
         u1.BPM(verbose=False)
@@ -458,22 +422,20 @@ class Test_Scalar_fields_XZ:
         func_name = sys._getframe().f_code.co_name
         filename = f"{newpath}{func_name}"
 
-        x0 = np.linspace(-100*um, 100*um, 512)
-        z0 = np.linspace(0*um, 200*um, 512)
-        wavelength = 5*um
+        x0 = np.linspace(-100 * um, 100 * um, 512)
+        z0 = np.linspace(0 * um, 200 * um, 512)
+        wavelength = 5 * um
         u0 = Scalar_source_X(x=x0, wavelength=wavelength)
-        u0.gauss_beam(A=1,
-                      x0=0*um,
-                      z0=0*um,
-                      w0=10*um,
-                      theta=0*degrees)
-        u0.plane_wave(A=1, theta=0*degrees)
+        u0.gauss_beam(A=1, x0=0 * um, z0=0 * um, w0=10 * um, theta=0 * degrees)
+        u0.plane_wave(A=1, theta=0 * degrees)
         u1 = Scalar_mask_XZ(x=x0, z=z0, wavelength=wavelength)
         u1.incident_field(u0)
-        u1.square(r0=(0*um, 100*um),
-                     size=(150*um, 50*um),
-                     angle=45*degrees,
-                     refractive_index=1.5 - 0 * .00025j)
+        u1.square(
+            r0=(0 * um, 100 * um),
+            size=(150 * um, 50 * um),
+            angle=45 * degrees,
+            refractive_index=1.5 - 0 * 0.00025j,
+        )
 
         u1.draw_refractive_index()
         u1.WPM(verbose=False)
@@ -487,24 +449,21 @@ class Test_Scalar_fields_XZ:
         func_name = sys._getframe().f_code.co_name
         filename = f"{newpath}{func_name}"
 
-        length = 200*um
-        wavelength = 5*um
-        x0 = np.linspace(-length/2, length/2, 512)
-        z0 = np.linspace(2*um, 500*um, 512)
+        length = 200 * um
+        wavelength = 5 * um
+        x0 = np.linspace(-length / 2, length / 2, 512)
+        z0 = np.linspace(2 * um, 500 * um, 512)
 
         # source
         f1 = Scalar_source_X(x0, wavelength)
-        f1.gauss_beam(A=1, x0=0*um, z0=0*um, w0=10*um, theta=0*degrees)
+        f1.gauss_beam(A=1, x0=0 * um, z0=0 * um, w0=10 * um, theta=0 * degrees)
         f1.draw(kind="intensity")
 
         # RS
         u1 = Scalar_field_XZ(x=x0, z=z0, wavelength=wavelength)
         u1.incident_field(f1)
         u1.RS()
-        u1.draw(kind="intensity",
-                logarithm=1,
-                normalize="intensity",
-                draw_borders=False)
+        u1.draw(kind="intensity", logarithm=1, normalize="intensity", draw_borders=False)
         save_figure_test(newpath, func_name, add_name="_RS")
 
         u1.save_data(filename=filename + ".npz", add_name="_RS")
@@ -513,67 +472,59 @@ class Test_Scalar_fields_XZ:
         u1.clear_field()
         u1.incident_field(f1)
         u1.BPM(verbose=False)
-        u1.draw(kind="intensity",
-                logarithm=1,
-                normalize="intensity",
-                draw_borders=False)
+        u1.draw(kind="intensity", logarithm=1, normalize="intensity", draw_borders=False)
         save_figure_test(newpath, func_name, add_name="_BPM")
 
         u1.save_data(filename=filename + ".npz", add_name="_BPM")
 
         u_BPM = u1.u
 
-        diferencias = np.abs(u_RS)**2 - np.abs(u_BPM)**2
+        diferencias = np.abs(u_RS) ** 2 - np.abs(u_BPM) ** 2
         u1.u = diferencias
-        u1.draw(kind="intensity", logarithm=0., normalize=False)
+        u1.draw(kind="intensity", logarithm=0.0, normalize=False)
         u1.save_data(filename=filename + ".npz", add_name="_diff")
         save_figure_test(newpath, func_name, add_name="_diff")
         assert True
-
 
     @pytest.mark.skip(reason="test_draw_profiles: mp4 generation not working at github")
     def test_draw_profiles(self):
         func_name = sys._getframe().f_code.co_name
         filename = f"{newpath}{func_name}"
 
-        length = 200*um
-        wavelength = 5*um
-        period = 25*um
+        length = 200 * um
+        wavelength = 5 * um
+        period = 25 * um
         z_talbot = 2 * period**2 / wavelength
-        x0 = np.linspace(-length/2, length/2, 512)
-        z0 = np.linspace(25*um, 1 * z_talbot, 64)
+        x0 = np.linspace(-length / 2, length / 2, 512)
+        z0 = np.linspace(25 * um, 1 * z_talbot, 64)
 
         u0 = Scalar_source_X(x0, wavelength)
-        u0.gauss_beam(A=1,
-                      x0=0*um,
-                      z0=-100*um,
-                      w0=100*um,
-                      theta=0*degrees)
+        u0.gauss_beam(A=1, x0=0 * um, z0=-100 * um, w0=100 * um, theta=0 * degrees)
 
         t1 = Scalar_mask_X(x0, wavelength)
-        t1.ronchi_grating(period=25*um, x0=0*um, fill_factor=0.5)
+        t1.ronchi_grating(period=25 * um, x0=0 * um, fill_factor=0.5)
 
         u1 = Scalar_field_XZ(x=x0, z=z0, wavelength=wavelength)
         u1.incident_field(t1 * u0)
         u1.RS()
 
-        u1.draw(kind="intensity",
-                logarithm=0.,
-                normalize="maximum",
-                draw_borders=True,
-                filename="")
+        u1.draw(
+            kind="intensity", logarithm=0.0, normalize="maximum", draw_borders=True, filename=""
+        )
         save_figure_test(newpath, func_name, add_name="_int")
 
         filename = "{}{}{}.{}".format(newpath, func_name, "_video", "mp4")
 
         seconds = 1
-        u1.video(kind="intensity",
-                 logarithm=True,
-                 normalize=False,
-                 time_video=10 * seconds,
-                 frames_reduction=5,
-                 filename=filename,
-                 dpi=100)
+        u1.video(
+            kind="intensity",
+            logarithm=True,
+            normalize=False,
+            time_video=10 * seconds,
+            frames_reduction=5,
+            filename=filename,
+            dpi=100,
+        )
 
         assert True
 
@@ -581,21 +532,17 @@ class Test_Scalar_fields_XZ:
         func_name = sys._getframe().f_code.co_name
         filename = f"{newpath}{func_name}"
 
-        x0 = np.linspace(-25*um, 25*um, 512)
-        z0 = np.linspace(0*um, 75*um, 128)
-        wavelength = 5*um
+        x0 = np.linspace(-25 * um, 25 * um, 512)
+        z0 = np.linspace(0 * um, 75 * um, 128)
+        wavelength = 5 * um
         u0 = Scalar_source_X(x=x0, wavelength=wavelength)
-        u0.plane_wave(A=1, theta=0*degrees)
+        u0.plane_wave(A=1, theta=0 * degrees)
         u1 = Scalar_mask_XZ(x=x0, z=z0, wavelength=wavelength)
         u1.incident_field(u0)
-        u1.mask_field(size_edge=5*um)
-        u1.cylinder(r0=(0*um, 20*um),
-                  radius=(20*um, 20*um),
-                  refractive_index=1.5)
+        u1.mask_field(size_edge=5 * um)
+        u1.cylinder(r0=(0 * um, 20 * um), radius=(20 * um, 20 * um), refractive_index=1.5)
         u1.BPM(verbose=False)
-        u1.draw_profiles_interactive(kind="intensity",
-                                     logarithm=True,
-                                     normalize="maximum")
+        u1.draw_profiles_interactive(kind="intensity", logarithm=True, normalize="maximum")
 
         u1.save_data(filename=filename + ".npz", add_name="")
         save_figure_test(newpath, func_name, add_name="")
@@ -605,22 +552,20 @@ class Test_Scalar_fields_XZ:
         func_name = sys._getframe().f_code.co_name
         # filename = '{}{}'.format(newpath, func_name)
 
-        x0 = np.linspace(-25*um, 25*um, 512)
-        z0 = np.linspace(0*um, 75*um, 512)
-        wavelength = .5*um
+        x0 = np.linspace(-25 * um, 25 * um, 512)
+        z0 = np.linspace(0 * um, 75 * um, 512)
+        wavelength = 0.5 * um
         u0 = Scalar_source_X(x=x0, wavelength=wavelength)
-        u0.plane_wave(A=1, theta=0*degrees)
+        u0.plane_wave(A=1, theta=0 * degrees)
         u1 = Scalar_mask_XZ(x=x0, z=z0, wavelength=wavelength)
         u1.incident_field(u0)
-        u1.mask_field(size_edge=5*um)
-        u1.cylinder(r0=(0*um, 0*um),
-                  radius=(25*um, 25*um),
-                  refractive_index=2)
+        u1.mask_field(size_edge=5 * um)
+        u1.cylinder(r0=(0 * um, 0 * um), radius=(25 * um, 25 * um), refractive_index=2)
         u1.BPM(verbose=False)
         u1.draw(logarithm=True, normalize="maximum", draw_borders=True)
         save_figure_test(newpath, func_name, add_name="")
 
-        u1.profile_longitudinal(x0=0*um)
+        u1.profile_longitudinal(x0=0 * um)
         save_figure_test(newpath, func_name, add_name="_prof")
         assert True
 
@@ -628,22 +573,20 @@ class Test_Scalar_fields_XZ:
         func_name = sys._getframe().f_code.co_name
         # filename = '{}{}'.format(newpath, func_name)
 
-        x0 = np.linspace(-25*um, 25*um, 512)
-        z0 = np.linspace(0*um, 75*um, 512)
-        wavelength = .5*um
+        x0 = np.linspace(-25 * um, 25 * um, 512)
+        z0 = np.linspace(0 * um, 75 * um, 512)
+        wavelength = 0.5 * um
         u0 = Scalar_source_X(x=x0, wavelength=wavelength)
-        u0.plane_wave(A=1, theta=0*degrees)
+        u0.plane_wave(A=1, theta=0 * degrees)
         u1 = Scalar_mask_XZ(x=x0, z=z0, wavelength=wavelength)
         u1.incident_field(u0)
-        u1.mask_field(size_edge=5*um)
-        u1.cylinder(r0=(0*um, 0*um),
-                  radius=(25*um, 25*um),
-                  refractive_index=2)
+        u1.mask_field(size_edge=5 * um)
+        u1.cylinder(r0=(0 * um, 0 * um), radius=(25 * um, 25 * um), refractive_index=2)
         u1.BPM(verbose=False)
         u1.draw(logarithm=True, normalize="maximum", draw_borders=True)
         save_figure_test(newpath, func_name, add_name="")
 
-        u1.profile_transversal(z0=46*um)
+        u1.profile_transversal(z0=46 * um)
         save_figure_test(newpath, func_name, add_name="_prof")
         assert True
 
@@ -674,7 +617,7 @@ class Test_Scalar_fields_XZ:
         # u1.draw_refractive_index()
         # u1.BPM(verbose=False)
         u1 = u_focus
-        u1.draw(logarithm=0., normalize=False, draw_borders=True)
+        u1.draw(logarithm=0.0, normalize=False, draw_borders=True)
         save_figure_test(newpath, func_name, add_name="")
 
         x_max, z_max = u1.search_focus()
@@ -689,42 +632,32 @@ class Test_Scalar_fields_XZ:
         func_name = sys._getframe().f_code.co_name
         # filename = '{}{}'.format(newpath, func_name)
 
-        x0 = np.linspace(-25*um, 25*um, 512)
-        z0 = np.linspace(0*um, 75*um, 512)
-        wavelength = 5*um
+        x0 = np.linspace(-25 * um, 25 * um, 512)
+        z0 = np.linspace(0 * um, 75 * um, 512)
+        wavelength = 5 * um
         u0 = Scalar_source_X(x=x0, wavelength=wavelength)
-        u0.gauss_beam(A=1, x0=0*um, z0=0*um, w0=10*um, theta=0*degrees)
+        u0.gauss_beam(A=1, x0=0 * um, z0=0 * um, w0=10 * um, theta=0 * degrees)
 
         u1 = Scalar_mask_XZ(x=x0, z=z0, wavelength=wavelength)
         u1.incident_field(u0)
 
-        u1.square(r0=(0*um, 45*um),
-                     size=(25*um, 25*um),
-                     angle=0*degrees,
-                     refractive_index=1.5)
+        u1.square(
+            r0=(0 * um, 45 * um), size=(25 * um, 25 * um), angle=0 * degrees, refractive_index=1.5
+        )
 
         u1.draw_refractive_index(draw_borders=True, min_incr=0.001)
         u1.BPM(verbose=False)
-        u1.draw(logarithm=True,
-                normalize="maximum",
-                draw_borders=True,
-                min_incr=0.001)
+        u1.draw(logarithm=True, normalize="maximum", draw_borders=True, min_incr=0.001)
 
         save_figure_test(newpath, func_name, add_name="_direct")
 
         u2 = u1.BPM_inverse()
-        u2.draw(logarithm=True,
-                normalize="maximum",
-                draw_borders=True,
-                min_incr=0.001)
+        u2.draw(logarithm=True, normalize="maximum", draw_borders=True, min_incr=0.001)
         save_figure_test(newpath, func_name, add_name="_inverse")
 
         differences = u1 - u2
         differences.u = np.abs(u1.u) - np.abs(u2.u)
-        differences.draw(logarithm=True,
-                         normalize="maximum",
-                         draw_borders=True,
-                         min_incr=0.001)
+        differences.draw(logarithm=True, normalize="maximum", draw_borders=True, min_incr=0.001)
         save_figure_test(newpath, func_name, add_name="_diff")
 
         assert True
@@ -737,41 +670,30 @@ class Test_Scalar_fields_XZ:
         1. propagate and after backpropagate the last field
         2. backpropagate u0=1
         """
-        x0 = np.linspace(-25*um, 25*um, 512)
-        z0 = np.linspace(0*um, 75*um, 512)
-        wavelength = 5*um
+        x0 = np.linspace(-25 * um, 25 * um, 512)
+        z0 = np.linspace(0 * um, 75 * um, 512)
+        wavelength = 5 * um
         u0 = Scalar_source_X(x=x0, wavelength=wavelength)
-        u0.plane_wave(theta=20*degrees)
-        u0.gauss_beam(A=1,
-                      x0=-15*um,
-                      z0=0*um,
-                      w0=10*um,
-                      theta=0*degrees)
+        u0.plane_wave(theta=20 * degrees)
+        u0.gauss_beam(A=1, x0=-15 * um, z0=0 * um, w0=10 * um, theta=0 * degrees)
 
         u1 = Scalar_mask_XZ(x=x0, z=z0, wavelength=wavelength)
         u1.incident_field(u0)
 
-        u1.square(r0=(0*um, 45*um),
-                     size=(25*um, 25*um),
-                     angle=0*degrees,
-                     refractive_index=4)
+        u1.square(
+            r0=(0 * um, 45 * um), size=(25 * um, 25 * um), angle=0 * degrees, refractive_index=4
+        )
 
         u1.draw_refractive_index(draw_borders=True, min_incr=0.001)
         u1.BPM(verbose=False)
-        u1.draw(logarithm=True,
-                normalize="maximum",
-                draw_borders=True,
-                min_incr=0.001)
+        u1.draw(logarithm=True, normalize="maximum", draw_borders=True, min_incr=0.001)
         save_figure_test(newpath, func_name, add_name="_for")
 
         # Hago la inverse y drawing los resultados
         u1.u[:, -1] = 1
         u2 = u1.BPM_back_propagation()
         # u2.draw_refractive_index(draw_borders=True, min_incr=0.001)
-        u2.draw(logarithm=True,
-                normalize="maximum",
-                draw_borders=True,
-                min_incr=0.001)
+        u2.draw(logarithm=True, normalize="maximum", draw_borders=True, min_incr=0.001)
 
         u2.save_data(filename=filename + ".npz", add_name="")
         save_figure_test(newpath, func_name, add_name="_back")
@@ -783,36 +705,28 @@ class Test_Scalar_fields_XZ:
         """
         we place a field at a certain position and after we backpropagate
         """
-        x0 = np.linspace(-25*um, 25*um, 512)
-        z0 = np.linspace(0*um, 100*um, 512)
-        wavelength = 5*um
+        x0 = np.linspace(-25 * um, 25 * um, 512)
+        z0 = np.linspace(0 * um, 100 * um, 512)
+        wavelength = 5 * um
         u0 = Scalar_source_X(x=x0, wavelength=wavelength)
-        u0.plane_wave(theta=20*degrees)
-        u0.gauss_beam(A=1,
-                      x0=-5*um,
-                      z0=0*um,
-                      w0=5*um,
-                      theta=15.*degrees)
+        u0.plane_wave(theta=20 * degrees)
+        u0.gauss_beam(A=1, x0=-5 * um, z0=0 * um, w0=5 * um, theta=15.0 * degrees)
 
         u1 = Scalar_mask_XZ(x=x0, z=z0, wavelength=wavelength)
 
-        u1.square(r0=(0*um, 45*um),
-                     size=(25*um, 25*um),
-                     angle=0*degrees,
-                     refractive_index=2)
+        u1.square(
+            r0=(0 * um, 45 * um), size=(25 * um, 25 * um), angle=0 * degrees, refractive_index=2
+        )
 
         u1.draw_refractive_index(draw_borders=True, min_incr=0.001)
-        u1.incident_field(u0, z0=80*um)
+        u1.incident_field(u0, z0=80 * um)
 
         # Hago la inverse y drawing los resultados
         u2 = u1.BPM_back_propagation()
         # u2.draw_incident_field(
         #     kind='intensity', logarithm=0., normalize=False, filename: str = '')
         u2.draw_refractive_index(draw_borders=True, min_incr=0.001)
-        u2.draw(logarithm=True,
-                normalize="maximum",
-                draw_borders=True,
-                min_incr=0.001)
+        u2.draw(logarithm=True, normalize="maximum", draw_borders=True, min_incr=0.001)
 
         u2.save_data(filename=filename + ".npz", add_name="")
         save_figure_test(newpath, func_name, add_name="")
@@ -822,42 +736,33 @@ class Test_Scalar_fields_XZ:
         func_name = sys._getframe().f_code.co_name
         filename = f"{newpath}{func_name}"
 
-        x0 = np.linspace(-60*um, 60*um, 512)
-        z0 = np.linspace(0*um, 120*um, 512)
-        wavelength = 4*um
+        x0 = np.linspace(-60 * um, 60 * um, 512)
+        z0 = np.linspace(0 * um, 120 * um, 512)
+        wavelength = 4 * um
 
-        radius_sphere = 30*um
+        radius_sphere = 30 * um
 
         u0 = Scalar_source_X(x=x0, wavelength=wavelength)
-        u0.gauss_beam(A=1,
-                      x0=0*um,
-                      z0=60*um,
-                      w0=25*um,
-                      theta=0*degrees)
+        u0.gauss_beam(A=1, x0=0 * um, z0=60 * um, w0=25 * um, theta=0 * degrees)
 
         u1 = Scalar_mask_XZ(x=x0, z=z0, wavelength=wavelength, n_background=4)
         u1.incident_field(u0)
-        u1.mask_field(size_edge=5*um)
+        u1.mask_field(size_edge=5 * um)
 
-        u1.cylinder(r0=(0, 40*um),
-                  radius=(radius_sphere, radius_sphere),
-                  refractive_index=1)
+        u1.cylinder(r0=(0, 40 * um), radius=(radius_sphere, radius_sphere), refractive_index=1)
 
-        u1.smooth_refractive_index(type_filter=3,
-                                   pixels_filtering=2,
-                                   max_diff_filter=0.01,
-                                   draw_check=False)
+        u1.smooth_refractive_index(
+            type_filter=3, pixels_filtering=2, max_diff_filter=0.01, draw_check=False
+        )
         save_figure_test(newpath, func_name, add_name="_n_diff")
 
         u1.BPM(verbose=False)
         u1.draw_refractive_index(scale="scaled")
         save_figure_test(newpath, func_name, add_name="_n")
 
-        u1.draw(kind="intensity",
-                logarithm=True,
-                normalize="maximum",
-                draw_borders=True,
-                scale="scaled")
+        u1.draw(
+            kind="intensity", logarithm=True, normalize="maximum", draw_borders=True, scale="scaled"
+        )
 
         u1.save_data(filename=filename + ".npz", add_name="")
         save_figure_test(newpath, func_name, add_name="")
@@ -869,12 +774,12 @@ class Test_Scalar_fields_XZ:
 
         wavelengths = np.linspace(0.4, 0.8, 5)
         w_central = 0.6
-        Dw = 0.15*um
-        spectrum = np.exp(-(wavelengths - w_central)**2 / (2 * Dw**2))
+        Dw = 0.15 * um
+        spectrum = np.exp(-((wavelengths - w_central) ** 2) / (2 * Dw**2))
         initial_field = _func_polychromatic_RS_(wavelengths[0])
         x0 = initial_field.x
 
-        z0 = np.linspace(250*um, 1000*um, 512)
+        z0 = np.linspace(250 * um, 1000 * um, 512)
 
         u1 = Scalar_mask_XZ(x0, z0, wavelengths[0], n_background=1)
         initial_field = _func_polychromatic_RS_(wavelengths[0])
@@ -883,11 +788,9 @@ class Test_Scalar_fields_XZ:
         u1.draw(logarithm=True, normalize="intensity")
 
         u1 = Scalar_mask_XZ(x0, z0, wavelengths[0], n_background=1)
-        u_poly = u1.RS_polychromatic(_func_polychromatic_RS_,
-                                     wavelengths,
-                                     spectrum=spectrum,
-                                     verbose=False,
-                                     num_processors=1)
+        u_poly = u1.RS_polychromatic(
+            _func_polychromatic_RS_, wavelengths, spectrum=spectrum, verbose=False, num_processors=1
+        )
 
         u_poly.draw(logarithm=True, normalize="intensity", draw_borders=True)
 
@@ -907,11 +810,9 @@ class Test_Scalar_fields_XZ:
         x0 = initial_field.x
 
         u1 = Scalar_mask_XZ(x0, z0, wavelengths[0], n_background=1)
-        u_poly = u1.BPM_polychromatic(_func_polychromatic_BPM_,
-                                      wavelengths,
-                                      spectrum,
-                                      verbose=True,
-                                      num_processors=1)
+        u_poly = u1.BPM_polychromatic(
+            _func_polychromatic_BPM_, wavelengths, spectrum, verbose=True, num_processors=1
+        )
         u_poly.draw(logarithm=True, normalize="intensity", draw_borders=True)
         save_figure_test(newpath, func_name, add_name="_int")
 

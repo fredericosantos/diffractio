@@ -284,7 +284,7 @@ class Test_Scalar_fields_XY:
         p1 = [0, 0]
         p2 = [field.x[0], field.y[0]]
 
-        h, z_profile, point1, point2 = field.profile(
+        _h, _z_profile, _point1, _point2 = field.profile(
             point1=p1, point2=p2, kind="intensity", order=1
         )
 
@@ -304,7 +304,7 @@ class Test_Scalar_fields_XY:
 
         field = gauss_beam_test()
 
-        h, z_profile, point1, point2 = field.draw_profile(
+        _h, _z_profile, point1, point2 = field.draw_profile(
             point1="", point2="", kind="intensity", order=1
         )
         field.draw()

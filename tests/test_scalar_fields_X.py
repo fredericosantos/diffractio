@@ -85,7 +85,6 @@ class Test_Scalar_fields_X:
 
     def test_amplitude_phase(self):
         func_name = sys._getframe().f_code.co_name
-        filename = f"{newpath}{func_name}"
 
         x = np.linspace(-1 * mm, 1 * mm, 1024)
         wavelength = 0.6328 * um
@@ -212,7 +211,7 @@ class Test_Scalar_fields_X:
             t2, x_pos=[-400, -200, 0, 200, 400], clean=True, kind_position="center"
         )
 
-        pos_transitions, type_transitions, raising, falling = t1.get_edges(
+        pos_transitions, type_transitions, _raising, _falling = t1.get_edges(
             kind_transition="amplitude", min_step=0.05
         )
         print(pos_transitions)

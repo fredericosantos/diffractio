@@ -59,7 +59,7 @@ tuple[int, ...] = (1, 2)
 
 clases
 def make_new_user(user_class: type[User]) -> User:
- 
+
 from typing import NoReturn
 
 def stop() -> NoReturn:

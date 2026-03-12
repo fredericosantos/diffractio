@@ -45,7 +45,7 @@ class Test_Scalar_masks_XZ:
         t1 = Scalar_mask_XZ(x=x0, z=z0, wavelength=wavelength, n_background=1)
         z0 = 10 * um
         z1 = 50 * um
-        v_globals = dict(z0=z0, z1=z1)
+        v_globals = {"z0": z0, "z1": z1}
         t1.extrude_mask(
             t=t0, z0=z0, z1=z1, refractive_index="1+0.25*(z-z0)/(z1-z0)", v_globals=v_globals
         )
@@ -72,7 +72,7 @@ class Test_Scalar_masks_XZ:
         t1 = Scalar_mask_XZ(x=x0, z=z0, wavelength=wavelength, n_background=1)
         z0 = 10 * um
         z1 = 50 * um
-        v_globals = dict(z0=z0, z1=z1)
+        v_globals = {"z0": z0, "z1": z1}
         t1.extrude_mask(t=t0, z0=z0, z1=z1, refractive_index=1.5, v_globals=v_globals)
         t1.draw_refractive_index(
             draw_borders=False,
@@ -150,12 +150,15 @@ class Test_Scalar_masks_XZ:
 
         t0 = Scalar_mask_XZ(x=x0, z=z0, wavelength=wavelength, n_background=1.0)
 
-        pn = dict(n_out=1.5, n_center=4, cx=0 * um, cz=100 * um, radius=75 * um)
+        pn = {"n_out": 1.5, "n_center": 4, "cx": 0 * um, "cz": 100 * um, "radius": 75 * um}
 
         center = (pn["cx"], pn["cz"])
         radius = pn["radius"]
         # ref_index = '2*(((X-0)**2+(Z-300)**2)/75**2-0)'
-        ref_index = f"{pn['n_out']}+({pn['n_center']}-{pn['n_out']})*(1-((X-{pn['cx']})**2+(Z-{pn['cz']})**2)/{pn['radius']}**2)"
+        ref_index = (
+            f"{pn['n_out']}+({pn['n_center']}-{pn['n_out']})"
+            f"*(1-((X-{pn['cx']})**2+(Z-{pn['cz']})**2)/{pn['radius']}**2)"
+        )
 
         t0.cylinder(r0=center, radius=(radius, radius), refractive_index=ref_index, angle=0)
 
@@ -180,7 +183,7 @@ class Test_Scalar_masks_XZ:
 
         z_min = 10 * um
         z_max = 50 * um
-        v_globals = dict(np=np)
+        v_globals = {"np": np}
         t1 = Scalar_mask_XZ(x=x0, z=z0, wavelength=wavelength, n_background=1)
         t1.extrude_mask(
             t=t0,
@@ -206,12 +209,15 @@ class Test_Scalar_masks_XZ:
 
         t0 = Scalar_mask_XZ(x=x0, z=z0, wavelength=wavelength, n_background=1.0)
 
-        pn = dict(n_out=1.5, n_center=4, cx=0 * um, cz=100 * um, radius=75 * um)
+        pn = {"n_out": 1.5, "n_center": 4, "cx": 0 * um, "cz": 100 * um, "radius": 75 * um}
 
         center = (pn["cx"], pn["cz"])
         radius = pn["radius"]
         # ref_index = '2*(((X-0)**2+(Z-300)**2)/75**2-0)'
-        ref_index = f"{pn['n_out']}+({pn['n_center']}-{pn['n_out']})*(1-((X-{pn['cx']})**2+(Z-{pn['cz']})**2)/{pn['radius']}**2)"
+        ref_index = (
+            f"{pn['n_out']}+({pn['n_center']}-{pn['n_out']})"
+            f"*(1-((X-{pn['cx']})**2+(Z-{pn['cz']})**2)/{pn['radius']}**2)"
+        )
 
         t0.cylinder(r0=center, radius=(radius, radius), refractive_index=ref_index, angle=0)
 

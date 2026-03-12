@@ -2,7 +2,8 @@
 
 # ----------------------------------------------------------------------
 # Name:        utils_drawing3D.py
-# Purpose:     Utility functions for 3D drawing operations. Pyvista has been used for the implementation
+# Purpose:     Utility functions for 3D drawing operations.
+#              Pyvista has been used for the implementation
 #
 # Author:      Luis Miguel Sanchez Brea
 #
@@ -97,7 +98,8 @@ def voxelize_volume_diffractio(self, mesh, refractive_index, check_surface=True)
     surface = mesh.extract_geometry()  # filter preserves topology
     if not surface.faces.size:
         # we have a point cloud or an empty mesh
-        raise ValueError("Input mesh must have faces for voxelization.")
+        msg = "Input mesh must have faces for voxelization."
+        raise ValueError(msg)
     if not surface.is_all_triangles:
         # reduce chance for artifacts, see gh-1743
         surface.triangulate(inplace=True)
@@ -145,9 +147,9 @@ def draw(
         filename (str, optional): saves images: html, png or svg. Defaults to ''.
     """
 
-    x_center = (self.x[-1] + self.x[0]) / 2
-    y_center = (self.y[-1] + self.y[0]) / 2
-    z_center = (self.z[-1] + self.z[0]) / 2
+    (self.x[-1] + self.x[0]) / 2
+    (self.y[-1] + self.y[0]) / 2
+    (self.z[-1] + self.z[0]) / 2
 
     len_x = len(self.x)
     len_y = len(self.y)
@@ -183,9 +185,9 @@ def draw(
         spacing = np.array((delta_y, delta_x, delta_z))
 
     if "cpos" in kwargs:
-        cpos = kwargs["cpos"]
+        kwargs["cpos"]
     else:
-        cpos = [(540, -617, 180), (128, 126.0, 111.0), (-0, 0, 0)]
+        pass
 
     if "background_color" in kwargs:
         background_color = kwargs["background_color"]
@@ -253,7 +255,7 @@ def draw(
 
         pl = pyvista.Plotter()
         slice = grid.slice_orthogonal()
-        dargs = dict(cmap=cmap)
+        dargs = {"cmap": cmap}
         pl.set_scale(
             xscale=1 / scale[2],
             yscale=1 / scale[0],
@@ -271,7 +273,7 @@ def draw(
         grid["scalars"] = np.transpose(data, axes=(2, 0, 1)).flatten()
 
         pl = pyvista.Plotter(shape=(2, 2))
-        dargs = dict(cmap=cmap)
+        dargs = {"cmap": cmap}
         slice1 = grid.slice_orthogonal(x=0, y=0)
         slice2 = grid.slice_orthogonal(x=0, z=0)
         slice3 = grid.slice_orthogonal(y=0, z=0)
@@ -418,9 +420,9 @@ def video_isovalue(
         kind (str, optional): "intensity" or "refractive_index". Defaults to 'refractive_index'.
     """
 
-    x_center = (self.x[-1] + self.x[0]) / 2
-    y_center = (self.y[-1] + self.y[0]) / 2
-    z_center = (self.z[-1] + self.z[0]) / 2
+    (self.x[-1] + self.x[0]) / 2
+    (self.y[-1] + self.y[0]) / 2
+    (self.z[-1] + self.z[0]) / 2
 
     len_x = len(self.x)
     len_y = len(self.y)
@@ -456,19 +458,19 @@ def video_isovalue(
         spacing = np.array((delta_y, delta_x, delta_z))
 
     if "cpos" in kwargs:
-        cpos = kwargs["cpos"]
+        kwargs["cpos"]
     else:
-        cpos = [(540, -617, 180), (128, 126.0, 111.0), (-0, 0, 0)]
+        pass
 
     if "background_color" in kwargs:
-        background_color = kwargs["background_color"]
+        kwargs["background_color"]
     else:
-        background_color = (1.0, 1.0, 1.0)
+        pass
 
     if "camera_position" in kwargs:
-        camera_position = kwargs["camera_position"]
+        kwargs["camera_position"]
     else:
-        camera_position = "xy"
+        pass
 
     grid = pv.ImageData(dimensions=dimensions, spacing=spacing)
 

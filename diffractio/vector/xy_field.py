@@ -60,7 +60,12 @@ from py_pol.jones_matrix import Jones_matrix
 from py_pol.jones_vector import Jones_vector
 
 from diffractio import degrees, eps, mm, np, plt, um
-from diffractio.config import bool_raise_exception, CONF_DRAWING, Draw_Vector_XY_Options, get_vector_options
+from diffractio.config import (
+    bool_raise_exception,
+    CONF_DRAWING,
+    Draw_Vector_XY_Options,
+    get_vector_options,
+)
 from diffractio.typing import NDArrayFloat
 from diffractio.core.operations import (
     load_data_common,

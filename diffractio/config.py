@@ -23,7 +23,7 @@ from matplotlib import cm
 bool_raise_exception = True
 
 # Configuration params for drawings
-CONF_DRAWING = dict()
+CONF_DRAWING = {}
 CONF_DRAWING["color_intensity"] = cm.hot  # type: ignore[attr-defined]
 CONF_DRAWING["color_amplitude"] = cm.viridis  # type: ignore[attr-defined]
 CONF_DRAWING["color_amplitude_sign"] = cm.seismic  # type: ignore[attr-defined]
