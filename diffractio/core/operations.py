@@ -303,7 +303,7 @@ def add(self, other, kind: Options_add = "source"):
 
             t.u = self.u + other.u
             i_change = t1 + t2 > 1
-            t.u[i_change] = np.exp(1j * f1[i_change]) + np.exp(1j * f2[i_change])
+            t.u[i_change] = (np.exp(1j * f1[i_change]) + np.exp(1j * f2[i_change])).real
             t.u[i_change] = t.u[i_change] / np.abs(t.u[i_change])
 
     elif kind == "phases":
